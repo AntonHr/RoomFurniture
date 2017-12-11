@@ -10,13 +10,16 @@ public class InputParser {
 
     private Pattern defaultDelimiter = new Scanner("").delimiter();
 
-    public void parse(String filename) throws FileNotFoundException {
+    public List<Problem> parse(String filename) throws FileNotFoundException {
         File file = new File(filename);
         Scanner scanner = new Scanner(file);
+        List<Problem> problems = new ArrayList<>();
         while (scanner.hasNextLine()) {
             String problem = scanner.nextLine();
-            parseProblem(problem);
+            Optional<Problem> parsedProblem = parseProblem(problem);
+            parsedProblem.ifPresent(problems::add);
         }
+        return problems;
     }
 
     private boolean checkFor(Scanner scanner, String pattern) {
@@ -27,7 +30,7 @@ public class InputParser {
         return false;
     }
 
-    private void parseProblem(String problem) {
+    private Optional<Problem> parseProblem(String problem) {
         Scanner scanner = new Scanner(problem);
 
 
@@ -54,8 +57,10 @@ public class InputParser {
 
         shape.ifPresent(shapes::add);
 
-        System.out.println(problemNumber + ": " + roomShape);
-        System.out.println(shapes);
+//        System.out.println(problemNumber + ": " + roomShape);
+//        System.out.println(shapes);
+
+        return Optional.of(new Problem(new Room(roomShape), shapes));
     }
 
     private List<Vertex> parseVertices(Scanner scanner, String pattern) {

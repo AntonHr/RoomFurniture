@@ -14,7 +14,7 @@ public class Main {
 //        System.out.println(runner.findBestIndividual().get());
 
         InputParser inputParser = new InputParser();
-        inputParser.parse("test.txt");
+        System.out.println(inputParser.parse("test.txt"));
 
 
     }
