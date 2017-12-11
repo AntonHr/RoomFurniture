@@ -1,14 +1,13 @@
 package com.roomfurniture.problem;
 
-import com.roomfurniture.ga.GeneticAlgorithmRunner;
-import com.roomfurniture.ga.bitstring.Bitstring;
-import com.roomfurniture.ga.bitstring.BitstringGeneticAlgorithmBuilder;
-import com.roomfurniture.ga.algorithm.interfaces.GeneticAlgorithm;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class Main {
 
-    public static void main(String[] args) {
-	// write your code here
+    public static void main(String[] args) throws FileNotFoundException {
+        // write your code here
 
 //        GeneticAlgorithm<Bitstring> algorithm = new BitstringGeneticAlgorithmBuilder().withInputSize(8).withEvaluator(individual -> 1.0).build();
 //
@@ -18,5 +17,7 @@ public class Main {
 
         InputParser inputParser = new InputParser();
         inputParser.parse("problemsets.txt");
+
+
     }
 }
