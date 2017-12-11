@@ -37,17 +37,7 @@ public class InputParser {
         scanner.useDelimiter(defaultDelimiter);
         scanner.skip(":");
 
-        List<Vertex> roomShape = new ArrayList<>();
-
-        Optional<Vertex> lastVertex = parseVertex(scanner);
-        roomShape.add(lastVertex.get());
-
-        while (lastVertex.isPresent()) {
-            lastVertex = parseVertex(scanner);
-            roomShape.add(lastVertex.get());
-
-            if(checkFor(scanner, " #")) break;
-        }
+        List<Vertex> roomShape = parseVertices(scanner, " #");
 
         //shapes
 
@@ -62,21 +52,43 @@ public class InputParser {
             if (checkFor(scanner, ";")) break;
         }
 
+        shape.ifPresent(shapes::add);
+
         System.out.println(problemNumber + ": " + roomShape);
         System.out.println(shapes);
     }
 
+    private List<Vertex> parseVertices(Scanner scanner, String pattern) {
+        List<Vertex> roomShape = new ArrayList<>();
+
+        Optional<Vertex> lastVertex = parseVertex(scanner);
+
+
+        while (lastVertex.isPresent()) {
+            roomShape.add(lastVertex.get());
+            lastVertex = parseVertex(scanner);
+
+            if(checkFor(scanner, pattern)) break;
+        }
+        lastVertex.ifPresent(roomShape::add);
+        return roomShape;
+    }
+
     private Optional<Shape> parseShape(Scanner scanner) {
-        Pattern initialDelimiter = scanner.delimiter();
+        try {
+            Pattern initialDelimiter = scanner.delimiter();
+            scanner.useDelimiter("\\D");
+            int cost = scanner.nextInt();
+            scanner.useDelimiter(initialDelimiter);
+            scanner.skip(":");
 
-        scanner.useDelimiter("\\D");
-        int cost = scanner.nextInt();
-        scanner.useDelimiter(initialDelimiter);
-        scanner.skip(":");
+            List<Vertex> vertices = parseVertices(scanner, ";");
 
-        Vertex vertex = parseVertex(scanner);
+            return Optional.of(new Shape(cost, vertices));
+        } catch (NoSuchElementException e) {
+            return Optional.empty();
+        }
 
-        return Optional.empty();
 
     }
 
