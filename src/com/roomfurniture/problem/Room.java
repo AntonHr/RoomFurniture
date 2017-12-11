@@ -2,13 +2,11 @@ package com.roomfurniture.problem;
 
 import java.util.List;
 
-public class Room {
-    private final List<Vertex> verticies;
+public class Room extends Polygon{
 
     public Room(List<Vertex> verticies) {
-        this.verticies = verticies;
+        super(verticies);
     }
-
     @Override
     public String toString() {
         return "Room{" +
