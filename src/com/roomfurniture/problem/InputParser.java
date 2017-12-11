@@ -42,25 +42,25 @@ public class InputParser {
 
         List<Vertex> roomShape = parseVertices(scanner, " #");
 
-        //shapes
+        //furnitures
 
 
-        List<Shape> shapes = new ArrayList<>();
+        List<Furniture> furnitures = new ArrayList<>();
 
-        Optional<Shape> shape = parseShape(scanner);
+        Optional<Furniture> shape = parseShape(scanner);
         while(shape.isPresent()){
-            shapes.add(shape.get());
+            furnitures.add(shape.get());
             shape = parseShape(scanner);
 
             if (checkFor(scanner, ";")) break;
         }
 
-        shape.ifPresent(shapes::add);
+        shape.ifPresent(furnitures::add);
 
 //        System.out.println(problemNumber + ": " + roomShape);
-//        System.out.println(shapes);
+//        System.out.println(furnitures);
 
-        return Optional.of(new Problem(new Room(roomShape), shapes));
+        return Optional.of(new Problem(new Room(roomShape), furnitures));
     }
 
     private List<Vertex> parseVertices(Scanner scanner, String pattern) {
@@ -79,7 +79,7 @@ public class InputParser {
         return roomShape;
     }
 
-    private Optional<Shape> parseShape(Scanner scanner) {
+    private Optional<Furniture> parseShape(Scanner scanner) {
         try {
             Pattern initialDelimiter = scanner.delimiter();
             scanner.useDelimiter("\\D");
@@ -89,7 +89,7 @@ public class InputParser {
 
             List<Vertex> vertices = parseVertices(scanner, ";");
 
-            return Optional.of(new Shape(cost, vertices));
+            return Optional.of(new Furniture(cost, vertices));
         } catch (NoSuchElementException e) {
             return Optional.empty();
         }

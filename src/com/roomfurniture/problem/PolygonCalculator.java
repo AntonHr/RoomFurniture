@@ -46,7 +46,7 @@ public class PolygonCalculator {
         for (int i = 0; i < size-1; i++) {
             sum = sum + (xs[i] * ys[(i+1)%(size-1)]) - (ys[i] * xs[(i+1)%(size-1)]);
         }
-        return 0.5 * sum;
+        return Math.abs(0.5 * sum);
 
     }
 }

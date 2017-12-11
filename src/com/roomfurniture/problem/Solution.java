@@ -12,4 +12,11 @@ public class Solution {
    public List<Descriptor> getDescriptors() {
       return descriptors;
    }
+
+   @Override
+   public String toString() {
+      return "Solution{" +
+              "descriptors=" + descriptors +
+              '}';
+   }
 }

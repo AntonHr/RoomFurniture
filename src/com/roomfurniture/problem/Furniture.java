@@ -3,12 +3,12 @@ package com.roomfurniture.problem;
 import java.awt.geom.Path2D;
 import java.util.List;
 
-public class Shape implements Polygonizable {
+public class Furniture implements Polygonizable {
     private final double scorePerUnitArea;
     private List<Vertex> vertices;
     private Path2D.Double polygon;
 
-    public Shape(double scorePerUnitArea, List<Vertex> vertices) {
+    public Furniture(double scorePerUnitArea, List<Vertex> vertices) {
         this.scorePerUnitArea = scorePerUnitArea;
         this.vertices = vertices;
 
@@ -23,12 +23,16 @@ public class Shape implements Polygonizable {
 
     @Override
     public String toString() {
-        return "Shape{" +
+        return "Furniture{" +
                 "scorePerUnitArea=" + scorePerUnitArea + ", vertices=" + this.vertices + '}';
     }
 
     @Override
     public Path2D.Double toPolygon() {
         return polygon;
+    }
+
+    public double getScorePerUnitArea() {
+        return scorePerUnitArea;
     }
 }

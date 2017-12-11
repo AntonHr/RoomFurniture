@@ -16,4 +16,12 @@ public class Descriptor {
     public double getRotation() {
         return rotation;
     }
+
+    @Override
+    public String toString() {
+        return "Descriptor{" +
+                "position=" + position +
+                ", rotation=" + rotation +
+                '}';
+    }
 }
