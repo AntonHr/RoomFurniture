@@ -1,6 +1,7 @@
 package com.roomfurniture.problem;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Problem {
     private final Room room;
@@ -17,5 +18,9 @@ public class Problem {
                 "room=" + room +
                 ", shapes=" + shapes +
                 '}';
+    }
+
+    public Optional<Double> score(Solution solution) {
+        return Optional.empty();
     }
 }
