@@ -46,7 +46,7 @@ public class InputParser {
     }
 
     private Optional<Vertex> parseVertex(Scanner scanner) {
-        Vertex vertex = null;
+        Vertex vertex;
         try {
             scanner.findInLine("\\( *(-?\\d+(\\.\\d+)?) *, *(-?\\d+(\\.\\d+)?) *\\)");
             MatchResult result = scanner.match();
