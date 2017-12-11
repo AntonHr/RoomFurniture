@@ -1,9 +1,10 @@
 package com.roomfurniture.problem;
 
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.List;
 
-public class Furniture implements Polygonizable {
+public class Furniture {
     private final double scorePerUnitArea;
     private List<Vertex> vertices;
     private Path2D.Double polygon;
@@ -27,12 +28,11 @@ public class Furniture implements Polygonizable {
                 "scorePerUnitArea=" + scorePerUnitArea + ", vertices=" + this.vertices + '}';
     }
 
-    @Override
-    public Path2D.Double toPolygon() {
-        return polygon;
-    }
-
     public double getScorePerUnitArea() {
         return scorePerUnitArea;
+    }
+
+    public Shape toShape() {
+        return polygon;
     }
 }

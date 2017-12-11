@@ -1,5 +1,8 @@
 package com.roomfurniture.problem;
 
+import com.roomfurniture.ShapeCalculator;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
@@ -25,22 +28,27 @@ public class Problem {
     }
 
     public Optional<Double> score(Solution solution) {
-        List<java.awt.Shape> solutions = new ArrayList<>();
+        //TODO(Kiran): Add better scoring function
+        List<Shape> solutions = new ArrayList<>();
         Iterator<Descriptor> iterator = solution.getDescriptors().iterator();
         for (Furniture furniture : furnitures) {
             Descriptor next = iterator.next();
-            AffineTransform rotateInstance = AffineTransform.getRotateInstance(next.getRotation());
-            AffineTransform translateInstance = AffineTransform.getTranslateInstance(next.getPosition().x, next.getPosition().y);
-            java.awt.Shape transformedShape = translateInstance.createTransformedShape(rotateInstance.createTransformedShape(furniture.toPolygon()));
+            AffineTransform transform = new AffineTransform();
+            transform.rotate(next.getRotation());
+            transform.translate(next.getPosition().x, next.getPosition().y);
+//            AffineTransform rotateInstance = AffineTransform.getRotateInstance(next.getRotation());
+//            AffineTransform translateInstance = AffineTransform.getTranslateInstance();
+//            Shape transformedShape = translateInstance.createTransformedShape(rotateInstance.createTransformedShape(furniture.toShape()));
+            Shape transformedShape = transform.createTransformedShape(furniture.toShape());
             solutions.add(transformedShape);
         }
 
-        Path2D.Double roomShape = room.toPolygon();
+        Shape roomShape = room.toShape();
         double sum = 0;
         int index = 0;
-        for (java.awt.Shape shape : solutions) {
+        for (Shape shape : solutions) {
 
-            if (Polygonizable.contains(roomShape, shape)) {
+            if (ShapeCalculator.contains(roomShape, shape)) {
                 sum += furnitures.get(index).getScorePerUnitArea();
             }
 

@@ -1,9 +1,10 @@
 package com.roomfurniture.problem;
 
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.List;
 
-public class Room implements Polygonizable{
+public class Room {
 
     public Path2D.Double polygon;
     private List<Vertex> verticies;
@@ -28,8 +29,7 @@ public class Room implements Polygonizable{
     }
 
 
-    @Override
-    public Path2D.Double toPolygon() {
+    public Shape toShape() {
         return polygon;
     }
 }

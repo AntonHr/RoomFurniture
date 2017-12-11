@@ -1,4 +1,9 @@
-package com.roomfurniture.problem;
+package com.roomfurniture;
+
+import com.roomfurniture.problem.Furniture;
+import com.roomfurniture.problem.Problem;
+import com.roomfurniture.problem.Room;
+import com.roomfurniture.problem.Vertex;
 
 import java.io.File;
 import java.io.FileNotFoundException;
