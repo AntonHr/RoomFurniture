@@ -40,31 +40,33 @@ public class InputParser {
         List<Vertex> roomShape = new ArrayList<>();
 
         Optional<Vertex> lastVertex = parseVertex(scanner);
+        roomShape.add(lastVertex.get());
+
         while (lastVertex.isPresent()) {
-            roomShape.add(lastVertex.get());
             lastVertex = parseVertex(scanner);
+            roomShape.add(lastVertex.get());
 
             if(checkFor(scanner, " #")) break;
         }
 
         //shapes
-        scanner.useDelimiter("\\D");
-        int cost = scanner.nextInt();
-        scanner.useDelimiter(defaultDelimiter);
-        scanner.skip(":");
-
-        List<Shape> shapes = new ArrayList<>();
-
-        Optional<Shape> shape = parseShape(scanner);
-        while(shape.isPresent()){
-            shapes.add(shape.get());
-            shape = parseShape(scanner);
-
-            if (checkFor(scanner, ";")) break;
-        }
+//        scanner.useDelimiter("\\D");
+//        int cost = scanner.nextInt();
+//        scanner.useDelimiter(defaultDelimiter);
+//        scanner.skip(":");
+//
+//        List<Shape> shapes = new ArrayList<>();
+//
+//        Optional<Shape> shape = parseShape(scanner);
+//        while(shape.isPresent()){
+//            shapes.add(shape.get());
+//            shape = parseShape(scanner);
+//
+//            if (checkFor(scanner, ";")) break;
+//        }
 
         System.out.println(problemNumber + ": " + roomShape);
-        System.out.println(cost + ": " + roomShape);
+//        System.out.println(cost + ": " + roomShape);
     }
 
     private Optional<Shape> parseShape(Scanner scanner) {
