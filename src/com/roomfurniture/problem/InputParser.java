@@ -44,10 +44,7 @@ public class InputParser {
             roomShape.add(lastVertex.get());
             lastVertex = parseVertex(scanner);
 
-            try {
-                scanner.skip(" #");
-                break;
-            } catch (NoSuchElementException ignored) {}
+            if(checkFor(scanner, " #")) break;
         }
 
         //shapes
