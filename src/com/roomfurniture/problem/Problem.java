@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Problem {
-    private final Room room;
+   public final Room room;
     private final List<Shape> shapes;
 
     public Problem(Room room, List<Shape> shapes) {
@@ -23,4 +23,6 @@ public class Problem {
     public Optional<Double> score(Solution solution) {
         return Optional.empty();
     }
+
+
 }

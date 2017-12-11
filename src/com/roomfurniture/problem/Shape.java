@@ -1,18 +1,34 @@
 package com.roomfurniture.problem;
 
+import java.awt.geom.Path2D;
 import java.util.List;
 
-public class Shape extends Polygon{
+public class Shape implements Polygonizable {
     private final double scorePerUnitArea;
+    private List<Vertex> vertices;
+    private Path2D.Double polygon;
 
     public Shape(double scorePerUnitArea, List<Vertex> vertices) {
-        super(vertices);
         this.scorePerUnitArea = scorePerUnitArea;
+        this.vertices = vertices;
+
+        polygon = new Path2D.Double();
+        Vertex vertex = vertices.get(0);
+        polygon.moveTo(vertex.x, vertex.y);
+        for(int i = 1; i < vertices.size(); i++) {
+            polygon.lineTo(vertices.get(i).x, vertices.get(i).y);
+        }
+        polygon.closePath();
     }
 
     @Override
     public String toString() {
         return "Shape{" +
-                "scorePerUnitArea=" + scorePerUnitArea + ", vertices=" + verticies + '}';
+                "scorePerUnitArea=" + scorePerUnitArea + ", vertices=" + this.vertices + '}';
+    }
+
+    @Override
+    public Path2D.Double toPolygon() {
+        return polygon;
     }
 }
