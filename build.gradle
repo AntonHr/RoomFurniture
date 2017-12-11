@@ -47,7 +47,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
-        
+        compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
     }
 }
 
@@ -62,7 +62,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.4"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.4"
-        
+        compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
     }
 }
 
