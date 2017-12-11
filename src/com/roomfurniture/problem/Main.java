@@ -18,11 +18,12 @@ public class Main {
         List<Problem> problems = inputParser.parse("test.txt");
 
         for(Problem p : problems) {
-            System.out.println(p.room.polygon);
+            System.out.println(p.room);
         }
 
-        System.out.println(Polygonizable.contains(problems.get(0).room, problems.get(1).room));
-        System.out.println(Polygonizable.contains(problems.get(1).room, problems.get(0).room));
+//        System.out.println(Polygonizable.contains(problems.get(0).room, problems.get(1).room));
+//        System.out.println(Polygonizable.contains(problems.get(1).room, problems.get(0).room));
+        System.out.println(PolygonCalculator.printPointsFor(problems.get(0).room));
 
 //        System.out.println(problems);
 //
