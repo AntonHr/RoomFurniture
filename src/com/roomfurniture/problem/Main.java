@@ -1,8 +1,6 @@
 package com.roomfurniture.problem;
 
 import java.io.FileNotFoundException;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
 public class Main {
 
@@ -16,7 +14,7 @@ public class Main {
 //        System.out.println(runner.findBestIndividual().get());
 
         InputParser inputParser = new InputParser();
-        inputParser.parse("problemsets.txt");
+        inputParser.parse("test.txt");
 
 
     }

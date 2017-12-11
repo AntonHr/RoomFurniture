@@ -22,11 +22,12 @@ public class InputParser {
     private void parseProblem(String problem) {
         Scanner scanner = new Scanner(problem);
 
+
+        //room
         scanner.useDelimiter("\\D");
         int problemNumber = scanner.nextInt();
         scanner.useDelimiter(defaultDelimiter);
         scanner.skip(":");
-
 
         List<Vertex> roomShape = new ArrayList<>();
 
@@ -36,13 +37,40 @@ public class InputParser {
             lastVertex = parseVertex(scanner);
 
             try {
+                scanner.skip(" #");
+                break;
+            } catch (NoSuchElementException ignored) {}
+        }
+
+        //shapes
+        scanner.useDelimiter("\\D");
+        int cost = scanner.nextInt();
+        scanner.useDelimiter(defaultDelimiter);
+        scanner.skip(":");
+
+        List<Shape> shapes = new ArrayList<>();
+
+        Optional<Shape> shape = parseShape(scanner);
+        while(shape.isPresent()){
+            shapes.add(shape.get());
+            shape = parseShape(scanner);
+
+            try {
                 scanner.skip(";");
                 break;
-            } catch (NoSuchElementException e) {
-            }
+            } catch (NoSuchElementException ignored) {}
         }
 
         System.out.println(problemNumber + ": " + roomShape);
+        System.out.println(cost + ": " + roomShape);
+    }
+
+    private Optional<Shape> parseShape(Scanner scanner) {
+        Shape shape;
+        Pattern initialDelimiter = scanner.delimiter();
+
+        return Optional.empty();
+
     }
 
     private Optional<Vertex> parseVertex(Scanner scanner) {
@@ -54,7 +82,7 @@ public class InputParser {
             double y = Double.parseDouble(result.group(3));
 
             vertex = new Vertex(x, y);
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | IllegalStateException e) {
             return Optional.empty();
         }
 
