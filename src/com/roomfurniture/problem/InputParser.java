@@ -19,6 +19,14 @@ public class InputParser {
         }
     }
 
+    private boolean checkFor(Scanner scanner, String pattern) {
+        try {
+            scanner.skip(pattern);
+            return true;
+        } catch (NoSuchElementException ignored) {}
+        return false;
+    }
+
     private void parseProblem(String problem) {
         Scanner scanner = new Scanner(problem);
 
@@ -55,10 +63,7 @@ public class InputParser {
             shapes.add(shape.get());
             shape = parseShape(scanner);
 
-            try {
-                scanner.skip(";");
-                break;
-            } catch (NoSuchElementException ignored) {}
+            if (checkFor(scanner, ";")) break;
         }
 
         System.out.println(problemNumber + ": " + roomShape);
