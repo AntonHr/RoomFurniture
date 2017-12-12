@@ -128,4 +128,8 @@ public class BasicParallelGeneticAlgorithm<T> implements ParallelGeneticAlgorith
     public Optional<Double> findBestFitness() {
         return bestFitness;
     }
+
+    public List<Result<T>> getPopulation() {
+        return population;
+    }
 }

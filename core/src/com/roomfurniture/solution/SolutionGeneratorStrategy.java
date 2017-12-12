@@ -29,7 +29,7 @@ public class SolutionGeneratorStrategy implements GeneratorStrategy<Solution> {
         double yRange = maxY - minY;
 
         for (int i = 0; i < p.getFurnitures().size(); i++) {
-            double rotation = ThreadLocalRandom.current().nextDouble() * 2 * Math.PI;
+            double rotation = ThreadLocalRandom.current().nextDouble() * 4 * Math.PI;
             Vertex position = new Vertex(ThreadLocalRandom.current().nextDouble() * xRange + minX, ThreadLocalRandom.current().nextDouble() * yRange + minY);
             Descriptor descriptor = new Descriptor(position, rotation);
             descriptors.add(descriptor);

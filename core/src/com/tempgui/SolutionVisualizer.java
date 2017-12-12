@@ -53,7 +53,7 @@ public class SolutionVisualizer extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        g2.transform(AffineTransform.getTranslateInstance(WIDTH/2, HEIGHT/2));
+        g2.transform(AffineTransform.getTranslateInstance(WIDTH / 2, HEIGHT / 2));
         g2.transform(rotateTransform);
         g2.transform(scaleTransform);
 
@@ -61,34 +61,32 @@ public class SolutionVisualizer extends JPanel {
         g2.draw(roomShape);
 
 
-
         Map<Boolean, List<Furniture>> result = Streams.zip(items.stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
 
         List<Furniture> furnitureInRoom = result.get(true);
 
-        Iterator<Furniture> iterator  = furnitureInRoom.iterator();
+        Iterator<Furniture> iterator = furnitureInRoom.iterator();
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Furniture furniture = iterator.next();
-            for(Furniture otherFurniture : furnitureInRoom) {
-                if(otherFurniture != furniture)
-                   if(ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+            for (Furniture otherFurniture : furnitureInRoom) {
+                if (otherFurniture != furniture)
+                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
                         // Keep furniture with highest score
-                       if(otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
-                           iterator.remove();
-                           break;
-                       }
-               }
+                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
+                            iterator.remove();
+                            break;
+                        }
+                    }
             }
         }
 
+        System.out.println(result.get(false).size());
 
-        System.out.println(furnitureInRoom.size());
-        for(Furniture furniture : furnitureInRoom) {
-            if (ShapeCalculator.contains(roomShape, furniture.toShape())) {
+        for (Furniture furniture2 : result.get(false)) {
                 Color color = g2.getColor();
 
-                double value = furniture.getScorePerUnitArea(); //this is your value between 0 and 1
+                double value = furniture2.getScorePerUnitArea(); //this is your value between 0 and 1
                 double minHue = 120f / 255; //corresponds to green
                 double maxHue = 0; //corresponds to red
                 double hue = value * maxHue + (1 - value) * minHue;
@@ -97,15 +95,36 @@ public class SolutionVisualizer extends JPanel {
                 g2.setColor(c);
 
                 g2.setFont(new Font("TimesRoman", Font.PLAIN, 5));
-                g2.drawString(("Value: " + ShapeCalculator.calculateAreaOf(furniture.toShape()) * value), (int)furniture.toShape().getBounds().getMaxX(), (int)furniture.toShape().getBounds().getMaxY());
-
-                g2.fill(furniture.toShape());
-                g2.draw(furniture.toShape());
+                g2.drawString(("Value: " + ShapeCalculator.calculateAreaOf(furniture2.toShape()) * value), (int) furniture2.toShape().getBounds().getMaxX(), (int) furniture2.toShape().getBounds().getMaxY());
+                g2.fill(furniture2.toShape());
+                g2.draw(furniture2.toShape());
                 g2.setColor(color);
-            }
-
         }
-        g2.dispose();
+
+
+            System.out.println(furnitureInRoom.size());
+        for (Furniture furniture : furnitureInRoom) {
+                if (ShapeCalculator.contains(roomShape, furniture.toShape())) {
+                    Color color = g2.getColor();
+
+                    double value = furniture.getScorePerUnitArea(); //this is your value between 0 and 1
+                    double minHue = 120f / 255; //corresponds to green
+                    double maxHue = 0; //corresponds to red
+                    double hue = value * maxHue + (1 - value) * minHue;
+                    Color c = new Color(Color.HSBtoRGB((float) hue, 1, 0.5f));
+
+                    g2.setColor(c);
+
+                    g2.setFont(new Font("TimesRoman", Font.PLAIN, 5));
+                    g2.drawString(("Value: " + ShapeCalculator.calculateAreaOf(furniture.toShape()) * value), (int) furniture.toShape().getBounds().getMaxX(), (int) furniture.toShape().getBounds().getMaxY());
+
+                    g2.fill(furniture.toShape());
+                    g2.draw(furniture.toShape());
+                    g2.setColor(color);
+                }
+
+            }
+            g2.dispose();
 
     }
 

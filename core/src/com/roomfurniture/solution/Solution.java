@@ -60,15 +60,15 @@ public class Solution {
         double areaSum = 0.0;
 
         for(Furniture furniture : furnitureInRoom) {
-                areaSum = ShapeCalculator.calculateAreaOf(furniture.toShape());
+                areaSum += ShapeCalculator.calculateAreaOf(furniture.toShape());
                 score += furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape());
         }
+        System.out.println("Score: " + score + ", areasum " + areaSum);
 
 
         double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
-        System.out.println(100*areaSum/roomArea);
-        if(areaSum/roomArea <= 0.3)
-            score *= 0.7;
+//        if(areaSum/roomArea <= 0.3)
+//            score *= 0.7;
 
         return Optional.of(score);
 
