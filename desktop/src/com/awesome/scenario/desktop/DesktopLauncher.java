@@ -23,7 +23,7 @@ public class DesktopLauncher {
         config.height = 1000;
 
         InputParser inputParser = new InputParser();
-        List<Problem> parse = inputParser.parse("test.txt");
+        List<Problem> parse = inputParser.parse("test2.txt");
         Map<Problem, Solution> solutionMap = doStuff(parse);
 
         for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
@@ -33,12 +33,12 @@ public class DesktopLauncher {
             new LwjglApplication(new RoomFurnitureRenderer(key, value), config);
             System.out.println("Score is " + value.score(key));
             System.out.println("real score: " + entry.getValue().score(entry.getKey()));
+            System.out.println("Coverage: " + value.findCoverage(key) * 100 + "%");
             break;
         }
 //
         Furniture furniture = parse.get(0).getFurnitures().get(0);
         double area = ShapeCalculator.calculateAreaOf(furniture.toShape());
-        System.out.println("Area : " + area);
         System.out.println(furniture);
 
 

@@ -32,10 +32,11 @@ public class SolutionMutationStrategy implements MutationStrategy<Solution> {
             double maxX = bounds2D.getMaxX();
             double maxY = bounds2D.getMaxY();
 
-            double dx = ThreadLocalRandom.current().nextDouble() * 2 - 1;
-            double dy = ThreadLocalRandom.current().nextDouble() * 2 - 1;
+            double dx = ThreadLocalRandom.current().nextDouble() * 1 - 0.5;
+            double dy = ThreadLocalRandom.current().nextDouble() * 1 - 0.5;
 
             Vertex newVertex = new Vertex(clamp(minX,maxX,position.x + dx), clamp(minY, maxY,position.y + dy));
+//            Vertex newVertex = new Vertex(position.x + dx, position.y + dy);
 
             Descriptor newDescriptor = new Descriptor(newVertex, Originaldescriptor.getRotation() + (ThreadLocalRandom.current().nextDouble() * 2 - 1));
 
