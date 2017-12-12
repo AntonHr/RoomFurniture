@@ -3,6 +3,7 @@ package com.roomfurniture.box2d;
 import com.gui.RoomFurnitureRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
@@ -16,6 +17,7 @@ public class PhysicsSimulator {
     public final World world;
     private final List<Body> bodies;
     private final List<Body> room;
+    private boolean active = false;
 
     public PhysicsSimulator(Problem problem, Solution solution) {
         //world
@@ -43,6 +45,7 @@ public class PhysicsSimulator {
             // Shape is the only disposable of the lot, so get rid of it
             shape.dispose();
 
+            body.setUserData(item);
             bodies.add(body);
         });
 
@@ -82,11 +85,17 @@ public class PhysicsSimulator {
     }
 
     public void update(float deltaTime) {
-        world.step(deltaTime, 6, 2);
+        if (active) {
 
+            for (Body body : bodies) {
+                Furniture correspondingItem = (Furniture) body.getUserData();
+                body.applyForceToCenter(0, (float) (100 * ShapeCalculator.calculateAreaOf(correspondingItem.toShape())), true);
+            }
+            world.step(deltaTime, 6, 2);
+        }
     }
 
     public void letTheFunBegin() {
-        bodies.get(0).applyForceToCenter(10, 0, true);
+        active = true;
     }
 }

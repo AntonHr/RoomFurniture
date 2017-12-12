@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class RoomFurnitureRenderer extends ApplicationAdapter implements InputProcessor {
@@ -90,6 +91,10 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
         //spread
         List<Furniture> notIncludedItems = new ArrayList<>();
+
+
+        notIncludedItems.sort(item->item.getScorePerUnitArea() * item.toShape());
+
         notIncludedItems.addAll(problem.getFurnitures());
 
 
@@ -136,13 +141,17 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         shapeRenderer.end();
     }
 
+
     @Override
     public void render() {
 
         physicsSimulator.update(Gdx.graphics.getDeltaTime());
 
+        if (renderType != 3)
+            Gdx.gl.glClearColor(1, 1, 1, 1);
+        else
+            Gdx.gl.glClearColor(0, 0, 0, 1);
 
-        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         handleInput();

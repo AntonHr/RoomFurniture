@@ -24,7 +24,7 @@ public class DesktopLauncher {
         config.height = 1000;
 
         InputParser inputParser = new InputParser();
-        List<Problem> parse = inputParser.parse("test2.txt");
+        List<Problem> parse = inputParser.parse("test.txt");
         Map<Problem, Solution> solutionMap = doStuff(parse);
 
         for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
