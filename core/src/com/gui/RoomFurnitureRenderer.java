@@ -191,7 +191,10 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
         int y = 50;
         font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
-        font.draw(batch, "translateSpeed: " + translateInc, 10, y += 20);
+        font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
+
+        font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
+        font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 20);
 
         batch.end();
     }
