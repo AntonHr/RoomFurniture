@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.awesome.scenario;
+package com.gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
