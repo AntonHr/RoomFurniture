@@ -43,12 +43,24 @@ public class DesktopLauncher {
 
             PhysicsSimulator physicsSimulator = new PhysicsSimulator(problem, solution);
 
-            LwjglApplication lwjglApplication = new LwjglApplication(new RoomFurnitureRenderer(problem, solution, physicsSimulator), config);
+//            LwjglApplication lwjglApplication = new LwjglApplication(new RoomFurnitureRenderer(problem, solution, physicsSimulator), config);
 
+             OptimizerProblem optimizerProblem = new OptimizerProblem(problem, solution);
 
-            System.out.println("Score is " + solution.score(problem));
-            System.out.println("real score: " + entry.getValue().score(entry.getKey()));
-            System.out.println("Coverage: " + solution.findCoverage(problem) * 100 + "%");
+            BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(1000, new OptimizerProblemEvaluationStrategy(optimizerProblem),
+                    new SolutionCrossoverStrategy(), new SolutionMutationStrategy(problem), new OptimizerProblemGeneratorStrategy(optimizerProblem), new RouletteWheelSelectionStrategy<Solution>());
+
+            ParallelGeneticAlgorithmRunner<Solution> runner = new ParallelGeneticAlgorithmRunner<Solution>(10, solutionBasicParallelGeneticAlgorithm);
+
+            runner.runTestIteration(1000);
+
+            Solution optimizedSolution = optimizerProblem.getOptimizedSolution(runner.findBestIndividual().get());
+            new LwjglApplication(new RoomFurnitureRenderer(problem, optimizedSolution, physicsSimulator), config);
+
+            System.out.println("Original score: " + entry.getValue().score(entry.getKey()));
+            System.out.println("Original Coverage: " + solution.findCoverage(problem) * 100 + "%");
+            System.out.println("Score is " + optimizedSolution.score(problem));
+            System.out.println("Coverage: " + optimizedSolution.findCoverage(problem) * 100 + "%");
             break;
         }
 //
