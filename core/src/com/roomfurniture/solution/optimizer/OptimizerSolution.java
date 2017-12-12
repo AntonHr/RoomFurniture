@@ -1,7 +1,19 @@
 package com.roomfurniture.solution.optimizer;
 
-/**
- * Created by Gopiandcode on 12/12/2017.
- */
-public class OptimizerSolution {
+import com.roomfurniture.problem.Descriptor;
+import com.roomfurniture.solution.Solution;
+
+import java.util.List;
+import java.util.Optional;
+
+public class OptimizerSolution extends Solution {
+    public OptimizerSolution(List<Descriptor> descriptors) {
+        super(descriptors);
+    }
+
+
+
+    public Optional<Double> score(OptimizerProblem problem) {
+        return Optional.empty();
+    }
 }
