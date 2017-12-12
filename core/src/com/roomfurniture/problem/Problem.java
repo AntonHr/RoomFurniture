@@ -1,5 +1,7 @@
 package com.roomfurniture.problem;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 
 public class Problem {
@@ -8,7 +10,7 @@ public class Problem {
 
     public Problem(Room room, List<Furniture> furnitures) {
         this.room = room;
-        this.furnitures = furnitures;
+        this.furnitures = ImmutableList.copyOf(furnitures);
     }
 
     @Override

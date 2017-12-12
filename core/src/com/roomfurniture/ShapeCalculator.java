@@ -32,8 +32,6 @@ public class ShapeCalculator {
             currentPosition++;
         }
 
-        System.out.println(Arrays.toString(xs));
-        System.out.println(Arrays.toString(ys));
         double sum = 0.0;
         for (int i = 0; i < size-1; i++) {
             sum = sum + (xs[i] * ys[(i+1)%(size-1)]) - (ys[i] * xs[(i+1)%(size-1)]);

@@ -1,5 +1,6 @@
 package com.roomfurniture.solution;
 
+import com.google.common.collect.Streams;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
@@ -7,10 +8,9 @@ import com.roomfurniture.problem.Problem;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Solution {
    private final List<Descriptor> descriptors;
@@ -32,35 +32,39 @@ public class Solution {
 
     public Optional<Double> score(Problem problem) {
         //TODO(Kiran): Add better scoring function
-        List<Shape> solutions = new ArrayList<>();
 
         List<Furniture> furnitures = problem.getFurnitures();
         Shape roomShape = problem.getRoom().toShape();
 
-        Iterator<Descriptor> iterator = getDescriptors().iterator();
-        for (Furniture furniture : furnitures) {
-            Descriptor next = iterator.next();
-            AffineTransform transform = new AffineTransform();
-            transform.rotate(next.getRotation());
-            transform.translate(next.getPosition().x, next.getPosition().y);
-//            AffineTransform rotateInstance = AffineTransform.getRotateInstance(next.getRotation());
-//            AffineTransform translateInstance = AffineTransform.getTranslateInstance();
-//            Shape transformedShape = translateInstance.createTransformedShape(rotateInstance.createTransformedShape(furniture.toShape()));
-            Shape transformedShape = transform.createTransformedShape(furniture.toShape());
-            solutions.add(transformedShape);
-        }
+        Map<Boolean, List<Furniture>> result = Streams.zip(furnitures.stream(), descriptors.stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
 
-        double sum = 0;
-        int index = 0;
-        for (Shape shape : solutions) {
 
-            if (ShapeCalculator.contains(roomShape, shape)) {
-                sum += furnitures.get(index).getScorePerUnitArea();
+        List<Furniture> furnitureInRoom = result.get(true);
+
+        Iterator<Furniture> iterator  = furnitureInRoom.iterator();
+
+        while(iterator.hasNext()) {
+            Furniture furniture = iterator.next();
+            for(Furniture otherFurniture : furnitureInRoom) {
+                if(otherFurniture != furniture)
+                   if(ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+                        // Keep furniture with highest score
+                       if(otherFurniture.getScorePerUnitArea() > furniture.getScorePerUnitArea()) {
+                           iterator.remove();
+                           break;
+                       }
+               }
             }
-
-            index += 1;
         }
-        return Optional.of(sum);
+
+        double score = 0;
+
+        for(Furniture furniture : furnitureInRoom) {
+                score += furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape());
+        }
+
+
+        return Optional.of(score);
 
     }
 }

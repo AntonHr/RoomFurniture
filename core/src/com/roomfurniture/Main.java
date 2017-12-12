@@ -7,7 +7,10 @@ import com.roomfurniture.ga.algorithm.interfaces.*;
 import com.roomfurniture.ga.algorithm.parallel.BasicParallelGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithmRunner;
+import com.roomfurniture.problem.Descriptor;
+import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
+import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.*;
 
 import java.io.FileNotFoundException;
@@ -20,6 +23,7 @@ public class Main {
 
         InputParser inputParser = new InputParser();
         List<Problem> problems = inputParser.parse("test.txt");
+        Furniture furniture = problems.get(0).getFurnitures().get(0);
 
         for (Problem p : problems) {
             CrossoverStrategy<Solution> solutionCrossoverStrategy = new SolutionCrossoverStrategy();

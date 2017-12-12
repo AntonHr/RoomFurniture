@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Room {
 
-    public Path2D.Double polygon;
+    private Path2D.Double polygon;
     private List<Vertex> verticies;
 
     public Room(List<Vertex> verticies) {
@@ -31,5 +31,9 @@ public class Room {
 
     public Shape toShape() {
         return polygon;
+    }
+
+    public List<Vertex> getVerticies() {
+        return verticies;
     }
 }
