@@ -53,6 +53,7 @@ public class Main {
     public static Map<Problem, Solution> doStuff(List<Problem> parse) throws FileNotFoundException {
         // write your code here
 
+
         List<Problem> problems = parse;
         Furniture furniture = problems.get(0).getFurnitures().get(0);
 

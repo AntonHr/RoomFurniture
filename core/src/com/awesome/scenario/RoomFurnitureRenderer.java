@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RoomFurnitureMain extends ApplicationAdapter {
+public class RoomFurnitureRenderer extends ApplicationAdapter {
 
 
     static final int WIDTH = 100;
@@ -46,7 +46,7 @@ public class RoomFurnitureMain extends ApplicationAdapter {
     private List<Furniture> notIncludedItems;
 
 
-    public RoomFurnitureMain(Problem problem, Solution solution) {
+    public RoomFurnitureRenderer(Problem problem, Solution solution) {
         this.problem = problem;
         this.solution = solution;
         items = Streams.zip(problem.getFurnitures().stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.toList());
@@ -102,12 +102,17 @@ public class RoomFurnitureMain extends ApplicationAdapter {
 
         //spread
 
-        List<Furniture> notIncludedItems = new ArrayList<>(items);
-        notIncludedItems.removeAll(furnitureInRoom);
-        List<Furniture> itemsToDraw = spread(notIncludedItems);
+        List<Furniture> notIncludedItems = new ArrayList<>();
+        notIncludedItems.addAll(items);
 
-        this.notIncludedItems = itemsToDraw;
 
+        for (Furniture furniture : furnitureInRoom) {
+            int ind = notIncludedItems.indexOf(furniture);
+            if (ind != -1)
+                notIncludedItems.remove(ind);
+        }
+
+        this.notIncludedItems = spread(notIncludedItems);
     }
 
     @Override
