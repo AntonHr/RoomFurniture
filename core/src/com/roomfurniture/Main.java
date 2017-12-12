@@ -72,7 +72,7 @@ public class Main {
                     solutionGeneratorStrategy,
                     new RouletteWheelSelectionStrategy<>());
             ParallelGeneticAlgorithmRunner<Solution> parallelRunner = new ParallelGeneticAlgorithmRunner<>(10, parallelAlgorithm, (level, message) -> System.out.println(message));
-            parallelRunner.runTestIteration(1000);
+            parallelRunner.runTestIteration(10);
             Solution solution = parallelRunner.findBestIndividual().get();
             System.out.println(solution);
 

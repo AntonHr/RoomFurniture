@@ -3,11 +3,12 @@ package com.awesome.scenario;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.Streams;
 import com.roomfurniture.ShapeCalculator;
@@ -23,7 +24,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RoomFurnitureRenderer extends ApplicationAdapter {
+public class RoomFurnitureRenderer extends ApplicationAdapter implements InputProcessor {
 
 
     static final int WIDTH = 100;
@@ -31,6 +32,9 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
 
 
     private SpriteBatch batch;
+
+    private BitmapFont font;
+
     //private Texture img;
     private MyShapeRenderer shapeRenderer;
     private OrthographicCamera cam;
@@ -41,8 +45,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
     private final Problem problem;
     private final Solution solution;
 
-    private final List<Furniture> items;
-    private List<Furniture> furnitureInRoom;
+    private List<Furniture> itemsInRoom;
     private List<Furniture> notIncludedItems;
     private int renderType = 0;
 
@@ -50,15 +53,15 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
     public RoomFurnitureRenderer(Problem problem, Solution solution) {
         this.problem = problem;
         this.solution = solution;
-        items = Streams.zip(problem.getFurnitures().stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.toList());
     }
 
     @Override
     public void create() {
-
+        Gdx.input.setInputProcessor(this);
         constructObjects();
 
-
+        font = new BitmapFont();
+        font.setColor(Color.BLACK);
         batch = new SpriteBatch();
         //img = new Texture("./core/assets/badlogic.jpg");
         shapeRenderer = new MyShapeRenderer();
@@ -75,39 +78,19 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         cam.update();
     }
 
+
     private void constructObjects() {
         //solution
 
-        Map<Boolean, List<Furniture>> result = items.stream().collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(problem.getRoom().toShape(), furniture.toShape())));
-
-        List<Furniture> furnitureInRoom = result.get(true);
-
-        Iterator<Furniture> iterator = furnitureInRoom.iterator();
-
-        while (iterator.hasNext()) {
-            Furniture furniture = iterator.next();
-            for (Furniture otherFurniture : furnitureInRoom) {
-                if (otherFurniture != furniture)
-                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
-                        // Keep furniture with highest score
-                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
-                            iterator.remove();
-                            break;
-                        }
-                    }
-            }
-        }
-
-        this.furnitureInRoom = furnitureInRoom;
+        this.itemsInRoom = solution.getItemsInTheRoom(problem);
 
 
         //spread
-
         List<Furniture> notIncludedItems = new ArrayList<>();
-        notIncludedItems.addAll(items);
+        notIncludedItems.addAll(problem.getFurnitures());
 
 
-        for (Furniture furniture : furnitureInRoom) {
+        for (Furniture furniture : itemsInRoom) {
             int ind = notIncludedItems.indexOf(furniture);
             if (ind != -1)
                 notIncludedItems.remove(ind);
@@ -117,12 +100,11 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
     }
 
     private void renderOutItems(double maxValue) {
-        //items
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
         for (Furniture item : notIncludedItems) {
             float[] points = getPoints(item.toShape());
 
-            shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
+            shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
             shapeRenderer.polygon(points);
         }
         shapeRenderer.end();
@@ -132,11 +114,11 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
     private void renderInItems(double maxValue) {
         //solution
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
-        for (Furniture item : furnitureInRoom) {
+        for (Furniture item : itemsInRoom) {
             float[] points = getPoints(item.toShape());
 
 
-            shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
+            shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
             shapeRenderer.polygon(points);
         }
         shapeRenderer.end();
@@ -183,6 +165,13 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         }
 
 
+        batch.begin();
+
+        int y = 50;
+        font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
+        font.draw(batch, "translateSpeed: " + translateInc, 10, y += 20);
+
+        batch.end();
     }
 
     private List<Furniture> spread(List<Furniture> items) {
@@ -195,9 +184,9 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
 
             Furniture currentItem = item;
 
-            while (intersectsAnything(currentItem, spreadItems)) {
+            do {
                 currentItem = currentItem.transform(new Descriptor(new Vertex(dir.cpy().scl(step)), 0));
-            }
+            } while (intersectsAnything(currentItem, spreadItems));
             spreadItems.add(currentItem);
             dir.rotate(14);
         }
@@ -207,28 +196,41 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
 
     private boolean intersectsAnything(Furniture item, List<Furniture> otherItems) {
         for (Furniture otherItem : otherItems) {
-            if (!item.equals(otherItem) && ShapeCalculator.intersect(item.toShape(), otherItem.toShape())) {
+            if (!item.equals(otherItem)
+                    && (ShapeCalculator.intersect(item.toShape(), otherItem.toShape())
+                    || ShapeCalculator.contains(item.toShape(), otherItem.toShape())
+                    || ShapeCalculator.contains(otherItem.toShape(), item.toShape()))) {
                 return true;
             }
-
-            if (ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()) || ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape()))
-                return true;
         }
+
+        if (ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape())
+                || ShapeCalculator.contains(item.toShape(), problem.getRoom().toShape())
+                || ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()))
+            return true;
 
         return false;
     }
 
+    private float zoomInc = 1.05f;
+    private float zoomUnit = 0.1f;
+
+    private float translateInc = 10f;
+    private float translateUnit = 1f;
+
+
+    private float rotateInc = 0.1f;
+    private float rotateUnit = 1f;
+
+
     private void handleInput() {
 
-        float zoomInc = 1.05f;
-        float translateInc = 10f;
-        float rotateInc = 1;
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            cam.zoom *= zoomInc;
+            cam.zoom += zoomInc;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            cam.zoom /= zoomInc;
+            cam.zoom -= zoomInc;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             cam.translate(-translateInc, 0, 0);
@@ -248,12 +250,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.E)) {
             cam.rotate(rotationSpeed, 0, 0, rotateInc);
         }
-
-
-        if (Gdx.input.isKeyPressed(Input.Keys.G)) {
-            renderType = (renderType + 1) % 3;
-        }
-
         cam.zoom = Math.max(cam.zoom, 0.1f);
         //cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 100 / cam.viewportWidth);
 
@@ -318,8 +314,14 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
     }
 
 
+    //0..1
+    public static Color valueToColor(float alpha) {
+        return new Color(Color.rgba8888(0, 1 - alpha, 0, 1));
+    }
+
     //note, hue is on 0-360 scale.
     public static Color hueToSaturatedColor(float hue) {
+        hue *= 360;
         float r, g, b;
         float Hprime = hue / 60;
         float X = 1 - Math.abs(Hprime % 2 - 1);
@@ -354,5 +356,65 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         }
 
         return new Color(r, g, b, 1);
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+
+        if (Gdx.input.isKeyPressed(Input.Keys.G)) {
+            renderType = (renderType + 1) % 3;
+        }
+
+
+        if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
+            translateInc += translateUnit;
+            zoomInc += zoomUnit;
+            rotateInc += rotateUnit;
+
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
+            translateInc -= translateUnit;
+            zoomInc -= zoomUnit;
+            rotateInc -= rotateUnit;
+
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }
