@@ -54,7 +54,7 @@ public class InputParser {
         List<Furniture> furnitures = new ArrayList<>();
 
         int id = 0;
-        Optional<Furniture> shape = parseShape(scanner, id);
+        Optional<Furniture> shape = parseShape(scanner, id++);
         while (shape.isPresent()) {
             furnitures.add(shape.get());
             shape = parseShape(scanner, id++);

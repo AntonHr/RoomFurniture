@@ -32,6 +32,7 @@ public class DesktopLauncher {
             Solution value = entry.getValue();
             Problem key = entry.getKey();
             value.getDescriptors().set(0, new Descriptor(new Vertex(1,1),0));
+            value.getDescriptors().set(1, new Descriptor(new Vertex(1,1),0));
             new LwjglApplication(new RoomFurnitureRenderer(key, value), config);
             System.out.println("Score is " + value.score(key));
             break;

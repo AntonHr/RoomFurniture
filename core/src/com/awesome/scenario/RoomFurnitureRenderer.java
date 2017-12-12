@@ -134,8 +134,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         shapeRenderer.polygon(roomPoints);
         shapeRenderer.end();
 
-        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
-
 
         //colours
         double maxValue = 0;
@@ -144,8 +142,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         }
 
         //solution
-
-
+        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
         for (Furniture item : furnitureInRoom) {
             float[] points = getPoints(item.toShape());
 
@@ -153,23 +150,17 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
             shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
             shapeRenderer.polygon(points);
         }
-
-
         shapeRenderer.end();
 
 
         //items
-
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
         for (Furniture item : notIncludedItems) {
             float[] points = getPoints(item.toShape());
 
-
             shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
             shapeRenderer.polygon(points);
         }
-
-
         shapeRenderer.end();
     }
 
