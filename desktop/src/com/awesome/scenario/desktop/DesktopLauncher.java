@@ -9,6 +9,7 @@ import com.roomfurniture.ga.algorithm.RouletteWheelSelectionStrategy;
 import com.roomfurniture.ga.algorithm.parallel.BasicParallelGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithmRunner;
+import com.roomfurniture.box2d.PhysicsSimulator;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.solution.Solution;
@@ -32,45 +33,22 @@ public class DesktopLauncher {
         config.height = 1000;
 
         InputParser inputParser = new InputParser();
-        List<Problem> parse = inputParser.parse("test2.txt");
+        List<Problem> parse = inputParser.parse("test.txt");
         Map<Problem, Solution> solutionMap = doStuff(parse);
 
         for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
-            Solution value = entry.getValue();
-            Problem key = entry.getKey();
+            Solution solution = entry.getValue();
+            Problem problem = entry.getKey();
 
-            System.out.println("Score is " + value.score(key));
+
+            PhysicsSimulator physicsSimulator = new PhysicsSimulator(problem, solution);
+
+            LwjglApplication lwjglApplication = new LwjglApplication(new RoomFurnitureRenderer(problem, solution, physicsSimulator), config);
+
+
+            System.out.println("Score is " + solution.score(problem));
             System.out.println("real score: " + entry.getValue().score(entry.getKey()));
-            System.out.println("Coverage: " + value.findCoverage(key) * 100 + "%");
-            List<Integer> placedPositions = value.findPlacedPositions(key);
-            System.out.println(placedPositions);
-            OptimizerProblem problem = new OptimizerProblem(key, value);
-
-            BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(1000, new OptimizerProblemEvaluationStrategy(problem),
-                    new SolutionCrossoverStrategy(), new SolutionMutationStrategy(key), new OptimizerProblemGeneratorStrategy(problem), new RouletteWheelSelectionStrategy<Solution>());
-
-            ParallelGeneticAlgorithmRunner<Solution> runner = new ParallelGeneticAlgorithmRunner<Solution>(10, solutionBasicParallelGeneticAlgorithm);
-
-            runner.runTestIteration(1000);
-
-            Solution optimizedSolution = problem.getOptimizedSolution(runner.findBestIndividual().get());
-            new LwjglApplication(new RoomFurnitureRenderer(key, optimizedSolution), config);
-
-
-//            List<Descriptor> descriptors = new ArrayList();
-//            for(int i = 0; i < key.getFurnitures().size() - placedPositions.size(); i++) {
-//                descriptors.add(new Descriptor(new Vertex(0, 0), 0));
-//            }
-//            Solution optimizedSolution = new OptimizerProblem(key, value).getOptimizedSolution(new Solution(descriptors));
-//            for(int i = 0; i < optimizedSolution.getDescriptors().size(); i++) {
-//                int finalI = i;
-//                if(placedPositions.stream().anyMatch(integer ->  integer.equals(finalI))) {
-//                    System.out.println("[" + i + "]: (" + value.getDescriptors().get(i) + " -> " + optimizedSolution.getDescriptors().get(i) + ")");
-//                }else {
-//                    System.out.println("[" + i + "]: " + value.getDescriptors().get(i) + " -> " + optimizedSolution.getDescriptors().get(i));
-//                }
-//            }
-//            System.out.println("Solution was \n\n" + value + "\n" + optimizedSolution);
+            System.out.println("Coverage: " + solution.findCoverage(problem) * 100 + "%");
             break;
         }
 //
@@ -81,3 +59,36 @@ public class DesktopLauncher {
 
     }
 }
+/// CODE FOR OPTIMIZER
+//            System.out.println("Score is " + value.score(key));
+//            System.out.println("real score: " + entry.getValue().score(entry.getKey()));
+//            System.out.println("Coverage: " + value.findCoverage(key) * 100 + "%");
+//            List<Integer> placedPositions = value.findPlacedPositions(key);
+//            System.out.println(placedPositions);
+//            OptimizerProblem problem = new OptimizerProblem(key, value);
+//
+//            BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(1000, new OptimizerProblemEvaluationStrategy(problem),
+//                    new SolutionCrossoverStrategy(), new SolutionMutationStrategy(key), new OptimizerProblemGeneratorStrategy(problem), new RouletteWheelSelectionStrategy<Solution>());
+//
+//            ParallelGeneticAlgorithmRunner<Solution> runner = new ParallelGeneticAlgorithmRunner<Solution>(10, solutionBasicParallelGeneticAlgorithm);
+//
+//            runner.runTestIteration(1000);
+//
+//            Solution optimizedSolution = problem.getOptimizedSolution(runner.findBestIndividual().get());
+//            new LwjglApplication(new RoomFurnitureRenderer(key, optimizedSolution), config);
+//
+//
+////            List<Descriptor> descriptors = new ArrayList();
+////            for(int i = 0; i < key.getFurnitures().size() - placedPositions.size(); i++) {
+////                descriptors.add(new Descriptor(new Vertex(0, 0), 0));
+////            }
+////            Solution optimizedSolution = new OptimizerProblem(key, value).getOptimizedSolution(new Solution(descriptors));
+////            for(int i = 0; i < optimizedSolution.getDescriptors().size(); i++) {
+////                int finalI = i;
+////                if(placedPositions.stream().anyMatch(integer ->  integer.equals(finalI))) {
+////                    System.out.println("[" + i + "]: (" + value.getDescriptors().get(i) + " -> " + optimizedSolution.getDescriptors().get(i) + ")");
+////                }else {
+////                    System.out.println("[" + i + "]: " + value.getDescriptors().get(i) + " -> " + optimizedSolution.getDescriptors().get(i));
+////                }
+////            }
+////            System.out.println("Solution was \n\n" + value + "\n" + optimizedSolution);
