@@ -1,7 +1,9 @@
 package com.roomfurniture;
 
+import com.roomfurniture.ga.algorithm.BasicGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.Result;
 import com.roomfurniture.ga.algorithm.RouletteWheelSelectionStrategy;
+import com.roomfurniture.ga.algorithm.SimpleGeneticAlgorithmRunner;
 import com.roomfurniture.ga.algorithm.interfaces.CrossoverStrategy;
 import com.roomfurniture.ga.algorithm.interfaces.EvaluationStrategy;
 import com.roomfurniture.ga.algorithm.interfaces.GeneratorStrategy;
@@ -86,37 +88,14 @@ public class Main {
 //            SimpleGeneticAlgorithmRunner<Solution> runner = new SimpleGeneticAlgorithmRunner<>(algorithm, (level, message) -> System.out.println(message));
 //            runner.runTestIteration(100);
 //            Solution x = runner.findBestIndividual().get();
-            System.out.println(solution);
-            System.out.println(parallelAlgorithm.findBestFitness());
+//            System.out.println(solution);
+//            System.out.println(parallelAlgorithm.findBestFitness());
 
             Map<Problem, Solution> solutionMap = new HashMap<>();
             solutionMap.put(problem, solution);
-//
-//            int i = 0;
-//            for (Result<Solution> result : parallelAlgorithm.getPopulation()) {
-//                i++;
-//                if (i > 5) break;
-//                JFrame bestFrame = SolutionVisualizer.constructVisualizationFrame(problem, result.getValue());
-//                bestFrame.setTitle("Solution " + i +  "- fitness: " + result.getFitness());
-//                EventQueue.invokeLater(() -> {
-//                    bestFrame.setVisible(true);
-//                });
-//            }
-//
+
 
             return solutionMap;
-
-//            int i = 0;
-//            for(Result<Solution> result: parallelAlgorithm.getPopulation()) {
-//                i++;
-//                if(i > 5) break;
-//                JFrame frame = SolutionVisualizer.constructVisualizationFrame(p, result.getValue());
-//                frame.setTitle("Okay Solution no. " + i);
-//                EventQueue.invokeLater(() -> {
-//                    frame.setVisible(true);
-//                });
-//            }
-
         }
 
 //            parallelRunner.shutdown();

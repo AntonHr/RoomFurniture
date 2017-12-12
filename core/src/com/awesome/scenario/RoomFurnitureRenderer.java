@@ -44,6 +44,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
     private final List<Furniture> items;
     private List<Furniture> furnitureInRoom;
     private List<Furniture> notIncludedItems;
+    private int renderType = 0;
 
 
     public RoomFurnitureRenderer(Problem problem, Solution solution) {
@@ -77,7 +78,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
     private void constructObjects() {
         //solution
 
-        Map<Boolean, List<Furniture>> result = Streams.zip(items.stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(problem.getRoom().toShape(), furniture.toShape())));
+        Map<Boolean, List<Furniture>> result = items.stream().collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(problem.getRoom().toShape(), furniture.toShape())));
 
         List<Furniture> furnitureInRoom = result.get(true);
 
@@ -115,6 +116,32 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         this.notIncludedItems = spread(notIncludedItems);
     }
 
+    private void renderOutItems(double maxValue) {
+        //items
+        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
+        for (Furniture item : notIncludedItems) {
+            float[] points = getPoints(item.toShape());
+
+            shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
+            shapeRenderer.polygon(points);
+        }
+        shapeRenderer.end();
+    }
+
+
+    private void renderInItems(double maxValue) {
+        //solution
+        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
+        for (Furniture item : furnitureInRoom) {
+            float[] points = getPoints(item.toShape());
+
+
+            shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
+            shapeRenderer.polygon(points);
+        }
+        shapeRenderer.end();
+    }
+
     @Override
     public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -141,27 +168,21 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
             maxValue = Math.max(maxValue, item.getScorePerUnitArea());
         }
 
-        //solution
-        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
-        for (Furniture item : furnitureInRoom) {
-            float[] points = getPoints(item.toShape());
 
-
-            shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
-            shapeRenderer.polygon(points);
+        switch (renderType) {
+            case 0:
+                renderInItems(maxValue);
+                renderOutItems(maxValue);
+                break;
+            case 1:
+                renderOutItems(maxValue);
+                break;
+            case 2:
+                renderInItems(maxValue);
+                break;
         }
-        shapeRenderer.end();
 
 
-        //items
-        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
-        for (Furniture item : notIncludedItems) {
-            float[] points = getPoints(item.toShape());
-
-            shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
-            shapeRenderer.polygon(points);
-        }
-        shapeRenderer.end();
     }
 
     private List<Furniture> spread(List<Furniture> items) {
@@ -186,11 +207,11 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
 
     private boolean intersectsAnything(Furniture item, List<Furniture> otherItems) {
         for (Furniture otherItem : otherItems) {
-            if (item != otherItem && ShapeCalculator.intersect(item.toShape(), otherItem.toShape())) {
+            if (!item.equals(otherItem) && ShapeCalculator.intersect(item.toShape(), otherItem.toShape())) {
                 return true;
             }
 
-            if (ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape()))
+            if (ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()) || ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape()))
                 return true;
         }
 
@@ -226,6 +247,11 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.E)) {
             cam.rotate(rotationSpeed, 0, 0, rotateInc);
+        }
+
+
+        if (Gdx.input.isKeyPressed(Input.Keys.G)) {
+            renderType = (renderType + 1) % 3;
         }
 
         cam.zoom = Math.max(cam.zoom, 0.1f);

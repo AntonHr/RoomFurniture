@@ -48,12 +48,11 @@ public class Furniture {
     }
 
     public Furniture transform(Descriptor descriptor) {
-        AffineTransform transform = new AffineTransform();
-        transform.rotate(descriptor.getRotation());
-        transform.translate(descriptor.getPosition().x, descriptor.getPosition().y);
-        Shape transformedShape = transform.createTransformedShape(toShape());
-        return new Furniture(id, this.scorePerUnitArea, transformedShape);
+        Shape shape = AffineTransform.getRotateInstance(descriptor.getRotation()).createTransformedShape(this.shape);
+        shape = AffineTransform.getTranslateInstance(descriptor.getPosition().x, descriptor.getPosition().y).createTransformedShape(shape);
+        return new Furniture(id, this.scorePerUnitArea, shape);
     }
+
 
     private List<Vertex> getVertices() {
         PathIterator pathIterator = shape.getPathIterator(null);

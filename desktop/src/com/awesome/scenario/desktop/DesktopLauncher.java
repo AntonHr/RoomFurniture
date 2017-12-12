@@ -5,10 +5,8 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.roomfurniture.InputParser;
 import com.roomfurniture.ShapeCalculator;
-import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
-import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
 
 import java.io.FileNotFoundException;
@@ -25,16 +23,16 @@ public class DesktopLauncher {
         config.height = 1000;
 
         InputParser inputParser = new InputParser();
-        List<Problem> parse = inputParser.parse("customTest.txt");
+        List<Problem> parse = inputParser.parse("test.txt");
         Map<Problem, Solution> solutionMap = doStuff(parse);
 
         for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
             Solution value = entry.getValue();
             Problem key = entry.getKey();
-            value.getDescriptors().set(0, new Descriptor(new Vertex(1,1),0));
-            value.getDescriptors().set(1, new Descriptor(new Vertex(1,1),0));
+
             new LwjglApplication(new RoomFurnitureRenderer(key, value), config);
             System.out.println("Score is " + value.score(key));
+            System.out.println("real score: " + entry.getValue().score(entry.getKey()));
             break;
         }
 //
