@@ -26,7 +26,7 @@ public class Main {
         // write your code here
 
         InputParser inputParser = new InputParser();
-        List<Problem> problems = inputParser.parse("test.txt");
+        List<Problem> problems = inputParser.parse("test2.txt");
         Furniture furniture = problems.get(0).getFurnitures().get(0);
 
         for (Problem p : problems) {
