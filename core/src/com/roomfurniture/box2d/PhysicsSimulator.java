@@ -12,8 +12,10 @@ import java.util.List;
 
 public class PhysicsSimulator {
 
-    public void createWorld(Problem problem, Solution solution) {
-        World world = new World(new Vector2(0, 0), true);
+    public final World world;
+
+    public PhysicsSimulator(Problem problem, Solution solution) {
+        world = new World(new Vector2(0, 0), true);
 
         List<BodyDef> bodyDefs = new ArrayList<>();
 
@@ -42,6 +44,11 @@ public class PhysicsSimulator {
 
             bodies.add(body);
         });
+
+    }
+
+    public void udpate(float deltaTime) {
+        world.step(deltaTime, 6, 2);
 
     }
 }

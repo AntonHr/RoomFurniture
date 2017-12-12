@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.roomfurniture.ShapeCalculator;
+import com.roomfurniture.box2d.PhysicsSimulator;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
@@ -33,7 +35,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
     private BitmapFont font;
 
-    //private Texture img;
     private MyShapeRenderer shapeRenderer;
     private OrthographicCamera cam;
 
@@ -47,16 +48,21 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     private List<Furniture> notIncludedItems;
     private int renderType = 0;
 
+    private Box2DDebugRenderer box2DDebugRenderer;
+    private PhysicsSimulator physicsSimulator;
 
     public RoomFurnitureRenderer(Problem problem, Solution solution) {
         this.problem = problem;
         this.solution = solution;
+        physicsSimulator = new PhysicsSimulator(problem, solution);
     }
 
     @Override
     public void create() {
         Gdx.input.setInputProcessor(this);
         constructObjects();
+
+        box2DDebugRenderer = new Box2DDebugRenderer();
 
         font = new BitmapFont();
         font.setColor(Color.BLACK);
@@ -124,6 +130,10 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
     @Override
     public void render() {
+
+        physicsSimulator.udpate(Gdx.graphics.getDeltaTime());
+
+
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -159,6 +169,9 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
                 break;
             case 2:
                 renderInItems(maxValue);
+                break;
+            case 3:
+                box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
                 break;
         }
 
@@ -360,7 +373,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     public boolean keyDown(int keycode) {
 
         if (Gdx.input.isKeyPressed(Input.Keys.G)) {
-            renderType = (renderType + 1) % 3;
+            renderType = (renderType + 1) % 4;
         }
 
 
