@@ -92,7 +92,7 @@ public class BasicParallelGeneticAlgorithm<T> implements ParallelGeneticAlgorith
                     double fitness = sample.getFitness().get();
 
                     if (bestFitness.isPresent()) {
-                        if (bestFitness.get() > fitness) {
+                        if (bestFitness.get() < fitness) {
                             bestFitness = Optional.of(fitness);
                             bestIndividual = Optional.of(sample.getValue());
                         }

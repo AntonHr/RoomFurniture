@@ -26,57 +26,58 @@ public class Main {
         // write your code here
 
         InputParser inputParser = new InputParser();
-        List<Problem> problems = inputParser.parse("test.txt");
+        List<Problem> problems = inputParser.parse("test2.txt");
         Furniture furniture = problems.get(0).getFurnitures().get(0);
 
         for (Problem p : problems) {
             CrossoverStrategy<Solution> solutionCrossoverStrategy = new SolutionCrossoverStrategy();
             EvaluationStrategy<Solution> solutionEvaluationStrategy = new SolutionEvaluationStrategy(p);
-            MutationStrategy<Solution> solutionMutationStrategy = new SolutionMutationStrategy();
+            MutationStrategy<Solution> solutionMutationStrategy = new SolutionMutationStrategy(p);
             GeneratorStrategy<Solution> solutionGeneratorStrategy = new SolutionGeneratorStrategy(p);
-
-            BasicGeneticAlgorithm<Solution> algorithm = new BasicGeneticAlgorithm<Solution>(
-                    100,
+            ParallelGeneticAlgorithm<Solution> parallelAlgorithm = new BasicParallelGeneticAlgorithm<>(
+                    1000,
                     solutionEvaluationStrategy,
                     solutionCrossoverStrategy,
                     solutionMutationStrategy,
                     solutionGeneratorStrategy,
                     new RouletteWheelSelectionStrategy<>());
-
-            SimpleGeneticAlgorithmRunner<Solution> runner = new SimpleGeneticAlgorithmRunner<>(algorithm, (level, message) -> System.out.println(message));
-            runner.runTestIteration(100);
-            Solution x = runner.findBestIndividual().get();
+            ParallelGeneticAlgorithmRunner<Solution> parallelRunner = new ParallelGeneticAlgorithmRunner<>(10, parallelAlgorithm, (level, message) -> System.out.println(message));
+            parallelRunner.runTestIteration(1000);
+            Solution x = parallelRunner.findBestIndividual().get();
             System.out.println(x);
-            System.out.println(runner.findBestFitness());
-             JFrame bestFrame = SolutionVisualizer.constructVisualizationFrame(p, x);
-             bestFrame.setTitle("Best solution");
-                EventQueue.invokeLater(() -> {
-                    bestFrame.setVisible(true);
-                });
 
-            int i = 0;
-            for(Result<Solution> result:algorithm.getPopulation()) {
-                i++;
-                if(i > 5) break;
-                 JFrame frame = SolutionVisualizer.constructVisualizationFrame(p, result.getValue());
-                 frame.setTitle("Okay Solution no. " + i);
-                EventQueue.invokeLater(() -> {
-                    frame.setVisible(true);
-                });
-            }
-
-        }
-
-//            ParallelGeneticAlgorithm<Solution> parallelAlgorithm = new BasicParallelGeneticAlgorithm<>(
-//                    100000,
+//            BasicGeneticAlgorithm<Solution> algorithm = new BasicGeneticAlgorithm<Solution>(
+//                    100,
 //                    solutionEvaluationStrategy,
 //                    solutionCrossoverStrategy,
 //                    solutionMutationStrategy,
 //                    solutionGeneratorStrategy,
 //                    new RouletteWheelSelectionStrategy<>());
-//            ParallelGeneticAlgorithmRunner<Solution> parallelRunner = new ParallelGeneticAlgorithmRunner<>(10, parallelAlgorithm, (level, message) -> System.out.println(message));
-//            parallelRunner.runTestIteration(1000);
-//            System.out.println(parallelRunner.findBestIndividual().get());
+//
+//            SimpleGeneticAlgorithmRunner<Solution> runner = new SimpleGeneticAlgorithmRunner<>(algorithm, (level, message) -> System.out.println(message));
+//            runner.runTestIteration(100);
+//            Solution x = runner.findBestIndividual().get();
+            System.out.println(x);
+            System.out.println(parallelAlgorithm.findBestFitness());
+            JFrame bestFrame = SolutionVisualizer.constructVisualizationFrame(p, x);
+            bestFrame.setTitle("Best solution");
+            EventQueue.invokeLater(() -> {
+                    bestFrame.setVisible(true);
+                });
+
+            int i = 0;
+//            for(Result<Solution> result: parallelAlgorithm.getPopulation()) {
+//                i++;
+//                if(i > 5) break;
+//                JFrame frame = SolutionVisualizer.constructVisualizationFrame(p, result.getValue());
+//                frame.setTitle("Okay Solution no. " + i);
+//                EventQueue.invokeLater(() -> {
+//                    frame.setVisible(true);
+//                });
+//            }
+
+        }
+
 //            parallelRunner.shutdown();
     }
 
