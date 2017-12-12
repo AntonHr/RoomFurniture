@@ -57,6 +57,11 @@ public class ParallelGeneticAlgorithmRunner<T> implements GeneticAlgorithmRunner
         return algorithm.findBestIndividual();
     }
 
+    @Override
+    public Optional<Double> findBestFitness() {
+        return algorithm.findBestFitness();
+    }
+
     public void shutdown() {
         this.threadPoolExecutor.shutdown();
     }

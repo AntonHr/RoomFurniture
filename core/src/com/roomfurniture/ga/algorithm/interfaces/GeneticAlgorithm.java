@@ -10,6 +10,6 @@ public interface GeneticAlgorithm<T> {
     void runTrainIteration();
 
     Optional<T> findBestIndividual();
-
+    Optional<Double> findBestFitness();
     Optional<Double> findAverageFitness();
 }

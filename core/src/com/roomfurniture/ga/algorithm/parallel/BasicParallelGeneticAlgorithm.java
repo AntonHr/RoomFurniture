@@ -1,5 +1,6 @@
 package com.roomfurniture.ga.algorithm.parallel;
 
+import afu.org.checkerframework.checker.oigj.qual.O;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.roomfurniture.ga.algorithm.Result;
@@ -121,5 +122,10 @@ public class BasicParallelGeneticAlgorithm<T> implements ParallelGeneticAlgorith
     @Override
     public Optional<T> findBestIndividual() {
         return bestIndividual;
+    }
+
+    @Override
+    public Optional<Double> findBestFitness() {
+        return bestFitness;
     }
 }

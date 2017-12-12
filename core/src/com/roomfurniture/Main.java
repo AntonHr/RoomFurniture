@@ -1,5 +1,6 @@
 package com.roomfurniture;
 
+import com.roomfurniture.ga.algorithm.Result;
 import com.roomfurniture.ga.algorithm.SimpleGeneticAlgorithmRunner;
 import com.roomfurniture.ga.algorithm.BasicGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.RouletteWheelSelectionStrategy;
@@ -12,7 +13,10 @@ import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.*;
+import com.tempgui.SolutionVisualizer;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -31,7 +35,7 @@ public class Main {
             MutationStrategy<Solution> solutionMutationStrategy = new SolutionMutationStrategy();
             GeneratorStrategy<Solution> solutionGeneratorStrategy = new SolutionGeneratorStrategy(p);
 
-            GeneticAlgorithm<Solution> algorithm = new BasicGeneticAlgorithm<Solution>(
+            BasicGeneticAlgorithm<Solution> algorithm = new BasicGeneticAlgorithm<Solution>(
                     100,
                     solutionEvaluationStrategy,
                     solutionCrossoverStrategy,
@@ -40,8 +44,26 @@ public class Main {
                     new RouletteWheelSelectionStrategy<>());
 
             SimpleGeneticAlgorithmRunner<Solution> runner = new SimpleGeneticAlgorithmRunner<>(algorithm, (level, message) -> System.out.println(message));
-            runner.runTestIteration(10000);
-            System.out.println(runner.findBestIndividual().get());
+            runner.runTestIteration(100);
+            Solution x = runner.findBestIndividual().get();
+            System.out.println(x);
+            System.out.println(runner.findBestFitness());
+             JFrame bestFrame = SolutionVisualizer.constructVisualizationFrame(p, x);
+             bestFrame.setTitle("Best solution");
+                EventQueue.invokeLater(() -> {
+                    bestFrame.setVisible(true);
+                });
+
+            int i = 0;
+            for(Result<Solution> result:algorithm.getPopulation()) {
+                i++;
+                if(i > 5) break;
+                 JFrame frame = SolutionVisualizer.constructVisualizationFrame(p, result.getValue());
+                 frame.setTitle("Okay Solution no. " + i);
+                EventQueue.invokeLater(() -> {
+                    frame.setVisible(true);
+                });
+            }
 
         }
 

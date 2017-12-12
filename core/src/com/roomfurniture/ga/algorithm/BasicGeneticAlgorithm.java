@@ -49,7 +49,7 @@ public class BasicGeneticAlgorithm <T> implements GeneticAlgorithm<T> {
                 fitness = individual.getFitness().get();
             }
             if (bestFitness.isPresent()) {
-                    if (bestFitness.get() > fitness) {
+                    if (bestFitness.get() < fitness) {
                         bestFitness = Optional.of(fitness);
                         bestIndividual = Optional.of(individual.getValue());
                     }
@@ -91,6 +91,9 @@ public class BasicGeneticAlgorithm <T> implements GeneticAlgorithm<T> {
         this.population = newPop;
     }
 
+    public List<Result<T>> getPopulation() {
+        return population;
+    }
 
     public Optional<T> findBestIndividual() {
         return bestIndividual;

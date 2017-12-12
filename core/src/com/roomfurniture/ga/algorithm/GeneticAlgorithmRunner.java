@@ -10,5 +10,6 @@ public interface GeneticAlgorithmRunner<T> {
 
     Optional<T> findBestIndividual();
 
+    Optional<Double> findBestFitness();
     Optional<Double> findAverageFitness();
 }

@@ -12,4 +12,6 @@ public interface ParallelGeneticAlgorithm<T> {
 
     Optional<Double> findAverageFitness();
     Optional<T> findBestIndividual();
+
+    Optional<Double> findBestFitness();
 }

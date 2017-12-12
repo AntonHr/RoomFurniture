@@ -43,4 +43,9 @@ public class SimpleGeneticAlgorithmRunner<T> implements GeneticAlgorithmRunner<T
         return algorithm.findAverageFitness();
     }
 
+    @Override
+    public Optional<Double> findBestFitness() {
+        return algorithm.findBestFitness();
+    }
+
 }
