@@ -10,14 +10,16 @@ import java.util.List;
 public class Furniture {
     private final double scorePerUnitArea;
     private Shape shape;
+    private int id;
 
-    public Furniture(double scorePerUnitArea, List<Vertex> vertices) {
+    public Furniture(int id, double scorePerUnitArea, List<Vertex> vertices) {
+        this.id = id;
         this.scorePerUnitArea = scorePerUnitArea;
 
         Path2D.Double path = new Path2D.Double();
         Vertex vertex = vertices.get(0);
         path.moveTo(vertex.x, vertex.y);
-        for(int i = 1; i < vertices.size(); i++) {
+        for (int i = 1; i < vertices.size(); i++) {
             path.lineTo(vertices.get(i).x, vertices.get(i).y);
         }
         path.closePath();
@@ -25,7 +27,8 @@ public class Furniture {
         this.shape = path;
     }
 
-    public Furniture(double scorePerUnitArea, Shape polygon) {
+    private Furniture(int id, double scorePerUnitArea, Shape polygon) {
+        this.id = id;
         this.scorePerUnitArea = scorePerUnitArea;
         this.shape = polygon;
     }
@@ -46,24 +49,29 @@ public class Furniture {
 
     public Furniture transform(Descriptor descriptor) {
         AffineTransform transform = new AffineTransform();
-            transform.rotate(descriptor.getRotation());
-            transform.translate(descriptor.getPosition().x, descriptor.getPosition().y);
-            Shape transformedShape = transform.createTransformedShape(toShape());
-            return new Furniture(this.scorePerUnitArea, transformedShape);
+        transform.rotate(descriptor.getRotation());
+        transform.translate(descriptor.getPosition().x, descriptor.getPosition().y);
+        Shape transformedShape = transform.createTransformedShape(toShape());
+        return new Furniture(id, this.scorePerUnitArea, transformedShape);
     }
 
     private List<Vertex> getVertices() {
         PathIterator pathIterator = shape.getPathIterator(null);
         List<Vertex> vertices = new ArrayList<>();
 
-        while(!pathIterator.isDone()) {
-                double[] kilme = new double[2];
-                pathIterator.currentSegment(kilme);
-                pathIterator.next();
-                vertices.add(new Vertex(kilme[0], kilme[1]));
+        while (!pathIterator.isDone()) {
+            double[] kilme = new double[2];
+            pathIterator.currentSegment(kilme);
+            pathIterator.next();
+            vertices.add(new Vertex(kilme[0], kilme[1]));
         }
 
-        vertices.remove(vertices.size()-1);
+        vertices.remove(vertices.size() - 1);
         return vertices;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.id == ((Furniture) obj).id;
     }
 }
