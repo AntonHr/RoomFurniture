@@ -3,12 +3,15 @@ package com.awesome.scenario;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 import com.google.common.collect.Streams;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.Descriptor;
@@ -23,7 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RoomFurnitureRenderer extends ApplicationAdapter {
+public class RoomFurnitureRenderer extends ApplicationAdapter implements InputProcessor {
 
 
     static final int WIDTH = 100;
@@ -31,6 +34,9 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
 
 
     private SpriteBatch batch;
+
+    private BitmapFont font;
+
     //private Texture img;
     private MyShapeRenderer shapeRenderer;
     private OrthographicCamera cam;
@@ -55,10 +61,11 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
 
     @Override
     public void create() {
-
+        Gdx.input.setInputProcessor(this);
         constructObjects();
 
-
+        font = new BitmapFont();
+        font.setColor(Color.BLACK);
         batch = new SpriteBatch();
         //img = new Texture("./core/assets/badlogic.jpg");
         shapeRenderer = new MyShapeRenderer();
@@ -183,6 +190,13 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         }
 
 
+        batch.begin();
+
+        int y = 50;
+        font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
+        font.draw(batch, "translateSpeed: " + translateInc, 10, y += 20);
+
+        batch.end();
     }
 
     private List<Furniture> spread(List<Furniture> items) {
@@ -223,17 +237,25 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         return false;
     }
 
+    private float zoomInc = 1.05f;
+    private float zoomUnit = 0.1f;
+
+    private float translateInc = 10f;
+    private float translateUnit = 1f;
+
+
+    private float rotateInc = 0.1f;
+    private float rotateUnit = 1f;
+
+
     private void handleInput() {
 
-        float zoomInc = 1.05f;
-        float translateInc = 10f;
-        float rotateInc = 1;
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            cam.zoom *= zoomInc;
+            cam.zoom += zoomInc;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            cam.zoom /= zoomInc;
+            cam.zoom -= zoomInc;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             cam.translate(-translateInc, 0, 0);
@@ -253,12 +275,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.E)) {
             cam.rotate(rotationSpeed, 0, 0, rotateInc);
         }
-
-
-        if (Gdx.input.isKeyPressed(Input.Keys.G)) {
-            renderType = (renderType + 1) % 3;
-        }
-
         cam.zoom = Math.max(cam.zoom, 0.1f);
         //cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 100 / cam.viewportWidth);
 
@@ -359,5 +375,65 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
         }
 
         return new Color(r, g, b, 1);
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+
+        if (Gdx.input.isKeyPressed(Input.Keys.G)) {
+            renderType = (renderType + 1) % 3;
+        }
+
+
+        if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
+            translateInc += translateUnit;
+            zoomInc += zoomUnit;
+            rotateInc += rotateUnit;
+
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
+            translateInc -= translateUnit;
+            zoomInc -= zoomUnit;
+            rotateInc -= rotateUnit;
+
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }

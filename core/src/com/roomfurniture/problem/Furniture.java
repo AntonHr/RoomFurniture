@@ -54,7 +54,7 @@ public class Furniture {
     }
 
 
-    private List<Vertex> getVertices() {
+    public List<Vertex> getVertices() {
         PathIterator pathIterator = shape.getPathIterator(null);
         List<Vertex> vertices = new ArrayList<>();
 
