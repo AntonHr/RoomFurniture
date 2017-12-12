@@ -25,7 +25,7 @@ public class DesktopLauncher {
 
         List<Problem> problems = inputParser.parse("test2.txt");
 
-        Map<Problem, Solution> solutionMap = doStuff();
+     //   Map<Problem, Solution> solutionMap = doStuff(problems);
 
 //        for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
 //            new LwjglApplication(new RoomFurnitureRenderer(entry.getKey(), entry.getValue()), config);
