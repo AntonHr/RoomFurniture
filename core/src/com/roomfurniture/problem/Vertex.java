@@ -19,4 +19,8 @@ public class Vertex {
     public String toString() {
         return "(" + x + ", " + y + ')';
     }
+
+    public Vector2 toVector2() {
+        return new Vector2((float) x, (float) y);
+    }
 }
