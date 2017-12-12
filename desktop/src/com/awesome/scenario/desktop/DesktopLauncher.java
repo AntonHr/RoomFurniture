@@ -1,12 +1,24 @@
 package com.awesome.scenario.desktop;
 
+import com.awesome.scenario.RoomFurnitureMain;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.awesome.scenario.RoomFurnitureMain;
+import com.roomfurniture.InputParser;
+import com.roomfurniture.problem.Problem;
+import com.roomfurniture.solution.SolutionGeneratorStrategy;
+
+import java.io.FileNotFoundException;
+import java.util.List;
 
 public class DesktopLauncher {
-	public static void main (String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new RoomFurnitureMain(), config);
-	}
+    public static void main(String[] arg) throws FileNotFoundException {
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+
+
+        InputParser inputParser = new InputParser();
+        List<Problem> problems = inputParser.parse("test.txt");
+
+
+        new LwjglApplication(new RoomFurnitureMain(problems.get(0), new SolutionGeneratorStrategy(problems.get(0)).generate()), config);
+    }
 }
