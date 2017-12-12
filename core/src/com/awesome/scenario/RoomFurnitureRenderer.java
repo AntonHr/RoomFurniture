@@ -9,9 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Align;
 import com.google.common.collect.Streams;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.Descriptor;
@@ -47,8 +45,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     private final Problem problem;
     private final Solution solution;
 
-    private final List<Furniture> items;
-    private List<Furniture> furnitureInRoom;
+    private List<Furniture> itemsInRoom;
     private List<Furniture> notIncludedItems;
     private int renderType = 0;
 
@@ -56,7 +53,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     public RoomFurnitureRenderer(Problem problem, Solution solution) {
         this.problem = problem;
         this.solution = solution;
-        items = Streams.zip(problem.getFurnitures().stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.toList());
     }
 
     @Override
@@ -82,39 +78,19 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         cam.update();
     }
 
+
     private void constructObjects() {
         //solution
 
-        Map<Boolean, List<Furniture>> result = items.stream().collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(problem.getRoom().toShape(), furniture.toShape())));
-
-        List<Furniture> furnitureInRoom = result.get(true);
-
-        Iterator<Furniture> iterator = furnitureInRoom.iterator();
-
-        while (iterator.hasNext()) {
-            Furniture furniture = iterator.next();
-            for (Furniture otherFurniture : furnitureInRoom) {
-                if (otherFurniture != furniture)
-                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
-                        // Keep furniture with highest score
-                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
-                            iterator.remove();
-                            break;
-                        }
-                    }
-            }
-        }
-
-        this.furnitureInRoom = furnitureInRoom;
+        this.itemsInRoom = solution.getItemsInTheRoom(problem);
 
 
         //spread
-
         List<Furniture> notIncludedItems = new ArrayList<>();
-        notIncludedItems.addAll(items);
+        notIncludedItems.addAll(problem.getFurnitures());
 
 
-        for (Furniture furniture : furnitureInRoom) {
+        for (Furniture furniture : itemsInRoom) {
             int ind = notIncludedItems.indexOf(furniture);
             if (ind != -1)
                 notIncludedItems.remove(ind);
@@ -124,7 +100,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     }
 
     private void renderOutItems(double maxValue) {
-        //items
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
         for (Furniture item : notIncludedItems) {
             float[] points = getPoints(item.toShape());
@@ -139,7 +114,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     private void renderInItems(double maxValue) {
         //solution
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
-        for (Furniture item : furnitureInRoom) {
+        for (Furniture item : itemsInRoom) {
             float[] points = getPoints(item.toShape());
 
 
@@ -209,9 +184,9 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
             Furniture currentItem = item;
 
-            while (intersectsAnything(currentItem, spreadItems)) {
+            do {
                 currentItem = currentItem.transform(new Descriptor(new Vertex(dir.cpy().scl(step)), 0));
-            }
+            } while (intersectsAnything(currentItem, spreadItems));
             spreadItems.add(currentItem);
             dir.rotate(14);
         }
