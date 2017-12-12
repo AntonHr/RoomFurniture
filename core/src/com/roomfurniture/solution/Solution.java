@@ -63,14 +63,50 @@ public class Solution {
                 areaSum += ShapeCalculator.calculateAreaOf(furniture.toShape());
                 score += furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape());
         }
-        System.out.println("Score: " + score + ", areasum " + areaSum);
 
 
         double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
-//        if(areaSum/roomArea <= 0.3)
-//            score *= 0.7;
+        if(areaSum/roomArea <= 0.3)
+            score *= 0.03;
+        score *= (1 + areaSum/roomArea);
 
         return Optional.of(score);
 
+    }
+
+    public double findCoverage(Problem problem) {
+         List<Furniture> furnitures = problem.getFurnitures();
+        Shape roomShape = problem.getRoom().toShape();
+
+        Map<Boolean, List<Furniture>> result = Streams.zip(furnitures.stream(), descriptors.stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
+
+        List<Furniture> furnitureInRoom = result.get(true);
+
+        Iterator<Furniture> iterator  = furnitureInRoom.iterator();
+
+        while(iterator.hasNext()) {
+            Furniture furniture = iterator.next();
+            for(Furniture otherFurniture : furnitureInRoom) {
+                if(otherFurniture != furniture)
+                   if(ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+                        // Keep furniture with highest score
+                      if(otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
+                           iterator.remove();
+                           break;
+                       }
+               }
+            }
+        }
+
+        double areaSum = 0.0;
+
+        for(Furniture furniture : furnitureInRoom) {
+                areaSum += ShapeCalculator.calculateAreaOf(furniture.toShape());
+        }
+
+
+        double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
+
+        return areaSum/roomArea;
     }
 }
