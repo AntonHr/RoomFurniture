@@ -207,13 +207,18 @@ public class RoomFurnitureRenderer extends ApplicationAdapter {
 
     private boolean intersectsAnything(Furniture item, List<Furniture> otherItems) {
         for (Furniture otherItem : otherItems) {
-            if (!item.equals(otherItem) && ShapeCalculator.intersect(item.toShape(), otherItem.toShape())) {
+            if (!item.equals(otherItem)
+                    && (ShapeCalculator.intersect(item.toShape(), otherItem.toShape())
+                    || ShapeCalculator.contains(item.toShape(), otherItem.toShape())
+                    || ShapeCalculator.contains(otherItem.toShape(), item.toShape()))) {
                 return true;
             }
-
-            if (ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()) || ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape()))
-                return true;
         }
+
+        if (ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape())
+                || ShapeCalculator.contains(item.toShape(), problem.getRoom().toShape())
+                || ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()))
+            return true;
 
         return false;
     }
