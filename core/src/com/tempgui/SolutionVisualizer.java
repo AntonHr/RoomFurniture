@@ -12,7 +12,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.FileNotFoundException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SolutionVisualizer extends JPanel {
@@ -55,10 +57,35 @@ public class SolutionVisualizer extends JPanel {
         g2.transform(rotateTransform);
         g2.transform(scaleTransform);
 
-        g2.draw(problem.getRoom().toShape());
+        Shape roomShape = problem.getRoom().toShape();
+        g2.draw(roomShape);
 
-        for(Furniture furniture : items) {
-            if (ShapeCalculator.contains(problem.getRoom().toShape(), furniture.toShape())) {
+
+
+        Map<Boolean, List<Furniture>> result = Streams.zip(items.stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
+
+        List<Furniture> furnitureInRoom = result.get(true);
+
+        Iterator<Furniture> iterator  = furnitureInRoom.iterator();
+
+        while(iterator.hasNext()) {
+            Furniture furniture = iterator.next();
+            for(Furniture otherFurniture : furnitureInRoom) {
+                if(otherFurniture != furniture)
+                   if(ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+                        // Keep furniture with highest score
+                       if(otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
+                           iterator.remove();
+                           break;
+                       }
+               }
+            }
+        }
+
+
+        System.out.println(furnitureInRoom.size());
+        for(Furniture furniture : furnitureInRoom) {
+            if (ShapeCalculator.contains(roomShape, furniture.toShape())) {
                 Color color = g2.getColor();
 
                 double value = furniture.getScorePerUnitArea(); //this is your value between 0 and 1

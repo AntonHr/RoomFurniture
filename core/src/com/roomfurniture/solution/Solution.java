@@ -48,7 +48,7 @@ public class Solution {
                 if(otherFurniture != furniture)
                    if(ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
                         // Keep furniture with highest score
-                       if(otherFurniture.getScorePerUnitArea() > furniture.getScorePerUnitArea()) {
+                      if(otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
                            iterator.remove();
                            break;
                        }
