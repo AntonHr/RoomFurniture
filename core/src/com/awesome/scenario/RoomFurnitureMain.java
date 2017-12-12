@@ -42,6 +42,8 @@ public class RoomFurnitureMain extends ApplicationAdapter {
     private final Solution solution;
 
     private final List<Furniture> items;
+    private List<Furniture> furnitureInRoom;
+    private List<Furniture> notIncludedItems;
 
 
     public RoomFurnitureMain(Problem problem, Solution solution) {
@@ -52,6 +54,10 @@ public class RoomFurnitureMain extends ApplicationAdapter {
 
     @Override
     public void create() {
+
+        constructObjects();
+
+
         batch = new SpriteBatch();
         //img = new Texture("./core/assets/badlogic.jpg");
         shapeRenderer = new MyShapeRenderer();
@@ -64,7 +70,44 @@ public class RoomFurnitureMain extends ApplicationAdapter {
         cam = new OrthographicCamera(WIDTH, HEIGHT * (h / w));
 
         //cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
+        cam.zoom = 10f;
         cam.update();
+    }
+
+    private void constructObjects() {
+        //solution
+
+        Map<Boolean, List<Furniture>> result = Streams.zip(items.stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(problem.getRoom().toShape(), furniture.toShape())));
+
+        List<Furniture> furnitureInRoom = result.get(true);
+
+        Iterator<Furniture> iterator = furnitureInRoom.iterator();
+
+        while (iterator.hasNext()) {
+            Furniture furniture = iterator.next();
+            for (Furniture otherFurniture : furnitureInRoom) {
+                if (otherFurniture != furniture)
+                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+                        // Keep furniture with highest score
+                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
+                            iterator.remove();
+                            break;
+                        }
+                    }
+            }
+        }
+
+        this.furnitureInRoom = furnitureInRoom;
+
+
+        //spread
+
+        List<Furniture> notIncludedItems = new ArrayList<>(items);
+        notIncludedItems.removeAll(furnitureInRoom);
+        List<Furniture> itemsToDraw = spread(notIncludedItems);
+
+        this.notIncludedItems = itemsToDraw;
+
     }
 
     @Override
@@ -97,26 +140,6 @@ public class RoomFurnitureMain extends ApplicationAdapter {
 
         //solution
 
-        Map<Boolean, List<Furniture>> result = Streams.zip(items.stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(problem.getRoom().toShape(), furniture.toShape())));
-
-        List<Furniture> furnitureInRoom = result.get(true);
-
-        Iterator<Furniture> iterator = furnitureInRoom.iterator();
-
-        while (iterator.hasNext()) {
-            Furniture furniture = iterator.next();
-            for (Furniture otherFurniture : furnitureInRoom) {
-                if (otherFurniture != furniture)
-                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
-                        // Keep furniture with highest score
-                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
-                            iterator.remove();
-                            break;
-                        }
-                    }
-            }
-        }
-
 
         for (Furniture item : furnitureInRoom) {
             float[] points = getPoints(item.toShape());
@@ -130,16 +153,10 @@ public class RoomFurnitureMain extends ApplicationAdapter {
         shapeRenderer.end();
 
 
-        //spread
-
-        List<Furniture> notIncludedItems = new ArrayList<>(items);
-        notIncludedItems.removeAll(furnitureInRoom);
-        List<Furniture> itemsToDraw = spread(notIncludedItems);
-
         //items
 
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
-        for (Furniture item : itemsToDraw) {
+        for (Furniture item : notIncludedItems) {
             float[] points = getPoints(item.toShape());
 
 
@@ -187,7 +204,7 @@ public class RoomFurnitureMain extends ApplicationAdapter {
     private void handleInput() {
 
         float zoomInc = 1.05f;
-        float translateInc = 1f;
+        float translateInc = 10f;
         float rotateInc = 1;
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
