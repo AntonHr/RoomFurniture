@@ -1,12 +1,12 @@
 package com.roomfurniture.ga.problems.npartition;
 
 import com.google.common.collect.ImmutableList;
-import com.roomfurniture.ga.GeneticAlgorithmRunner;
+import com.roomfurniture.ga.algorithm.SimpleGeneticAlgorithmRunner;
 import com.roomfurniture.ga.algorithm.interfaces.GeneticAlgorithm;
-import com.roomfurniture.ga.list.GaussianConvolutionListMutationStrategy;
-import com.roomfurniture.ga.list.ListGeneratorStrategy;
-import com.roomfurniture.ga.list.ListGeneticAlgorithmBuilder;
-import com.roomfurniture.ga.list.SinglePointListCrossoverStrategy;
+import com.roomfurniture.ga.implementations.list.GaussianConvolutionListMutationStrategy;
+import com.roomfurniture.ga.implementations.list.ListGeneratorStrategy;
+import com.roomfurniture.ga.implementations.list.ListGeneticAlgorithmBuilder;
+import com.roomfurniture.ga.implementations.list.SinglePointListCrossoverStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,7 @@ public class NPartitionProblem {
                 })
                 .build();
 
-        GeneticAlgorithmRunner<List<Integer>> runner = new GeneticAlgorithmRunner<>(algorithm, (level, message) -> System.out.println(message));
+        SimpleGeneticAlgorithmRunner<List<Integer>> runner = new SimpleGeneticAlgorithmRunner<>(algorithm, (level, message) -> System.out.println(message));
 
         runner.runTestIteration(200);
 

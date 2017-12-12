@@ -1,10 +1,15 @@
 package com.roomfurniture.ga.algorithm.interfaces;
 
 import java.util.Map;
+import java.util.Optional;
 
 
 public interface GeneticAlgorithm<T> {
-    Map<T, Double> calculateFitness();
+    void calculateFitness();
 
-    void runTrainIteration(Map<T, Double> scores);
+    void runTrainIteration();
+
+    Optional<T> findBestIndividual();
+
+    Optional<Double> findAverageFitness();
 }

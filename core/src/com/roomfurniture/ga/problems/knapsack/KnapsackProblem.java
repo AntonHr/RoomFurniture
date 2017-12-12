@@ -1,10 +1,10 @@
 package com.roomfurniture.ga.problems.knapsack;
 
-import com.roomfurniture.ga.GeneticAlgorithmRunner;
+import com.roomfurniture.ga.algorithm.SimpleGeneticAlgorithmRunner;
 import com.roomfurniture.ga.algorithm.interfaces.GeneticAlgorithm;
-import com.roomfurniture.ga.list.GaussianConvolutionListMutationStrategy;
-import com.roomfurniture.ga.list.ListGeneratorStrategy;
-import com.roomfurniture.ga.list.ListGeneticAlgorithmBuilder;
+import com.roomfurniture.ga.implementations.list.GaussianConvolutionListMutationStrategy;
+import com.roomfurniture.ga.implementations.list.ListGeneratorStrategy;
+import com.roomfurniture.ga.implementations.list.ListGeneticAlgorithmBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class KnapsackProblem {
                 })
                 .build();
 
-        GeneticAlgorithmRunner<List<Integer>> geneticAlgorithmRunner = new GeneticAlgorithmRunner<>(geneticAlgorithm, (level, message) -> System.out.println(message));
+        SimpleGeneticAlgorithmRunner<List<Integer>> geneticAlgorithmRunner = new SimpleGeneticAlgorithmRunner<>(geneticAlgorithm, (level, message) -> System.out.println(message));
 
         geneticAlgorithmRunner.runTestIteration(1000);
         System.out.println(geneticAlgorithmRunner.findBestIndividual());

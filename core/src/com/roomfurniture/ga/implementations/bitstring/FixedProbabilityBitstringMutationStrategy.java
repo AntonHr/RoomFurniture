@@ -1,4 +1,4 @@
-package com.roomfurniture.ga.bitstring;
+package com.roomfurniture.ga.implementations.bitstring;
 
 import com.roomfurniture.ga.algorithm.interfaces.MutationStrategy;
 

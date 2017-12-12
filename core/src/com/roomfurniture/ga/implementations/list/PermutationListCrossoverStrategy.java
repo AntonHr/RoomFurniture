@@ -1,4 +1,4 @@
-package com.roomfurniture.ga.list;
+package com.roomfurniture.ga.implementations.list;
 
 import com.google.common.collect.ImmutableList;
 import com.roomfurniture.ga.algorithm.interfaces.CrossoverStrategy;

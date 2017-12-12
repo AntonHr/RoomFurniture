@@ -1,4 +1,4 @@
-package com.roomfurniture.ga.list;
+package com.roomfurniture.ga.implementations.list;
 
 import com.roomfurniture.ga.algorithm.interfaces.GeneratorStrategy;
 

@@ -1,4 +1,4 @@
-package com.roomfurniture.ga.bitstring;
+package com.roomfurniture.ga.implementations.bitstring;
 
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
