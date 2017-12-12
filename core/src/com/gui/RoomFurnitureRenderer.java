@@ -127,6 +127,15 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         shapeRenderer.end();
     }
 
+    private void renderRoom() {
+        shapeRenderer.begin(MyShapeRenderer.ShapeType.Line);
+        float[] roomPoints = getPoints(problem.getRoom().toShape());
+
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.polygon(roomPoints);
+        shapeRenderer.end();
+    }
+
     @Override
     public void render() {
 
@@ -141,16 +150,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
         shapeRenderer.setProjectionMatrix(cam.combined);
 
-
-        //room
-        shapeRenderer.begin(MyShapeRenderer.ShapeType.Line);
-        float[] roomPoints = getPoints(problem.getRoom().toShape());
-
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.polygon(roomPoints);
-        shapeRenderer.end();
-
-
         //colours
         double maxValue = 0;
         for (Furniture item : problem.getFurnitures()) {
@@ -160,13 +159,16 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
         switch (renderType) {
             case 0:
+                renderRoom();
                 renderInItems(maxValue);
                 renderOutItems(maxValue);
                 break;
             case 1:
+                renderRoom();
                 renderOutItems(maxValue);
                 break;
             case 2:
+                renderRoom();
                 renderInItems(maxValue);
                 break;
             case 3:
@@ -391,7 +393,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-           physicsSimulator.letTheFunBegin();
+            physicsSimulator.letTheFunBegin();
         }
 
         return true;
