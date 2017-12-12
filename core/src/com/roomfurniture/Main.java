@@ -32,7 +32,7 @@ public class Main {
         for (Problem p : problems) {
             CrossoverStrategy<Solution> solutionCrossoverStrategy = new SolutionCrossoverStrategy();
             EvaluationStrategy<Solution> solutionEvaluationStrategy = new SolutionEvaluationStrategy(p);
-            MutationStrategy<Solution> solutionMutationStrategy = new SolutionMutationStrategy();
+            MutationStrategy<Solution> solutionMutationStrategy = new SolutionMutationStrategy(p);
             GeneratorStrategy<Solution> solutionGeneratorStrategy = new SolutionGeneratorStrategy(p);
 
             BasicGeneticAlgorithm<Solution> algorithm = new BasicGeneticAlgorithm<Solution>(

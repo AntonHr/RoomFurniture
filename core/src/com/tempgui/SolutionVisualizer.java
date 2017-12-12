@@ -2,6 +2,7 @@ package com.tempgui;
 
 import com.google.common.collect.Streams;
 import com.roomfurniture.InputParser;
+import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.solution.Solution;
@@ -57,21 +58,23 @@ public class SolutionVisualizer extends JPanel {
         g2.draw(problem.getRoom().toShape());
 
         for(Furniture furniture : items) {
-            Color color = g2.getColor();
+            if (ShapeCalculator.contains(problem.getRoom().toShape(), furniture.toShape())) {
+                Color color = g2.getColor();
 
-             double value = furniture.getScorePerUnitArea(); //this is your value between 0 and 1
-             double minHue = 120f/255; //corresponds to green
-             double maxHue = 0; //corresponds to red
-             double hue = value*maxHue + (1-value)*minHue;
-             Color c = new Color(Color.HSBtoRGB((float)hue, 1, 0.5f));
+                double value = furniture.getScorePerUnitArea(); //this is your value between 0 and 1
+                double minHue = 120f / 255; //corresponds to green
+                double maxHue = 0; //corresponds to red
+                double hue = value * maxHue + (1 - value) * minHue;
+                Color c = new Color(Color.HSBtoRGB((float) hue, 1, 0.5f));
 
-                     g2.setColor(c);
+                g2.setColor(c);
 
-            g2.fill(furniture.toShape());
-            g2.draw(furniture.toShape());
-            g2.setColor(color);
+                g2.fill(furniture.toShape());
+                g2.draw(furniture.toShape());
+                g2.setColor(color);
+            }
+
         }
-
         g2.dispose();
 
     }
