@@ -39,8 +39,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     private OrthographicCamera cam;
 
 
-    private float rotationSpeed = 0.5f;
-
     private final Problem problem;
     private final Solution solution;
 
@@ -230,7 +228,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     private float translateUnit = 1f;
 
 
-    private float rotateInc = 0.1f;
+    private float rotateInc = 0.5f;
     private float rotateUnit = 1f;
 
 
@@ -256,10 +254,10 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
             cam.translate(0, translateInc, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            cam.rotate(-rotationSpeed, 0, 0, rotateInc);
+            cam.rotate(-rotateInc, 0, 0, 1);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-            cam.rotate(rotationSpeed, 0, 0, rotateInc);
+            cam.rotate(rotateInc, 0, 0, 1);
         }
         cam.zoom = Math.max(cam.zoom, 0.1f);
         //cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 100 / cam.viewportWidth);
