@@ -14,9 +14,11 @@ public class DesktopLauncher {
     public static void main(String[] arg) throws FileNotFoundException {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
+        config.width = 2000;
+        config.height = 1000;
 
         InputParser inputParser = new InputParser();
-        List<Problem> problems = inputParser.parse("test.txt");
+        List<Problem> problems = inputParser.parse("test2.txt");
 
 
         new LwjglApplication(new RoomFurnitureMain(problems.get(0), new SolutionGeneratorStrategy(problems.get(0)).generate()), config);

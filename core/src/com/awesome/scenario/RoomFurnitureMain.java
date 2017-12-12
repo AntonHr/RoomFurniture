@@ -8,15 +8,18 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.google.common.collect.Streams;
+import com.roomfurniture.ShapeCalculator;
+import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
+import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
 
 import java.awt.*;
 import java.awt.geom.PathIterator;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,8 +48,6 @@ public class RoomFurnitureMain extends ApplicationAdapter {
         this.problem = problem;
         this.solution = solution;
         items = Streams.zip(problem.getFurnitures().stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.toList());
-
-
     }
 
     @Override
@@ -74,7 +75,6 @@ public class RoomFurnitureMain extends ApplicationAdapter {
         handleInput();
         cam.update();
 
-
         shapeRenderer.setProjectionMatrix(cam.combined);
 
 
@@ -84,20 +84,62 @@ public class RoomFurnitureMain extends ApplicationAdapter {
 
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.polygon(roomPoints);
-
         shapeRenderer.end();
-
 
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
 
 
-        //items
+        //colours
         double maxValue = 0;
-        for (Furniture item : items) {
+        for (Furniture item : problem.getFurnitures()) {
             maxValue = Math.max(maxValue, item.getScorePerUnitArea());
         }
 
-        for (Furniture item : items) {
+        //solution
+
+        Map<Boolean, List<Furniture>> result = Streams.zip(items.stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(problem.getRoom().toShape(), furniture.toShape())));
+
+        List<Furniture> furnitureInRoom = result.get(true);
+
+        Iterator<Furniture> iterator = furnitureInRoom.iterator();
+
+        while (iterator.hasNext()) {
+            Furniture furniture = iterator.next();
+            for (Furniture otherFurniture : furnitureInRoom) {
+                if (otherFurniture != furniture)
+                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+                        // Keep furniture with highest score
+                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
+                            iterator.remove();
+                            break;
+                        }
+                    }
+            }
+        }
+
+
+        for (Furniture item : furnitureInRoom) {
+            float[] points = getPoints(item.toShape());
+
+
+            shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
+            shapeRenderer.polygon(points);
+        }
+
+
+        shapeRenderer.end();
+
+
+        //spread
+
+        List<Furniture> notIncludedItems = new ArrayList<>(items);
+        notIncludedItems.removeAll(furnitureInRoom);
+        List<Furniture> itemsToDraw = spread(notIncludedItems);
+
+        //items
+
+        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
+        for (Furniture item : itemsToDraw) {
             float[] points = getPoints(item.toShape());
 
 
@@ -109,17 +151,50 @@ public class RoomFurnitureMain extends ApplicationAdapter {
         shapeRenderer.end();
     }
 
+    private List<Furniture> spread(List<Furniture> items) {
+        Vector2 dir = new Vector2(1, 0);
+        float step = 10;
+
+        List<Furniture> spreadItems = new ArrayList<>();
+
+        for (Furniture item : items) {
+
+            Furniture currentItem = item;
+
+            while (intersectsAnything(currentItem, spreadItems)) {
+                currentItem = currentItem.transform(new Descriptor(new Vertex(dir.cpy().scl(step)), 0));
+            }
+            spreadItems.add(currentItem);
+            dir.rotate(14);
+        }
+
+        return spreadItems;
+    }
+
+    private boolean intersectsAnything(Furniture item, List<Furniture> otherItems) {
+        for (Furniture otherItem : otherItems) {
+            if (item != otherItem && ShapeCalculator.intersect(item.toShape(), otherItem.toShape())) {
+                return true;
+            }
+
+            if (ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape()))
+                return true;
+        }
+
+        return false;
+    }
+
     private void handleInput() {
 
-        float zoomInc = 0.01f;
+        float zoomInc = 1.05f;
         float translateInc = 1f;
         float rotateInc = 1;
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            cam.zoom += zoomInc;
+            cam.zoom *= zoomInc;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            cam.zoom -= zoomInc;
+            cam.zoom /= zoomInc;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             cam.translate(-translateInc, 0, 0);
@@ -140,7 +215,8 @@ public class RoomFurnitureMain extends ApplicationAdapter {
             cam.rotate(rotationSpeed, 0, 0, rotateInc);
         }
 
-        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 100 / cam.viewportWidth);
+        cam.zoom = Math.max(cam.zoom, 0.1f);
+        //cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 100 / cam.viewportWidth);
 
 //        float effectiveViewportWidth = cam.viewportWidth * cam.zoom;
 //        float effectiveViewportHeight = cam.viewportHeight * cam.zoom;
@@ -155,6 +231,7 @@ public class RoomFurnitureMain extends ApplicationAdapter {
 //
 //        cam.update();
 //    }
+
 
     @Override
     public void dispose() {
