@@ -38,7 +38,6 @@ public class Solution {
 
         Map<Boolean, List<Furniture>> result = Streams.zip(furnitures.stream(), descriptors.stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
 
-
         List<Furniture> furnitureInRoom = result.get(true);
 
         Iterator<Furniture> iterator  = furnitureInRoom.iterator();
