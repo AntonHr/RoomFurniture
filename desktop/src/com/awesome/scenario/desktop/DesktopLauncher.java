@@ -45,22 +45,24 @@ public class DesktopLauncher {
 
 //            LwjglApplication lwjglApplication = new LwjglApplication(new RoomFurnitureRenderer(problem, solution, physicsSimulator), config);
 
-             OptimizerProblem optimizerProblem = new OptimizerProblem(problem, solution);
-
-            BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(1000, new OptimizerProblemEvaluationStrategy(optimizerProblem),
-                    new SolutionCrossoverStrategy(), new SolutionMutationStrategy(problem), new OptimizerProblemGeneratorStrategy(optimizerProblem), new RouletteWheelSelectionStrategy<Solution>());
-
-            ParallelGeneticAlgorithmRunner<Solution> runner = new ParallelGeneticAlgorithmRunner<Solution>(10, solutionBasicParallelGeneticAlgorithm);
-
-            runner.runTestIteration(1000);
-
-            Solution optimizedSolution = optimizerProblem.getOptimizedSolution(runner.findBestIndividual().get());
-            new LwjglApplication(new RoomFurnitureRenderer(problem, optimizedSolution, physicsSimulator), config);
-
             System.out.println("Original score: " + entry.getValue().score(entry.getKey()));
             System.out.println("Original Coverage: " + solution.findCoverage(problem) * 100 + "%");
+            Solution optimizedSolution = optimizeSolution(solution, problem);
+            System.out.println("Optimization Pass 1");
             System.out.println("Score is " + optimizedSolution.score(problem));
             System.out.println("Coverage: " + optimizedSolution.findCoverage(problem) * 100 + "%");
+            optimizedSolution = optimizeSolution(optimizedSolution, problem);
+            System.out.println("Optimization Pass 2");
+            System.out.println("Score is " + optimizedSolution.score(problem));
+            System.out.println("Coverage: " + optimizedSolution.findCoverage(problem) * 100 + "%");
+            optimizedSolution = optimizeSolution(optimizedSolution, problem);
+            System.out.println("Optimization Pass 3");
+            System.out.println("Score is " + optimizedSolution.score(problem));
+            System.out.println("Coverage: " + optimizedSolution.findCoverage(problem) * 100 + "%");
+
+            new LwjglApplication(new RoomFurnitureRenderer(problem, optimizedSolution, physicsSimulator), config);
+
+
             break;
         }
 //
@@ -69,6 +71,19 @@ public class DesktopLauncher {
         System.out.println(furniture);
 
 
+    }
+
+    private static Solution optimizeSolution(Solution solution, Problem problem) {
+        OptimizerProblem optimizerProblem = new OptimizerProblem(problem, solution);
+
+        BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(1000, new OptimizerProblemEvaluationStrategy(optimizerProblem),
+                new SolutionCrossoverStrategy(), new SolutionMutationStrategy(problem), new OptimizerProblemGeneratorStrategy(optimizerProblem), new RouletteWheelSelectionStrategy<Solution>());
+
+        ParallelGeneticAlgorithmRunner<Solution> runner = new ParallelGeneticAlgorithmRunner<Solution>(10, solutionBasicParallelGeneticAlgorithm);
+
+        runner.runTestIteration(1000);
+
+        return optimizerProblem.getOptimizedSolution(runner.findBestIndividual().get());
     }
 }
 /// CODE FOR OPTIMIZER
