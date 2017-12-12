@@ -1,6 +1,6 @@
 package com.awesome.scenario.desktop;
 
-import com.awesome.scenario.RoomFurnitureMain;
+import com.awesome.scenario.RoomFurnitureRenderer;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.roomfurniture.InputParser;
@@ -10,11 +10,7 @@ import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
-import com.roomfurniture.solution.SolutionGeneratorStrategy;
-import com.tempgui.SolutionVisualizer;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +32,7 @@ public class DesktopLauncher {
             Solution value = entry.getValue();
             Problem key = entry.getKey();
             value.getDescriptors().set(0, new Descriptor(new Vertex(1,1),0));
-            new LwjglApplication(new RoomFurnitureMain(key, value), config);
+            new LwjglApplication(new RoomFurnitureRenderer(key, value), config);
             System.out.println("Score is " + value.score(key));
             break;
         }
