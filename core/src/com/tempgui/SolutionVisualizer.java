@@ -96,6 +96,9 @@ public class SolutionVisualizer extends JPanel {
 
                 g2.setColor(c);
 
+                g2.setFont(new Font("TimesRoman", Font.PLAIN, 5));
+                g2.drawString(("Value: " + ShapeCalculator.calculateAreaOf(furniture.toShape()) * value), (int)furniture.toShape().getBounds().getMaxX(), (int)furniture.toShape().getBounds().getMaxY());
+
                 g2.fill(furniture.toShape());
                 g2.draw(furniture.toShape());
                 g2.setColor(color);
@@ -120,7 +123,7 @@ public class SolutionVisualizer extends JPanel {
     public static JFrame constructVisualizationFrame(Problem problem, Solution solution) throws FileNotFoundException {
         Furniture furniture = problem.getFurnitures().get(0);
 
-        DefaultBoundedRangeModel scalingModel = new DefaultBoundedRangeModel(5,0,1,10);
+        DefaultBoundedRangeModel scalingModel = new DefaultBoundedRangeModel(5,0, -1,100);
         DefaultBoundedRangeModel rotationModel = new DefaultBoundedRangeModel(0, 0, 0, (int) (Math.PI * 1000));
 
         JFrame frame = new JFrame();
