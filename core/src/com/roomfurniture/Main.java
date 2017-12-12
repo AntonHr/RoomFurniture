@@ -23,26 +23,30 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
-        Map<Problem, Solution> solutionMap = doStuff();
+        InputParser inputParser = new InputParser();
+        List<Problem> parse = inputParser.parse("customTest.txt");
+//        Map<Problem, Solution> solutionMap = doStuff(parse);
 
-        for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
-            JFrame bestFrame = SolutionVisualizer.constructVisualizationFrame(entry.getKey(), entry.getValue());
-            bestFrame.setTitle("Best solution");
-            EventQueue.invokeLater(() -> {
-                bestFrame.setVisible(true);
-            });
-            break;
-        }
-
-
+//        for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
+//            JFrame bestFrame = SolutionVisualizer.constructVisualizationFrame(entry.getKey(), entry.getValue());
+//            bestFrame.setTitle("Best solution");
+//            EventQueue.invokeLater(() -> {
+//                bestFrame.setVisible(true);
+//            });
+//            break;
+//        }
+//
+        Furniture furniture = parse.get(0).getFurnitures().get(0);
+        double area = ShapeCalculator.calculateAreaOf(furniture.toShape());
+        System.out.println("Area : " +area);
+        System.out.println(furniture);
     }
 
 
-    public static Map<Problem, Solution> doStuff() throws FileNotFoundException {
+    public static Map<Problem, Solution> doStuff(List<Problem> parse) throws FileNotFoundException {
         // write your code here
 
-        InputParser inputParser = new InputParser();
-        List<Problem> problems = inputParser.parse("test2.txt");
+        List<Problem> problems = parse;
         Furniture furniture = problems.get(0).getFurnitures().get(0);
 
         for (Problem problem : problems) {
