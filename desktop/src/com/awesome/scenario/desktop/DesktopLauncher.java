@@ -5,6 +5,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.roomfurniture.InputParser;
 import com.roomfurniture.ShapeCalculator;
+import com.roomfurniture.box2d.PhysicsSimulator;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.solution.Solution;
@@ -27,13 +28,18 @@ public class DesktopLauncher {
         Map<Problem, Solution> solutionMap = doStuff(parse);
 
         for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
-            Solution value = entry.getValue();
-            Problem key = entry.getKey();
+            Solution solution = entry.getValue();
+            Problem problem = entry.getKey();
 
-            new LwjglApplication(new RoomFurnitureRenderer(key, value), config);
-            System.out.println("Score is " + value.score(key));
+
+            PhysicsSimulator physicsSimulator = new PhysicsSimulator(problem, solution);
+
+            LwjglApplication lwjglApplication = new LwjglApplication(new RoomFurnitureRenderer(problem, solution, physicsSimulator), config);
+
+
+            System.out.println("Score is " + solution.score(problem));
             System.out.println("real score: " + entry.getValue().score(entry.getKey()));
-            System.out.println("Coverage: " + value.findCoverage(key) * 100 + "%");
+            System.out.println("Coverage: " + solution.findCoverage(problem) * 100 + "%");
             break;
         }
 //

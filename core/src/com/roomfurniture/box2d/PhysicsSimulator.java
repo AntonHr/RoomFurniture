@@ -13,15 +13,15 @@ import java.util.List;
 public class PhysicsSimulator {
 
     public final World world;
+    private final List<Body> bodies;
 
     public PhysicsSimulator(Problem problem, Solution solution) {
         world = new World(new Vector2(0, 0), true);
 
-        List<BodyDef> bodyDefs = new ArrayList<>();
 
         List<Furniture> itemsInTheRoom = solution.getItemsInTheRoom(problem);
 
-        List<Body> bodies = new ArrayList<>();
+        bodies = new ArrayList<>();
 
         itemsInTheRoom.forEach(item -> {
             //body def
@@ -47,8 +47,12 @@ public class PhysicsSimulator {
 
     }
 
-    public void udpate(float deltaTime) {
+    public void update(float deltaTime) {
         world.step(deltaTime, 6, 2);
 
+    }
+
+    public void letTheFunBegin() {
+        bodies.get(0).applyForceToCenter(10, 0,true);
     }
 }

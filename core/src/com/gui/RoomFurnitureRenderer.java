@@ -21,7 +21,8 @@ import com.roomfurniture.solution.Solution;
 
 import java.awt.*;
 import java.awt.geom.PathIterator;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RoomFurnitureRenderer extends ApplicationAdapter implements InputProcessor {
@@ -49,10 +50,10 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     private Box2DDebugRenderer box2DDebugRenderer;
     private PhysicsSimulator physicsSimulator;
 
-    public RoomFurnitureRenderer(Problem problem, Solution solution) {
+    public RoomFurnitureRenderer(Problem problem, Solution solution, PhysicsSimulator physicsSimulator) {
         this.problem = problem;
         this.solution = solution;
-        physicsSimulator = new PhysicsSimulator(problem, solution);
+        this.physicsSimulator = physicsSimulator;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         cam = new OrthographicCamera(WIDTH, HEIGHT * (h / w));
 
         //cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
-        cam.zoom = 10f;
+        cam.zoom = 1f;
         cam.update();
     }
 
@@ -129,7 +130,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     @Override
     public void render() {
 
-        physicsSimulator.udpate(Gdx.graphics.getDeltaTime());
+        physicsSimulator.update(Gdx.graphics.getDeltaTime());
 
 
         Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -387,6 +388,10 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
             zoomInc -= zoomUnit;
             rotateInc -= rotateUnit;
 
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+           physicsSimulator.letTheFunBegin();
         }
 
         return true;
