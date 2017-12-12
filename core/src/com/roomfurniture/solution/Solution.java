@@ -74,6 +74,47 @@ public class Solution {
 
     }
 
+    public List<Integer> findPlacedPositions(Problem problem) {
+        List<Furniture> furnitures = problem.getFurnitures();
+        Shape roomShape = problem.getRoom().toShape();
+        List<Integer> placedPositions = new ArrayList<>();
+        List<Furniture> furnitureInRoom = new ArrayList<>();
+
+        for(int i = 0; i < furnitures.size(); i++) {
+            Furniture transform = furnitures.get(i).transform(descriptors.get(i));
+            if(ShapeCalculator.contains(roomShape, transform.toShape())) {
+                furnitureInRoom.add(transform);
+                // collect indexes of valid positions
+                placedPositions.add(i);
+            }
+        }
+
+        Map<Boolean, List<Furniture>> result = Streams.zip(furnitures.stream(), descriptors.stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
+
+
+        Iterator<Furniture> iterator = furnitureInRoom.iterator();
+        Iterator<Integer> positioniterator = placedPositions.iterator();
+
+        while (iterator.hasNext()) {
+            Furniture furniture = iterator.next();
+            positioniterator.next();
+            for (Furniture otherFurniture : furnitureInRoom) {
+                if (otherFurniture != furniture)
+                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+                        // Keep furniture with highest score
+                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
+                            iterator.remove();
+                            positioniterator.remove();
+                            break;
+                        }
+                    }
+            }
+        }
+
+
+        return placedPositions;
+    }
+
     public double findCoverage(Problem problem) {
         List<Furniture> furnitures = problem.getFurnitures();
         Shape roomShape = problem.getRoom().toShape();
