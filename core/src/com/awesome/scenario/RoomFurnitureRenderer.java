@@ -129,7 +129,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         for (Furniture item : notIncludedItems) {
             float[] points = getPoints(item.toShape());
 
-            shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
+            shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
             shapeRenderer.polygon(points);
         }
         shapeRenderer.end();
@@ -143,7 +143,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
             float[] points = getPoints(item.toShape());
 
 
-            shapeRenderer.setColor(hueToSaturatedColor((float) (item.getScorePerUnitArea() / maxValue * 360)));
+            shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
             shapeRenderer.polygon(points);
         }
         shapeRenderer.end();
@@ -339,8 +339,14 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     }
 
 
+    //0..1
+    public static Color valueToColor(float alpha) {
+        return new Color(Color.rgba8888(0, 1 - alpha, 0, 1));
+    }
+
     //note, hue is on 0-360 scale.
     public static Color hueToSaturatedColor(float hue) {
+        hue *= 360;
         float r, g, b;
         float Hprime = hue / 60;
         float X = 1 - Math.abs(Hprime % 2 - 1);
