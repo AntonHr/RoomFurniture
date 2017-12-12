@@ -1,4 +1,4 @@
-package com.awesome.scenario;
+package com.gui;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.google.common.collect.Streams;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
@@ -22,7 +21,6 @@ import java.awt.*;
 import java.awt.geom.PathIterator;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RoomFurnitureRenderer extends ApplicationAdapter implements InputProcessor {
 

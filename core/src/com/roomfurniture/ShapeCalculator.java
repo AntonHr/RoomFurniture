@@ -1,6 +1,6 @@
 package com.roomfurniture;
 
-import com.awesome.scenario.RoomFurnitureRenderer;
+import com.gui.RoomFurnitureRenderer;
 import com.badlogic.gdx.math.GeometryUtils;
 import com.badlogic.gdx.math.Polygon;
 

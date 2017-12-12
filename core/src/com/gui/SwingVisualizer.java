@@ -1,4 +1,4 @@
-package com.tempgui;
+package com.gui;
 
 import com.google.common.collect.Streams;
 import com.roomfurniture.InputParser;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SolutionVisualizer extends JPanel {
+public class SwingVisualizer extends JPanel {
     public static final int HEIGHT = 720;
     public static final int WIDTH = 1280;
     private final Problem problem;
@@ -26,7 +26,7 @@ public class SolutionVisualizer extends JPanel {
     private final AffineTransform scaleTransform = AffineTransform.getScaleInstance(5,5);
     private final List<Furniture> items;
 
-    public SolutionVisualizer(Problem problem, Solution solution) {
+    public SwingVisualizer(Problem problem, Solution solution) {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.problem = problem;
         this.solution = solution;
@@ -146,7 +146,7 @@ public class SolutionVisualizer extends JPanel {
         DefaultBoundedRangeModel rotationModel = new DefaultBoundedRangeModel(0, 0, 0, (int) (Math.PI * 1000));
 
         JFrame frame = new JFrame();
-        SolutionVisualizer visualizer = new SolutionVisualizer(problem, solution);
+        SwingVisualizer visualizer = new SwingVisualizer(problem, solution);
         JSlider scaleSlider = new JSlider(SwingConstants.VERTICAL);
         JSlider rotationSlider= new JSlider(SwingConstants.VERTICAL);
 

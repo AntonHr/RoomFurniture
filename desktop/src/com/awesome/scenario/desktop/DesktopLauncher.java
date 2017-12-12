@@ -1,6 +1,6 @@
 package com.awesome.scenario.desktop;
 
-import com.awesome.scenario.RoomFurnitureRenderer;
+import com.gui.RoomFurnitureRenderer;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.roomfurniture.InputParser;

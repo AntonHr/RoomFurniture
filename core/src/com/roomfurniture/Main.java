@@ -1,22 +1,18 @@
 package com.roomfurniture;
 
-import com.roomfurniture.ga.algorithm.BasicGeneticAlgorithm;
-import com.roomfurniture.ga.algorithm.Result;
 import com.roomfurniture.ga.algorithm.RouletteWheelSelectionStrategy;
-import com.roomfurniture.ga.algorithm.SimpleGeneticAlgorithmRunner;
 import com.roomfurniture.ga.algorithm.interfaces.CrossoverStrategy;
 import com.roomfurniture.ga.algorithm.interfaces.EvaluationStrategy;
 import com.roomfurniture.ga.algorithm.interfaces.GeneratorStrategy;
 import com.roomfurniture.ga.algorithm.interfaces.MutationStrategy;
 import com.roomfurniture.ga.algorithm.parallel.BasicParallelGeneticAlgorithm;
-import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithmRunner;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.*;
-import com.tempgui.SolutionVisualizer;
+import com.gui.SwingVisualizer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +33,7 @@ public class Main {
             Problem key = entry.getKey();
             value.getDescriptors().set(0, new Descriptor(new Vertex(1,1),0));
             System.out.println("Score is " + value.score(key));
-            JFrame bestFrame = SolutionVisualizer.constructVisualizationFrame(key, value);
+            JFrame bestFrame = SwingVisualizer.constructVisualizationFrame(key, value);
             bestFrame.setTitle("Best solution");
             EventQueue.invokeLater(() -> {
                 bestFrame.setVisible(true);

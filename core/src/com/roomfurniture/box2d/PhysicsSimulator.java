@@ -1,11 +1,10 @@
 package com.roomfurniture.box2d;
 
-import com.awesome.scenario.RoomFurnitureRenderer;
+import com.gui.RoomFurnitureRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
-import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
 
 import java.util.ArrayList;
