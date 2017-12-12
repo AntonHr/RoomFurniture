@@ -258,7 +258,7 @@ public class RoomFurnitureMain extends ApplicationAdapter {
     }
 
 
-    static float[] getPoints(Shape path) {
+    public static float[] getPoints(Shape path) {
         List<double[]> pointList = new ArrayList<double[]>();
         double[] coords = new double[6];
         int numSubPaths = 0;

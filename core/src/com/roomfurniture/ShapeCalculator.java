@@ -1,5 +1,9 @@
 package com.roomfurniture;
 
+import com.awesome.scenario.RoomFurnitureMain;
+import com.badlogic.gdx.math.GeometryUtils;
+import com.badlogic.gdx.math.Polygon;
+
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
@@ -8,36 +12,11 @@ import java.util.Arrays;
 
 public class ShapeCalculator {
 
-    public static double calculateAreaOf(Shape aDouble) {
-        PathIterator pathIterator = aDouble.getPathIterator(null);
-        int size = 0;
-        while(!pathIterator.isDone()) {
-            pathIterator.next();
-            size += 1;
-        }
-        Double xs[] = new Double[size-1];
-        Double ys[] = new Double[size-1];
-        int currentPosition = 0;
-        pathIterator = aDouble.getPathIterator(null);
-
-        while(!pathIterator.isDone()) {
-            double[] kilme = new double[2];
-            pathIterator.currentSegment(kilme);
-            pathIterator.next();
-            if(currentPosition < size-1) {
-                xs[currentPosition] = kilme[0];
-                ys[currentPosition] = kilme[1];
-            }
-
-            currentPosition++;
-        }
-
-        double sum = 0.0;
-        for (int i = 0; i < size-1; i++) {
-            sum = sum + (xs[i] * ys[(i+1)%(size-1)]) - (ys[i] * xs[(i+1)%(size-1)]);
-        }
-        return Math.abs(0.5 * sum);
-
+    public static double calculateAreaOf(Shape shape) {
+        float[] points = RoomFurnitureMain.getPoints(shape);
+        GeometryUtils.ensureCCW(points);
+        Polygon polygon = new Polygon(points);
+        return polygon.area();
     }
 
     public static boolean intersect(Shape shapeA, Shape shapeB) {
