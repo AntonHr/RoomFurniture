@@ -93,7 +93,8 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         List<Furniture> notIncludedItems = new ArrayList<>();
 
 
-        notIncludedItems.sort(item->item.getScorePerUnitArea() * item.toShape());
+        Comparator<Furniture> comparator = Comparator.comparing(item -> item.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(item.toShape()));
+        notIncludedItems.sort(comparator);
 
         notIncludedItems.addAll(problem.getFurnitures());
 
