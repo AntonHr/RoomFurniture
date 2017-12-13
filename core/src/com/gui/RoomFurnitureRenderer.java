@@ -127,7 +127,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         for (Furniture item : itemsInRoom) {
             float[] points = getPoints(item.toShape());
 
-
             shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
             shapeRenderer.polygon(points);
         }
@@ -430,6 +429,10 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
             physicsSimulator.letTheFunBegin();
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
+            physicsSimulator.startSpawning(notIncludedItems);
+        }
+
         return true;
     }
 
@@ -478,5 +481,38 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+
+    public void updateItem(Furniture item, List<Vertex> vertices, Vector2 position, float angle) {
+        int ind = itemsInRoom.indexOf(item);
+        if (ind != -1) {
+            Furniture item1 = itemsInRoom.get(ind);
+            item1.updateShape(vertices);
+            itemsInRoom.set(ind, item1.transform(new Descriptor(new Vertex(position), angle)));
+            return;
+        }
+
+//        ind = notIncludedItems.indexOf(item);
+//        if (ind != -1) {
+//            itemsInRoom.get(ind).updateShape(vertices);
+//            return;
+//        }
+        throw new RuntimeException("Unknown item to update");
+    }
+
+    public void moveInsideRoom(Furniture item) {
+        int ind = notIncludedItems.indexOf(item);
+        if (ind == -1)
+            throw new RuntimeException("Cant move to room");
+        itemsInRoom.add(notIncludedItems.remove(ind));
+    }
+
+    public List<Furniture> insideItems() {
+        return itemsInRoom;
+    }
+
+    public Furniture findItem(Furniture item) {
+
+        return null;
     }
 }

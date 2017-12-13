@@ -33,8 +33,9 @@ public class DesktopLauncher {
 
 
             PhysicsSimulator physicsSimulator = new PhysicsSimulator(problem, solution);
-
-            LwjglApplication lwjglApplication = new LwjglApplication(new RoomFurnitureRenderer(problem, solution, physicsSimulator), config);
+            RoomFurnitureRenderer roomFurnitureRenderer = new RoomFurnitureRenderer(problem, solution, physicsSimulator);
+            physicsSimulator.setRenderer(roomFurnitureRenderer);
+            LwjglApplication lwjglApplication = new LwjglApplication(roomFurnitureRenderer, config);
 
 
             System.out.println("Score is " + solution.score(problem));
