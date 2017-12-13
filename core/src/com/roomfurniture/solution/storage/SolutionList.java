@@ -60,6 +60,8 @@ public class SolutionList {
     int problem;
 
     public void storeSolution(double coverage, double score, Solution solution) {
+         if(netEnabled)
+            updateLocalFile(problem);
         SolutionEntry solutionEntry = new SolutionEntry(coverage, score, solution);
         try {
             FileWriter write = new FileWriter("./solutions/solution_" + problem + ".txt",true);
