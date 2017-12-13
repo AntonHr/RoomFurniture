@@ -12,22 +12,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.roomfurniture.ShapeCalculator;
-import com.roomfurniture.box2d.PhysicsSimulator;
-import com.roomfurniture.problem.Descriptor;
-import com.roomfurniture.problem.Furniture;
-import com.roomfurniture.problem.Problem;
-import com.roomfurniture.problem.Vertex;
-import com.roomfurniture.solution.Solution;
+import com.roomfurniture.box2d.PhysicsSimulatorEvaluator;
 
 import java.awt.*;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
-public class RoomFurnitureRenderer extends ApplicationAdapter implements InputProcessor {
+public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements InputProcessor {
 
 
     static final int WIDTH = 100;
@@ -41,164 +34,135 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
     private MyShapeRenderer shapeRenderer;
     private OrthographicCamera cam;
 
+    private PhysicsSimulatorEvaluator physicsSimulator;
 
-    private final Problem problem;
-    private final Solution solution;
-
-    private List<Furniture> itemsInRoom;
-    private List<Furniture> notIncludedItems;
     private int renderType = 0;
 
     private Box2DDebugRenderer box2DDebugRenderer;
-    private PhysicsSimulator physicsSimulator;
+    //private PhysicsSimulator physicsSimulator;
 
-    public RoomFurnitureRenderer(Problem problem, Solution solution, PhysicsSimulator physicsSimulator) {
-        this.problem = problem;
-        this.solution = solution;
-        this.physicsSimulator = physicsSimulator;
-    }
 
     @Override
     public void create() {
         Gdx.input.setInputProcessor(this);
-        constructObjects();
+        // constructObjects();
 
         box2DDebugRenderer = new Box2DDebugRenderer();
 
         font = new BitmapFont();
         font.setColor(Color.BLACK);
         batch = new SpriteBatch();
-        //img = new Texture("./core/assets/badlogic.jpg");
+
         shapeRenderer = new MyShapeRenderer();
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
-        // Constructs a new OrthographicCamera, using the given viewport width and height
-        // Height is multiplied by aspect ratio.
+
         cam = new OrthographicCamera(WIDTH, HEIGHT * (h / w));
 
-        //cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
         cam.zoom = 1f;
         cam.update();
     }
 
 
-    private void constructObjects() {
-        //solution
-
-        this.itemsInRoom = solution.getItemsInTheRoom(problem);
-
-
-        //spread
-        List<Furniture> notIncludedItems = new ArrayList<>();
-
-
-        Comparator<Furniture> comparator = Comparator.comparing(item -> item.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(item.toShape()));
-        notIncludedItems.sort(comparator);
-
-        notIncludedItems.addAll(problem.getFurnitures());
-
-
-        for (Furniture furniture : itemsInRoom) {
-            int ind = notIncludedItems.indexOf(furniture);
-            if (ind != -1)
-                notIncludedItems.remove(ind);
-        }
-
-        this.notIncludedItems = spread(notIncludedItems);
-    }
-
-    private void renderOutItems(double maxValue) {
-        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
-        for (Furniture item : notIncludedItems) {
-            float[] points = getPoints(item.toShape());
-
-            shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
-            shapeRenderer.polygon(points);
-        }
-        shapeRenderer.end();
-    }
-
-
-    private void renderInItems(double maxValue) {
-        //solution
-        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
-        for (Furniture item : itemsInRoom) {
-            float[] points = getPoints(item.toShape());
-
-            shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
-            shapeRenderer.polygon(points);
-        }
-        shapeRenderer.end();
-    }
-
-    private void renderRoom() {
-        shapeRenderer.begin(MyShapeRenderer.ShapeType.Line);
-        float[] roomPoints = getPoints(problem.getRoom().toShape());
-
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.polygon(roomPoints);
-        shapeRenderer.end();
-    }
+//    private void constructObjects() {
+//        //solution
+//
+//        this.itemsInRoom = solution.getItemsInTheRoom(problem);
+//
+//
+//        //spread
+//        List<Furniture> notIncludedItems = new ArrayList<>();
+//
+//
+//        Comparator<Furniture> comparator = Comparator.comparing(item -> item.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(item.toShape()));
+//        notIncludedItems.sort(comparator);
+//
+//        notIncludedItems.addAll(problem.getFurnitures());
+//
+//
+//        for (Furniture furniture : itemsInRoom) {
+//            int ind = notIncludedItems.indexOf(furniture);
+//            if (ind != -1)
+//                notIncludedItems.remove(ind);
+//        }
+//
+//        this.notIncludedItems = spread(notIncludedItems);
+//    }
 
 
     @Override
     public void render() {
-
-        physicsSimulator.update(Gdx.graphics.getDeltaTime());
-
-        if (renderType != 3)
-            Gdx.gl.glClearColor(1, 1, 1, 1);
-        else
-            Gdx.gl.glClearColor(0, 0, 0, 1);
-
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         handleInput();
         cam.update();
-
         shapeRenderer.setProjectionMatrix(cam.combined);
 
-        //colours
-        double maxValue = 0;
-        for (Furniture item : problem.getFurnitures()) {
-            maxValue = Math.max(maxValue, item.getScorePerUnitArea());
-        }
-
-
-        switch (renderType) {
-            case 0:
-                renderRoom();
-                renderInItems(maxValue);
-                renderOutItems(maxValue);
-                break;
-            case 1:
-                renderRoom();
-                renderOutItems(maxValue);
-                break;
-            case 2:
-                renderRoom();
-                renderInItems(maxValue);
-                break;
-            case 3:
-                box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
-                break;
+        if (physicsSimulator != null) {
+            box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
         }
 
         renderRepelPoint();
 
+        //
+//
+//        physicsSimulator.update(Gdx.graphics.getDeltaTime());
+//
+//        if (renderType != 3)
+//            Gdx.gl.glClearColor(1, 1, 1, 1);
+//        else
+//            Gdx.gl.glClearColor(0, 0, 0, 1);
+//
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//
+//        handleInput();
+//        cam.update();
+//
+//        shapeRenderer.setProjectionMatrix(cam.combined);
+//
+//        //colours
+//        double maxValue = 0;
+//        for (Furniture item : problem.getFurnitures()) {
+//            maxValue = Math.max(maxValue, item.getScorePerUnitArea());
+//        }
+//
+//
+//        switch (renderType) {
+//            case 0:
+//                renderRoom();
+//                renderInItems(maxValue);
+//                renderOutItems(maxValue);
+//                break;
+//            case 1:
+//                renderRoom();
+//                renderOutItems(maxValue);
+//                break;
+//            case 2:
+//                renderRoom();
+//                renderInItems(maxValue);
+//                break;
+//            case 3:
+//                box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
+//                break;
+//        }
+//
+//        renderRepelPoint();
+//
+//
+//        batch.begin();
+//
+//        int y = 50;<<<<<<< HEAD
 
-        batch.begin();
-
-        int y = 50;
-        font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
-        font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
-
-        font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
-        font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 20);
-
-        batch.end();
+//        font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
+//        font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
+//
+//        font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
+//        font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 20);
+//
+//        batch.end();
     }
 
     private void renderRepelPoint() {
@@ -219,43 +183,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         shapeRenderer.end();
     }
 
-    private List<Furniture> spread(List<Furniture> items) {
-        Vector2 dir = new Vector2(1, 0);
-        float step = 10;
-
-        List<Furniture> spreadItems = new ArrayList<>();
-
-        for (Furniture item : items) {
-
-            Furniture currentItem = item;
-
-            do {
-                currentItem = currentItem.transform(new Descriptor(new Vertex(dir.cpy().scl(step)), 0));
-            } while (intersectsAnything(currentItem, spreadItems));
-            spreadItems.add(currentItem);
-            dir.rotate(14);
-        }
-
-        return spreadItems;
-    }
-
-    private boolean intersectsAnything(Furniture item, List<Furniture> otherItems) {
-        for (Furniture otherItem : otherItems) {
-            if (!item.equals(otherItem)
-                    && (ShapeCalculator.intersect(item.toShape(), otherItem.toShape())
-                    || ShapeCalculator.contains(item.toShape(), otherItem.toShape())
-                    || ShapeCalculator.contains(otherItem.toShape(), item.toShape()))) {
-                return true;
-            }
-        }
-
-        if (ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape())
-                || ShapeCalculator.contains(item.toShape(), problem.getRoom().toShape())
-                || ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()))
-            return true;
-
-        return false;
-    }
 
     private float zoomInc = 1.05f;
     private float zoomUnit = 0.1f;
@@ -269,8 +196,6 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
 
     private void handleInput() {
-
-
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             cam.zoom += zoomInc;
         }
@@ -425,19 +350,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-            physicsSimulator.letTheFunBegin();
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
-            physicsSimulator.startSpawning(notIncludedItems);
-        }
-
         return true;
-    }
-
-    private void updateRepelPoint(Vector2 mousePosInWorld) {
-        physicsSimulator.setRepelPoint(mousePosInWorld);
     }
 
     Vector2 getMousePosInWorld() {
@@ -457,8 +370,8 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        updateRepelPoint(getMousePosInWorld());
-        return true;
+
+        return false;
     }
 
     @Override
@@ -468,8 +381,8 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        updateRepelPoint(getMousePosInWorld());
-        return true;
+
+        return false;
     }
 
 
@@ -483,36 +396,7 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         return false;
     }
 
-    public void updateItem(Furniture item, List<Vertex> vertices, Vector2 position, float angle) {
-        int ind = itemsInRoom.indexOf(item);
-        if (ind != -1) {
-            Furniture item1 = itemsInRoom.get(ind);
-            item1.updateShape(vertices);
-            itemsInRoom.set(ind, item1.transform(new Descriptor(new Vertex(position), angle)));
-            return;
-        }
-
-//        ind = notIncludedItems.indexOf(item);
-//        if (ind != -1) {
-//            itemsInRoom.get(ind).updateShape(vertices);
-//            return;
-//        }
-        throw new RuntimeException("Unknown item to update");
-    }
-
-    public void moveInsideRoom(Furniture item) {
-        int ind = notIncludedItems.indexOf(item);
-        if (ind == -1)
-            throw new RuntimeException("Cant move to room");
-        itemsInRoom.add(notIncludedItems.remove(ind));
-    }
-
-    public List<Furniture> insideItems() {
-        return itemsInRoom;
-    }
-
-    public Furniture findItem(Furniture item) {
-
-        return null;
+    public void update(PhysicsSimulatorEvaluator physicsSimulator) {
+        this.physicsSimulator = physicsSimulator;
     }
 }

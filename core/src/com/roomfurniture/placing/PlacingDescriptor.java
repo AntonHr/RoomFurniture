@@ -20,7 +20,6 @@ public class PlacingDescriptor {
         this.spawnPoint = spawnPoint;
     }
 
-
     public Vertex getVertex(PlacingProblem problem) {
         return problem.getSpawnPoints().get(spawnPoint);
     }
