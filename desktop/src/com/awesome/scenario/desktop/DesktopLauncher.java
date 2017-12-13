@@ -1,5 +1,6 @@
 package com.awesome.scenario.desktop;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.gui.EvaluatorPhysicsRenderer;
@@ -91,9 +92,8 @@ public class DesktopLauncher {
 
         PlacingProblem placingProblem = new PlacingProblem(parse.get(0),
                 Arrays.asList(
-                        new Vertex(-10, 10),
-                        new Vertex(-1000, 100),
-                        new Vertex(-100, 200)
+                        new Vertex(-100, 10),
+                        new Vertex(-100, 150)
                 ));
 
         PlacingSolution placingSolution = new PlacingSolutionGeneratorStrategy(placingProblem).generate();
@@ -142,7 +142,7 @@ public class DesktopLauncher {
 
         application = new LwjglApplication(renderer, config);
 
-        BasicGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicGeneticAlgorithm<>(10,
+        BasicGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicGeneticAlgorithm<>(100,
                 new PhysicsPlacingSolutionEvaluationStrategy(placingProblem),
                 new PlacingSolutionCrossoverStrategyAdapter(),
                 new PlacingSolutionMutationStrategyAdapter(0.5, 10),
@@ -170,8 +170,7 @@ public class DesktopLauncher {
 //            if (i % 10 == 0)
  //           renderer.update(physicsSimulator);
         }
-        //Gdx.app.exit();
-
+        Gdx.app.exit();
 
 
 

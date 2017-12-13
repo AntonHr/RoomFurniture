@@ -22,7 +22,7 @@ public class PhysicsSimulatorEvaluator {
     private boolean active = false;
     private boolean spawning = true;
     private Vector2 repelPoint;
-    private static float TRIAL_TIME = 0.01f; //s
+    private static float TRIAL_TIME = 0.1f; //s
     private float timeSinceLast = 0.0f;
 
 
