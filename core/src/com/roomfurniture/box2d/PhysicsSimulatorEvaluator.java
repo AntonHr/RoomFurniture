@@ -4,14 +4,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.gui.RoomFurnitureRenderer;
 import com.roomfurniture.ShapeCalculator;
-import com.roomfurniture.problem.Descriptor;
-import com.roomfurniture.problem.Furniture;
-import com.roomfurniture.problem.Room;
-import com.roomfurniture.problem.Vertex;
+import com.roomfurniture.placing.PlacingSolution;
+import com.roomfurniture.problem.*;
+import com.roomfurniture.solution.Solution;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PhysicsSimulatorEvaluator {
 
@@ -324,6 +322,31 @@ public class PhysicsSimulatorEvaluator {
         return false;
     }
 
+    public Solution getSolution(Problem problem) {
+//        if (bodies.stream().filter(body -> !body.isActive()).count() > 1) {
+//            throw new RuntimeException("more than 1 inactive item, something is wrong");
+//        }
+
+
+        List<Optional<Descriptor>> descriptors = new ArrayList<>();
+        for (int i = 0; i < problem.getFurnitures().size(); i++) {
+            descriptors.add(Optional.empty());
+        }
+
+        bodies.stream()
+                .filter(Body::isActive)
+                .forEach(body -> {
+                    Furniture item = (Furniture) body.getUserData();
+                    int ind = item.findMeInInitialArray(problem.getFurnitures());
+
+                    descriptors.set(ind, Optional.of(new Descriptor(new Vertex(body.getPosition()), body.getAngle())));
+                });
+
+        return new Solution(descriptors.stream()
+                .map(descriptorOpt -> descriptorOpt.orElse(new Descriptor(new Vertex(Double.MAX_VALUE, Double.MAX_VALUE), 0)))
+                .collect(Collectors.toList()));
+    }
+
     public List<Furniture> getTransformedItems() {
         List<Furniture> transformedItems = new ArrayList<>();
 
@@ -335,9 +358,10 @@ public class PhysicsSimulatorEvaluator {
                 .filter(Body::isActive)
                 .forEach(body -> {
                     Furniture item = (Furniture) body.getUserData();
+
+
                     transformedItems.add(item.transform(new Descriptor(new Vertex(body.getPosition()), body.getAngle())));
                 });
-
         return transformedItems;
     }
 //

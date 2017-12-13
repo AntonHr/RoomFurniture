@@ -176,7 +176,7 @@ public class DesktopLauncher {
 //        Gdx.app.exit();
 
         HashMap<String, Object> cachedResults = bestIndividual.get().getCachedResults();
-        List<Furniture> furniture = (List<Furniture>) cachedResults.get("furniture");
+        Solution Solution= (Solution) cachedResults.get("solution");
 
 
 //

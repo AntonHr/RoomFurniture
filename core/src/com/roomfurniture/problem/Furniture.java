@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.List;
+import java.util.function.Function;
 
 public class Furniture {
     private final double scorePerUnitArea;
@@ -67,5 +68,12 @@ public class Furniture {
     @Override
     public boolean equals(Object obj) {
         return this.id == ((Furniture) obj).id;
+    }
+
+    public int findMeInInitialArray(List<Furniture> initialItemArray) {
+        int ind = initialItemArray.indexOf(this);
+        if (ind == -1)
+            throw new RuntimeException("ooopos");
+        return ind;
     }
 }

@@ -13,8 +13,10 @@ public class PlacingProblem {
     private final Room room;
     private final List<Furniture> furnitures;
     private final List<Vertex> spawnPoints;
+    public final Problem problem;
 
     public PlacingProblem(Problem problem, List<Vertex> spawnPoints) {
+        this.problem = problem;
         this.room = problem.getRoom();
         this.furnitures = ImmutableList.copyOf(problem.getFurnitures());
         this.spawnPoints = ImmutableList.copyOf(spawnPoints);

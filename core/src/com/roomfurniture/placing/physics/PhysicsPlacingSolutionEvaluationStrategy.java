@@ -101,7 +101,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         placingSolution.cacheResults(new HashMap<String, Object>() {{
             put("coverage", finalAreaSum / roomArea);//0..1
             put("score", finalScore);
-            put("furniture", furnitureInRoom);
+            put("solution", physicsSimulator.getSolution(problem.problem));
         }});
         placingSolution.storePhysicsSimulator(physicsSimulator);
 
