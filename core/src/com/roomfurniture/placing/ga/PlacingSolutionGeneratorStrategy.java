@@ -18,10 +18,15 @@ import java.util.stream.Stream;
 
 public class PlacingSolutionGeneratorStrategy implements GeneratorStrategy<PlacingSolution>{
     private final int vertexCount;
-    private ContiguousSet<Integer> furnitures;
+    private List<Integer> furnitures;
 
     public PlacingSolutionGeneratorStrategy(PlacingProblem problem) {
-        furnitures = ContiguousSet.create(Range.closed(0, problem.getFurnitures().size()), DiscreteDomain.integers());
+
+        furnitures = new ArrayList<>();
+        for(int i = 0; i < problem.getFurnitures().size(); i++) {
+            furnitures.add(i);
+        }
+//        furnitures = ContiguousSet.create(Range.closed(0, problem.getFurnitures().size()), DiscreteDomain.integers());
         vertexCount = problem.getSpawnPoints().size();
     }
 
