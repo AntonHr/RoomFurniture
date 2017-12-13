@@ -257,7 +257,7 @@ public class PhysicsSimulatorEvaluator {
     }
 
     private void skipCurrentItem(Body b) {
-        //world.destroyBody(b);
+        world.destroyBody(b);
         nextBodyToSpawn = null;
     }
 

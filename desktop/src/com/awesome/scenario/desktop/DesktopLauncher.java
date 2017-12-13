@@ -16,6 +16,7 @@ import com.roomfurniture.placing.ga.PlacingSolutionCrossoverStrategyAdapter;
 import com.roomfurniture.placing.ga.PlacingSolutionGeneratorStrategy;
 import com.roomfurniture.placing.ga.PlacingSolutionMutationStrategyAdapter;
 import com.roomfurniture.placing.physics.PhysicsPlacingSolutionEvaluationStrategy;
+import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
@@ -27,6 +28,7 @@ import com.roomfurniture.solution.optimizer.OptimizerProblemGeneratorStrategy;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -92,8 +94,9 @@ public class DesktopLauncher {
 
         PlacingProblem placingProblem = new PlacingProblem(parse.get(0),
                 Arrays.asList(
-                        new Vertex(-100, 10),
-                        new Vertex(-100, 150)
+                        new Vertex(25,-30)
+//                        new Vertex(-100, 10),
+//                        new Vertex(-100, 150)
                 ));
 
         PlacingSolution placingSolution = new PlacingSolutionGeneratorStrategy(placingProblem).generate();
@@ -170,8 +173,10 @@ public class DesktopLauncher {
 //            if (i % 10 == 0)
  //           renderer.update(physicsSimulator);
         }
-        Gdx.app.exit();
+//        Gdx.app.exit();
 
+        HashMap<String, Object> cachedResults = bestIndividual.get().getCachedResults();
+        List<Furniture> furniture = (List<Furniture>) cachedResults.get("furniture");
 
 
 //
