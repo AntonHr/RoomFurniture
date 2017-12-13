@@ -65,19 +65,19 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         config.width = 2000;
         config.height = 1000;
 
-        EvaluatorPhysicsRenderer renderer = new EvaluatorPhysicsRenderer();
-        LwjglApplication lwjglApplication = new LwjglApplication(renderer, config);
+        //EvaluatorPhysicsRenderer renderer = new EvaluatorPhysicsRenderer();
+//        LwjglApplication lwjglApplication = new LwjglApplication(renderer, config);
 
         float dt = 0.0001f; //s
         //float dt = 0.1f; //s
-        int ITERATION_COUNT = 418778;
+        int ITERATION_COUNT = 4187;
         for (int i = 0; i < ITERATION_COUNT; i++) {
-            System.out.println(i + "/" + ITERATION_COUNT);
+//            System.out.println(i + "/" + ITERATION_COUNT);
             physicsSimulator.update(dt);
             //if (i % 10 == 0)
-            renderer.update(physicsSimulator);
+ //           renderer.update(physicsSimulator);
         }
-        Gdx.app.exit();
+        //Gdx.app.exit();
 
         List<Furniture> furnitureInRoom = physicsSimulator.getTransformedItems();
 

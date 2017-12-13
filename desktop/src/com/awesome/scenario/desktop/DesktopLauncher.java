@@ -7,7 +7,9 @@ import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithmRunner;
 import com.roomfurniture.placing.PlacingDescriptor;
 import com.roomfurniture.placing.PlacingProblem;
 import com.roomfurniture.placing.PlacingSolution;
+import com.roomfurniture.placing.ga.PlacingSolutionCrossoverStrategyAdapter;
 import com.roomfurniture.placing.ga.PlacingSolutionGeneratorStrategy;
+import com.roomfurniture.placing.ga.PlacingSolutionMutationStrategyAdapter;
 import com.roomfurniture.placing.physics.PhysicsPlacingSolutionEvaluationStrategy;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
@@ -84,6 +86,19 @@ public class DesktopLauncher {
                 ));
 
         PlacingSolution placingSolution = new PlacingSolutionGeneratorStrategy(placingProblem).generate();
+
+//    public BasicParallelGeneticAlgorithm(int populationSize, EvaluationStrategy<T> evaluationStrategy, CrossoverStrategy<T> crossoverStrategy, MutationStrategy<T> mutationStrategy, GeneratorStrategy<T> generatorStrategy, SelectionStrategy<T> selectionStrategy) {
+        BasicParallelGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(100,
+                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem),
+                new PlacingSolutionCrossoverStrategyAdapter(),
+                new PlacingSolutionMutationStrategyAdapter(0.5, 10),
+                new PlacingSolutionGeneratorStrategy(placingProblem),
+                new RouletteWheelSelectionStrategy<>()
+        );
+
+        ParallelGeneticAlgorithmRunner<PlacingSolution> placingSolutionParallelGeneticAlgorithmRunner = new ParallelGeneticAlgorithmRunner<>(10, placingSolutionBasicParallelGeneticAlgorithm);
+        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(10);
+        System.out.println(placingSolutionParallelGeneticAlgorithmRunner.findBestIndividual());
 //
 //        PlacingSolution placingSolution = new PlacingSolution(
 //                Arrays.asList(
@@ -91,7 +106,7 @@ public class DesktopLauncher {
 //                        new PlacingDescriptor(1, 1)));
 //        );
 
-        new PhysicsPlacingSolutionEvaluationStrategy(placingProblem).evaluate(placingSolution);
+//        new PhysicsPlacingSolutionEvaluationStrategy(placingProblem).evaluate(placingSolution);
     }
 
     private static Solution optimizeSolution(Solution solution, Problem problem, ExecutorService service) {
