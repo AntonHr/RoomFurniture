@@ -1,4 +1,4 @@
-package com.roomfurniture.JNFP;
+package com.roomfurniture.nfp.JNFP;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;

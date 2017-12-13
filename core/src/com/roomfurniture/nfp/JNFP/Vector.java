@@ -1,4 +1,4 @@
-package com.roomfurniture.JNFP;
+package com.roomfurniture.nfp.JNFP;
 /**
  * this class describes a vector starting in the origin
  * @author Stiaan Uyttersprot

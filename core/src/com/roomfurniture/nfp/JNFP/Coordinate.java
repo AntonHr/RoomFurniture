@@ -1,4 +1,4 @@
-package com.roomfurniture.JNFP;
+package com.roomfurniture.nfp.JNFP;
 
 /**
  * the class used for storing and using a coordinate

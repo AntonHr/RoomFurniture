@@ -1,4 +1,4 @@
-package com.roomfurniture.JNFP;
+package com.roomfurniture.nfp.JNFP;
 
 /**
  * Used in the Minkowski sums method.

@@ -1,4 +1,4 @@
-package com.roomfurniture.JNFP;
+package com.roomfurniture.nfp.JNFP;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class Minkowski {
 	 * @return the NFP of these polygons
 	 * @throws FileNotFoundException when the file is not found
 	 */
-	public static NoFitPolygon generateMinkowskiNFP(MultiPolygon polyA, MultiPolygon polyB) throws FileNotFoundException {
+	public static NoFitPolygon generateMinkowskiNFP(MultiPolygon polyA, MultiPolygon polyB) {
 		
 		NoFitPolygon nfp = null;
 		clockwiseContainsTurningpoints = null;

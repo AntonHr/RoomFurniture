@@ -1,4 +1,4 @@
-package com.roomfurniture.JNFP;
+package com.roomfurniture.nfp.JNFP;
 
 /**
  * Pairs of edges that are touching used in the orbiting method are

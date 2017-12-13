@@ -1,4 +1,4 @@
-package com.roomfurniture.JNFP;
+package com.roomfurniture.nfp.JNFP;
 
 /**
  *	The Edge class describes an edge given by a start- and endpoint
