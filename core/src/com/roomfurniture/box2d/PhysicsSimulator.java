@@ -12,18 +12,20 @@ import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class PhysicsSimulator {
 
     public final World world;
     private final List<Body> bodies;
-    private final List<Body> room;
+    private final List<Body> roomWalls;
     private boolean active = false;
     private boolean spawning = false;
     private Vector2 repelPoint;
-    private float spawningTime = 0.2f;//s
-    private float sinceLastSpawn = 0;
+//    private float spawningTime = 0.2f;//s
+//    private float sinceLastSpawn = 0;
 
     private List<Furniture> unusedItems;
 
@@ -31,6 +33,8 @@ public class PhysicsSimulator {
 
     private Body nextBodyToSpawn;
     private RoomFurnitureRenderer renderer;
+
+    private Queue<Runnable> toDo = new LinkedList<>();
 
     public PhysicsSimulator(Problem problem, Solution solution) {
         this.problem = problem;
@@ -44,8 +48,8 @@ public class PhysicsSimulator {
             bodies.add(createBody(item));
         });
 
-        //room
-        room = new ArrayList<>();
+        //roomWalls
+        roomWalls = new ArrayList<>();
 
         Vertex previousCorner = null;
         for (Vertex currentCorner : problem.getRoom().getVerticies()) {
@@ -99,7 +103,7 @@ public class PhysicsSimulator {
 
         // Shape is the only disposable of the lot, so get rid of it
         shape.dispose();
-        room.add(body);
+        roomWalls.add(body);
     }
 
 
@@ -107,9 +111,12 @@ public class PhysicsSimulator {
 
     public void update(float deltaTime) {
 
-        if (iter >= 100)
-            return;
+
         if (active) {
+
+            while (!toDo.isEmpty())
+                toDo.poll().run();
+
             if (repelPoint != null)
                 if (spawning) {
                     if (!unusedItems.isEmpty() || nextBodyToSpawn != null) {
@@ -125,10 +132,11 @@ public class PhysicsSimulator {
                             item = unusedItems.get(0);
                             //sinceLastSpawn = sinceLastSpawn % spawningTime;
                             unusedItems.remove(0);
+
                             b = createBody(item);
-                            Vector2 bodyCenter = b.getLocalCenter();
-                            b.setTransform(repelPoint.cpy().sub(bodyCenter.sub(b.getPosition())), b.getAngle());
+
                             nextBodyToSpawn = b;
+                            moveToRepelPoint(b);
                         }
                         b.setActive(false);
 
@@ -168,6 +176,11 @@ public class PhysicsSimulator {
         }
     }
 
+    private void moveToRepelPoint(Body b) {
+        Vector2 bodyCenter = b.getLocalCenter().cpy().add(b.getPosition());
+        b.setTransform(repelPoint.cpy().sub(bodyCenter.cpy().sub(b.getPosition())), b.getAngle());
+    }
+
     private void updateItemInRenderer(Body body) {
         Furniture item = (Furniture) body.getUserData();
 
@@ -196,7 +209,7 @@ public class PhysicsSimulator {
 
 //        if (ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape())
 //                || ShapeCalculator.contains(item.toShape(), problem.getRoom().toShape())
-//                || !ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()) //if not inside the room - invalid
+//                || !ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()) //if not inside the roomWalls - invalid
 //                )
 //
 //        {
@@ -225,6 +238,13 @@ public class PhysicsSimulator {
 
     public void setRepelPoint(Vector2 repelPoint) {
         this.repelPoint = repelPoint;
+
+        toDo.add(() -> {
+
+            if (nextBodyToSpawn != null)
+                moveToRepelPoint(nextBodyToSpawn);
+        });
+
     }
 
     public Vector2 getRepelPoint() {
