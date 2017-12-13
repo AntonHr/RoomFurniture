@@ -1,32 +1,16 @@
 package com.roomfurniture.placing.physics;
 
 import com.awesome.scenario.desktop.DesktopLauncher;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
-import com.gui.EvaluatorPhysicsRenderer;
-import com.gui.RoomFurnitureRenderer;
-import com.roomfurniture.InputParser;
 import com.roomfurniture.ShapeCalculator;
-import com.roomfurniture.box2d.PhysicsSimulator;
 import com.roomfurniture.box2d.PhysicsSimulatorEvaluator;
 import com.roomfurniture.ga.algorithm.interfaces.EvaluationStrategy;
 import com.roomfurniture.placing.PlacingDescriptor;
 import com.roomfurniture.placing.PlacingProblem;
 import com.roomfurniture.placing.PlacingSolution;
 import com.roomfurniture.problem.Furniture;
-import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
 
-import java.awt.*;
-import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrategy<PlacingSolution> {
     private final PlacingProblem problem;
@@ -68,15 +52,15 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
 //        for (int i = 0; i < ITERATION_COUNT; i++) {
 //            System.out.println(i + "/" + ITERATION_COUNT);
         int iterationCount = 0;
-        while(!physicsSimulator.isDone()) {
+        while (!physicsSimulator.isDone()) {
             iterationCount++;
-            if(iterationCount % 100000 == 0) {
+            if (iterationCount % 100000 == 0) {
                 System.out.println("Iteration Count: " + iterationCount);
                 System.out.println("Items to spawn: " + physicsSimulator.itemsToSpawn.size() + "/ " + (physicsSimulator.bodies.size() - 1));
             }
             physicsSimulator.update(dt);
             if (iterationCount % 10 == 0)
-            DesktopLauncher.renderer.update(physicsSimulator);
+                DesktopLauncher.renderer.update(physicsSimulator);
         }
 
         List<Furniture> furnitureInRoom = physicsSimulator.getTransformedItems();

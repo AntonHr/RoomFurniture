@@ -81,7 +81,6 @@ public class PhysicsSimulatorEvaluator {
         Fixture fixture = body.createFixture(fixtureDef);
 
         // Shape is the only disposable of the lot, so get rid of it
-        shape.dispose();
         roomWalls.add(body);
     }
 
@@ -104,7 +103,6 @@ public class PhysicsSimulatorEvaluator {
         Fixture fixture = body.createFixture(fixtureDef);
 
         // Shape is the only disposable of the lot, so get rid of it
-        shape.dispose();
 
         body.setUserData(item);
         return body;
@@ -116,15 +114,32 @@ public class PhysicsSimulatorEvaluator {
 //
     public void update(float deltaTime) {
 
+
+        //apply forces
+        if (repelPoint != null)
+            for (Body body : bodies) {
+                Furniture correspondingItem = (Furniture) body.getUserData();
+
+                float magnitude = (float) (100 * ShapeCalculator.calculateAreaOf(correspondingItem.toShape()));
+                Vector2 direction = repelPoint.cpy().sub(getBodyCenterPosition(body)).nor();
+
+                if (direction.isZero())
+                    direction = Vector2.X.cpy().setToRandomDirection();
+
+                body.applyForceToCenter(direction.scl(-magnitude), true);
+            }
+
         if (spawning) {
             if (!itemsToSpawn.isEmpty() || nextBodyToSpawn != null) {
                 timeSinceLast += deltaTime;
 
                 Body b;
+                Furniture item;
                 if (nextBodyToSpawn != null) {
                     b = nextBodyToSpawn;
+                    item = (Furniture) b.getUserData();
                 } else {
-                    Furniture item = itemsToSpawn.poll();
+                    item = itemsToSpawn.poll();
                     Vertex spawnPoint = spawnPoints.poll();
 
                     b = createBody(item);
@@ -141,7 +156,13 @@ public class PhysicsSimulatorEvaluator {
                         b.setActive(true);
                         bodies.add(b);
                         nextBodyToSpawn = null;
-                        timeSinceLast=0;
+                        timeSinceLast = 0;
+
+
+                        //set random implulse
+                        float magnitude = (float) (10000 * ShapeCalculator.calculateAreaOf(item.toShape()));
+                        Vector2 direction = new Vector2().setToRandomDirection();
+                        b.applyLinearImpulse(direction.scl(-magnitude), getBodyCenterPosition(b), true);
                     } else {
                         if (timeSinceLast > TRIAL_TIME) {
                             timeSinceLast = timeSinceLast % TRIAL_TIME;
@@ -160,19 +181,6 @@ public class PhysicsSimulatorEvaluator {
                 repelPoint = null;
             }
         }
-
-        if (repelPoint != null)
-            for (Body body : bodies) {
-                Furniture correspondingItem = (Furniture) body.getUserData();
-
-                float magnitude = (float) (100 * ShapeCalculator.calculateAreaOf(correspondingItem.toShape()));
-                Vector2 direction = repelPoint.cpy().sub(getBodyCenterPosition(body)).nor();
-
-                if (direction.isZero())
-                    direction = Vector2.X.cpy().setToRandomDirection();
-
-                body.applyForceToCenter(direction.scl(-magnitude), true);
-            }
 
 
         world.step(deltaTime, 6, 2);
@@ -241,9 +249,8 @@ public class PhysicsSimulatorEvaluator {
 //        }
     }
 
-    public boolean isDone()
-    {
-        return nextBodyToSpawn==null && itemsToSpawn.isEmpty();
+    public boolean isDone() {
+        return nextBodyToSpawn == null && itemsToSpawn.isEmpty();
     }
 
     private void skipCurrentItem(Body b) {
