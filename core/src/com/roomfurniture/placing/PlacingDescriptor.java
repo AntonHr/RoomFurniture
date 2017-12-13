@@ -20,12 +20,15 @@ public class PlacingDescriptor {
         this.spawnPoint = spawnPoint;
     }
 
-
     public Vertex getVertex(PlacingProblem problem) {
         return problem.getSpawnPoints().get(spawnPoint);
     }
 
     public Furniture getFurniture(PlacingProblem problem) {
+        if(shapeNo >= problem.getFurnitures().size())
+        {
+            System.out.println("haha");
+        }
         return problem.getFurnitures().get(shapeNo);
     }
 }

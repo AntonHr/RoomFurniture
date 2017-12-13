@@ -108,8 +108,6 @@ public class PhysicsSimulator {
     }
 
 
-    int iter = 0;
-
     public void update(float deltaTime) {
 
 
