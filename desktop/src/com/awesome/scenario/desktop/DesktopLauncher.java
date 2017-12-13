@@ -1,10 +1,14 @@
 package com.awesome.scenario.desktop;
 
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.gui.EvaluatorPhysicsRenderer;
 import com.roomfurniture.InputParser;
+import com.roomfurniture.ga.algorithm.BasicGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.RouletteWheelSelectionStrategy;
+import com.roomfurniture.ga.algorithm.SimpleGeneticAlgorithmRunner;
 import com.roomfurniture.ga.algorithm.parallel.BasicParallelGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithmRunner;
-import com.roomfurniture.placing.PlacingDescriptor;
 import com.roomfurniture.placing.PlacingProblem;
 import com.roomfurniture.placing.PlacingSolution;
 import com.roomfurniture.placing.ga.PlacingSolutionCrossoverStrategyAdapter;
@@ -23,9 +27,14 @@ import com.roomfurniture.solution.optimizer.OptimizerProblemGeneratorStrategy;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 public class DesktopLauncher {
+
+    public static EvaluatorPhysicsRenderer renderer;
+    public static LwjglApplication application;
+
     public static void main(String[] arg) {
         InputParser inputParser = new InputParser();
         List<Problem> parse = null;
@@ -82,13 +91,58 @@ public class DesktopLauncher {
 
         PlacingProblem placingProblem = new PlacingProblem(parse.get(0),
                 Arrays.asList(
-                        new Vertex(-10, 10)
+                        new Vertex(-10, 10),
+                        new Vertex(-1000, 100),
+                        new Vertex(-100, 200)
                 ));
 
         PlacingSolution placingSolution = new PlacingSolutionGeneratorStrategy(placingProblem).generate();
 
 //    public BasicParallelGeneticAlgorithm(int populationSize, EvaluationStrategy<T> evaluationStrategy, CrossoverStrategy<T> crossoverStrategy, MutationStrategy<T> mutationStrategy, GeneratorStrategy<T> generatorStrategy, SelectionStrategy<T> selectionStrategy) {
-        BasicParallelGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(100,
+//        BasicParallelGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(10,
+//                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem),
+//                new PlacingSolutionCrossoverStrategyAdapter(),
+//                new PlacingSolutionMutationStrategyAdapter(0.5, 10),
+//                new PlacingSolutionGeneratorStrategy(placingProblem),
+//                new RouletteWheelSelectionStrategy<>()
+//        );
+
+//        ParallelGeneticAlgorithmRunner<PlacingSolution> placingSolutionParallelGeneticAlgorithmRunner = new ParallelGeneticAlgorithmRunner<>(1, placingSolutionBasicParallelGeneticAlgorithm);
+//        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(1);
+//        Optional<PlacingSolution> bestIndividual = placingSolutionParallelGeneticAlgorithmRunner.findBestIndividual();
+//        System.out.println(bestIndividual.get());
+//        System.out.println(bestIndividual.get().getCachedResults());
+//
+//
+//        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+//        config.width = 2000;
+//        config.height = 1000;
+//
+//        EvaluatorPhysicsRenderer renderer = new EvaluatorPhysicsRenderer();
+//        LwjglApplication lwjglApplication = new LwjglApplication(renderer, config);
+//
+//        PhysicsSimulatorEvaluator physicsSimulator = bestIndividual.get().getPhysicsSimulator();
+//        float dt = 0.0001f; //s
+////        float dt = 0.1f; //s
+//        int ITERATION_COUNT = 418788000;
+//        for (int i = 0; i < ITERATION_COUNT; i++) {
+////            System.out.println(i + "/" + ITERATION_COUNT);
+////            physicsSimulator.update(dt);
+//            if (i % 10 == 0)
+//            renderer.update(physicsSimulator);
+//        }
+////        Gdx.app.exit();
+//
+
+
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        renderer = new EvaluatorPhysicsRenderer();
+        config.width = 2000;
+        config.height = 1000;
+
+        application = new LwjglApplication(renderer, config);
+
+        BasicGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicGeneticAlgorithm<>(10,
                 new PhysicsPlacingSolutionEvaluationStrategy(placingProblem),
                 new PlacingSolutionCrossoverStrategyAdapter(),
                 new PlacingSolutionMutationStrategyAdapter(0.5, 10),
@@ -96,9 +150,31 @@ public class DesktopLauncher {
                 new RouletteWheelSelectionStrategy<>()
         );
 
-        ParallelGeneticAlgorithmRunner<PlacingSolution> placingSolutionParallelGeneticAlgorithmRunner = new ParallelGeneticAlgorithmRunner<>(10, placingSolutionBasicParallelGeneticAlgorithm);
-        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(10);
-        System.out.println(placingSolutionParallelGeneticAlgorithmRunner.findBestIndividual());
+
+        SimpleGeneticAlgorithmRunner placingSolutionParallelGeneticAlgorithmRunner = new SimpleGeneticAlgorithmRunner<PlacingSolution>( placingSolutionBasicParallelGeneticAlgorithm, (level, message) -> System.out.println(message));
+        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(1);
+        Optional<PlacingSolution> bestIndividual = placingSolutionParallelGeneticAlgorithmRunner.findBestIndividual();
+        System.out.println(bestIndividual.get());
+        System.out.println(bestIndividual.get().getCachedResults());
+
+
+
+
+        //PhysicsSimulatorEvaluator physicsSimulator = bestIndividual.get().getPhysicsSimulator();
+        float dt = 0.0001f; //s
+//        float dt = 0.1f; //s
+        int ITERATION_COUNT = 418788000;
+        for (int i = 0; i < ITERATION_COUNT; i++) {
+//            System.out.println(i + "/" + ITERATION_COUNT);
+//            physicsSimulator.update(dt);
+//            if (i % 10 == 0)
+ //           renderer.update(physicsSimulator);
+        }
+        //Gdx.app.exit();
+
+
+
+
 //
 //        PlacingSolution placingSolution = new PlacingSolution(
 //                Arrays.asList(

@@ -22,7 +22,7 @@ public class Furniture {
         shape = constructPath(vertices);
     }
 
-    private Path2D.Double constructPath(List<Vertex> vertices) {
+    private Shape constructPath(List<Vertex> vertices) {
         Path2D.Double path = new Path2D.Double();
         Vertex vertex = vertices.get(0);
         path.moveTo(vertex.x, vertex.y);

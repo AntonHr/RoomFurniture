@@ -16,18 +16,20 @@ import java.util.Queue;
 public class PhysicsSimulatorEvaluator {
 
     public final World world;
-    private final List<Body> bodies;
+    public final List<Body> bodies;
     private final List<Body> roomWalls;
     private final Room room;
     private boolean active = false;
     private boolean spawning = true;
     private Vector2 repelPoint;
+    private static float TRIAL_TIME = 0.01f; //s
+    private float timeSinceLast = 0.0f;
 
 
     private Body nextBodyToSpawn;
 
 
-    private Queue<Furniture> itemsToSpawn;
+    public Queue<Furniture> itemsToSpawn;
     private Queue<Vertex> spawnPoints;
 
 
@@ -113,8 +115,10 @@ public class PhysicsSimulatorEvaluator {
 //    int iter = 0;
 //
     public void update(float deltaTime) {
+
         if (spawning) {
             if (!itemsToSpawn.isEmpty() || nextBodyToSpawn != null) {
+                timeSinceLast += deltaTime;
 
                 Body b;
                 if (nextBodyToSpawn != null) {
@@ -137,13 +141,18 @@ public class PhysicsSimulatorEvaluator {
                         b.setActive(true);
                         bodies.add(b);
                         nextBodyToSpawn = null;
+                        timeSinceLast=0;
+                    } else {
+                        if (timeSinceLast > TRIAL_TIME) {
+                            timeSinceLast = timeSinceLast % TRIAL_TIME;
+                            skipCurrentItem(b);
+                        }
                     }
                 } else {
                     //skip this object
                     //cause it doesn't fit in the room at this position
 
-                    world.destroyBody(b);
-                    nextBodyToSpawn = null;
+                    skipCurrentItem(b);
                 }
 
 
@@ -230,6 +239,16 @@ public class PhysicsSimulatorEvaluator {
 //            bodies.forEach(this::updateItemInRenderer);
 //
 //        }
+    }
+
+    public boolean isDone()
+    {
+        return nextBodyToSpawn==null && itemsToSpawn.isEmpty();
+    }
+
+    private void skipCurrentItem(Body b) {
+        world.destroyBody(b);
+        nextBodyToSpawn = null;
     }
 
     //TODO: fix this in the other simulator

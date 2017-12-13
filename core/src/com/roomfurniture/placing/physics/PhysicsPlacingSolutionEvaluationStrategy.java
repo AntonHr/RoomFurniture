@@ -1,5 +1,6 @@
 package com.roomfurniture.placing.physics;
 
+import com.awesome.scenario.desktop.DesktopLauncher;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -61,23 +62,22 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         PhysicsSimulatorEvaluator physicsSimulator = new PhysicsSimulatorEvaluator(problem.getRoom(), itemsToSpawn, spawnPoints);
 
 
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 2000;
-        config.height = 1000;
-
-        //EvaluatorPhysicsRenderer renderer = new EvaluatorPhysicsRenderer();
-        //LwjglApplication lwjglApplication = new LwjglApplication(renderer, config);
-
         float dt = 0.0001f; //s
-        //float dt = 0.1f; //s
-        int ITERATION_COUNT = 4187;
-        for (int i = 0; i < ITERATION_COUNT; i++) {
+//        float dt = 0.1f; //s
+//        int ITERATION_COUNT = 4187;
+//        for (int i = 0; i < ITERATION_COUNT; i++) {
 //            System.out.println(i + "/" + ITERATION_COUNT);
+        int iterationCount = 0;
+        while(!physicsSimulator.isDone()) {
+            iterationCount++;
+            if(iterationCount % 100000 == 0) {
+                System.out.println("Iteration Count: " + iterationCount);
+                System.out.println("Items to spawn: " + physicsSimulator.itemsToSpawn.size() + "/ " + (physicsSimulator.bodies.size() - 1));
+            }
             physicsSimulator.update(dt);
-            //if (i % 10 == 0)
- //           renderer.update(physicsSimulator);
+            if (iterationCount % 10 == 0)
+            DesktopLauncher.renderer.update(physicsSimulator);
         }
-        //Gdx.app.exit();
 
         List<Furniture> furnitureInRoom = physicsSimulator.getTransformedItems();
 
@@ -118,6 +118,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
             put("coverage", finalAreaSum / roomArea);//0..1
             put("score", finalScore);
         }});
+        placingSolution.storePhysicsSimulator(physicsSimulator);
 
 
         // The optimizer often can make up for an initial lack of coverage, but not score
