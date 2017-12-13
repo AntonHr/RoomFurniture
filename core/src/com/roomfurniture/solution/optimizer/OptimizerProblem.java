@@ -115,9 +115,10 @@ public class OptimizerProblem {
 
 
         double roomArea = ShapeCalculator.calculateAreaOf(roomShape);
-        if (areaSum / roomArea <= 0.3)
+        if (areaSum / roomArea <= 0.3) {
             score *= 0.03;
-        score *= (1 + areaSum / roomArea);
+            score *= (1 + areaSum / roomArea);
+        }
 
         return Optional.of(score);
 
