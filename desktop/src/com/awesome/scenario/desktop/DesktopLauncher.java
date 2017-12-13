@@ -157,13 +157,11 @@ public class DesktopLauncher {
         );
 
 
-        SimpleGeneticAlgorithmRunner placingSolutionParallelGeneticAlgorithmRunner = new SimpleGeneticAlgorithmRunner<PlacingSolution>( placingSolutionBasicParallelGeneticAlgorithm, (level, message) -> System.out.println(message));
+        SimpleGeneticAlgorithmRunner placingSolutionParallelGeneticAlgorithmRunner = new SimpleGeneticAlgorithmRunner<PlacingSolution>(placingSolutionBasicParallelGeneticAlgorithm, (level, message) -> System.out.println(message));
         placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(1);
         Optional<PlacingSolution> bestIndividual = placingSolutionParallelGeneticAlgorithmRunner.findBestIndividual();
         System.out.println(bestIndividual.get());
         System.out.println(bestIndividual.get().getCachedResults());
-
-
 
 
         //PhysicsSimulatorEvaluator physicsSimulator = bestIndividual.get().getPhysicsSimulator();
@@ -174,13 +172,14 @@ public class DesktopLauncher {
 //            System.out.println(i + "/" + ITERATION_COUNT);
 //            physicsSimulator.update(dt);
 //            if (i % 10 == 0)
- //           renderer.update(physicsSimulator);
+            //           renderer.update(physicsSimulator);
         }
 //        Gdx.app.exit();
 
         HashMap<String, Object> cachedResults = bestIndividual.get().getCachedResults();
-        Solution Solution= (Solution) cachedResults.get("solution");
+        Solution solution = (Solution) cachedResults.get("solution");
 
+        renderer.renderSolution(placingProblem.problem, solution);
 //            RoomFurnitureRenderer roomFurnitureRenderer = new RoomFurnitureRenderer(problem, solution, physicsSimulator);
 //            physicsSimulator.setRenderer(roomFurnitureRenderer);
 //            LwjglApplication lwjglApplication = new LwjglApplication(roomFurnitureRenderer, config);
