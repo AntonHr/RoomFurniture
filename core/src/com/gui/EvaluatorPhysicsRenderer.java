@@ -12,12 +12,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.box2d.PhysicsSimulatorEvaluator;
+import com.roomfurniture.problem.Descriptor;
+import com.roomfurniture.problem.Furniture;
+import com.roomfurniture.problem.Problem;
+import com.roomfurniture.problem.Vertex;
+import com.roomfurniture.solution.Solution;
 
 import java.awt.*;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements InputProcessor {
@@ -39,7 +46,14 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
     private int renderType = 0;
 
     private Box2DDebugRenderer box2DDebugRenderer;
-    //private PhysicsSimulator physicsSimulator;
+
+    private List<Furniture> itemsInRoom;
+    private List<Furniture> notIncludedItems;
+
+    private Problem problem;
+    private Solution solution;
+
+    private boolean solutionIsBeingRendered = false;
 
 
     @Override
@@ -94,18 +108,75 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (solutionIsBeingRendered) {
+            physicsSimulator.update(Gdx.graphics.getDeltaTime());
 
-        handleInput();
-        cam.update();
-        shapeRenderer.setProjectionMatrix(cam.combined);
+            if (renderType != 3)
+                Gdx.gl.glClearColor(1, 1, 1, 1);
+            else
+                Gdx.gl.glClearColor(0, 0, 0, 1);
 
-        if (physicsSimulator != null) {
-            box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+            handleInput();
+            cam.update();
+
+            shapeRenderer.setProjectionMatrix(cam.combined);
+
+            //colours
+            double maxValue = 0;
+            for (Furniture item : problem.getFurnitures()) {
+                maxValue = Math.max(maxValue, item.getScorePerUnitArea());
+            }
+
+
+            switch (renderType) {
+                case 0:
+                    renderRoom();
+                    renderInItems(maxValue);
+                    renderOutItems(maxValue);
+                    break;
+                case 1:
+                    renderRoom();
+                    renderOutItems(maxValue);
+                    break;
+                case 2:
+                    renderRoom();
+                    renderInItems(maxValue);
+                    break;
+                case 3:
+                    box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
+                    break;
+            }
+
+            renderRepelPoint();
+
+
+            batch.begin();
+
+            int y = 50;
+            font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
+            font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
+
+            font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
+            font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 20);
+
+            batch.end();
+        } else {
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+            handleInput();
+            cam.update();
+            shapeRenderer.setProjectionMatrix(cam.combined);
+
+            if (physicsSimulator != null) {
+                box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
+            }
+
+            renderRepelPoint();
         }
 
-        renderRepelPoint();
 
         //
 //
@@ -163,6 +234,39 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
 //        font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 20);
 //
 //        batch.end();
+    }
+
+    private void renderOutItems(double maxValue) {
+        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
+        for (Furniture item : notIncludedItems) {
+            float[] points = getPoints(item.toShape());
+
+            shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
+            shapeRenderer.polygon(points);
+        }
+        shapeRenderer.end();
+    }
+
+
+    private void renderInItems(double maxValue) {
+        //solution
+        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
+        for (Furniture item : itemsInRoom) {
+            float[] points = getPoints(item.toShape());
+
+            shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
+            shapeRenderer.polygon(points);
+        }
+        shapeRenderer.end();
+    }
+
+    private void renderRoom() {
+        shapeRenderer.begin(MyShapeRenderer.ShapeType.Line);
+        float[] roomPoints = getPoints(problem.getRoom().toShape());
+
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.polygon(roomPoints);
+        shapeRenderer.end();
     }
 
     private void renderRepelPoint() {
@@ -398,5 +502,75 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
 
     public void update(PhysicsSimulatorEvaluator physicsSimulator) {
         this.physicsSimulator = physicsSimulator;
+    }
+
+    public void renderSolution(Problem problem, Solution solution) {
+        this.problem = problem;
+        this.solution = solution;
+        solutionIsBeingRendered = true;
+        constructObjects();
+    }
+
+    private void constructObjects() {
+        //solution
+
+        this.itemsInRoom = solution.getItemsInTheRoom(problem);
+
+
+        //spread
+        List<Furniture> notIncludedItems = new ArrayList<>();
+
+
+        Comparator<Furniture> comparator = Comparator.comparing(item -> item.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(item.toShape()));
+        notIncludedItems.sort(comparator);
+
+        notIncludedItems.addAll(problem.getFurnitures());
+
+
+        for (Furniture furniture : itemsInRoom) {
+            int ind = notIncludedItems.indexOf(furniture);
+            if (ind != -1)
+                notIncludedItems.remove(ind);
+        }
+
+        this.notIncludedItems = spread(notIncludedItems);
+    }
+
+    private List<Furniture> spread(List<Furniture> items) {
+        Vector2 dir = new Vector2(1, 0);
+        float step = 10;
+
+        List<Furniture> spreadItems = new ArrayList<>();
+
+        for (Furniture item : items) {
+
+            Furniture currentItem = item;
+
+            do {
+                currentItem = currentItem.transform(new Descriptor(new Vertex(dir.cpy().scl(step)), 0));
+            } while (intersectsAnything(currentItem, spreadItems));
+            spreadItems.add(currentItem);
+            dir.rotate(14);
+        }
+
+        return spreadItems;
+    }
+
+    private boolean intersectsAnything(Furniture item, List<Furniture> otherItems) {
+        for (Furniture otherItem : otherItems) {
+            if (!item.equals(otherItem)
+                    && (ShapeCalculator.intersect(item.toShape(), otherItem.toShape())
+                    || ShapeCalculator.contains(item.toShape(), otherItem.toShape())
+                    || ShapeCalculator.contains(otherItem.toShape(), item.toShape()))) {
+                return true;
+            }
+        }
+
+        if (ShapeCalculator.intersect(item.toShape(), problem.getRoom().toShape())
+                || ShapeCalculator.contains(item.toShape(), problem.getRoom().toShape())
+                || ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()))
+            return true;
+
+        return false;
     }
 }
