@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.gui.EvaluatorPhysicsRenderer;
+import com.gui.RoomFurnitureRenderer;
 import com.roomfurniture.InputParser;
 import com.roomfurniture.ga.algorithm.BasicGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.RouletteWheelSelectionStrategy;
@@ -94,7 +95,9 @@ public class DesktopLauncher {
 
         PlacingProblem placingProblem = new PlacingProblem(parse.get(0),
                 Arrays.asList(
-                        new Vertex(25,-30)
+                        new Vertex(25,-30),
+                        new Vertex(15,-15),
+                        new Vertex(0,-1)
 //                        new Vertex(-100, 10),
 //                        new Vertex(-100, 150)
                 ));
@@ -177,6 +180,10 @@ public class DesktopLauncher {
 
         HashMap<String, Object> cachedResults = bestIndividual.get().getCachedResults();
         Solution Solution= (Solution) cachedResults.get("solution");
+
+//            RoomFurnitureRenderer roomFurnitureRenderer = new RoomFurnitureRenderer(problem, solution, physicsSimulator);
+//            physicsSimulator.setRenderer(roomFurnitureRenderer);
+//            LwjglApplication lwjglApplication = new LwjglApplication(roomFurnitureRenderer, config);
 
 
 //
