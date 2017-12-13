@@ -1,7 +1,7 @@
 package com.roomfurniture.solution.storage;
 
 
-import com.roomfurniture.problem.Furniture;
+import com.roomfurniture.problem.Problem;
 import com.roomfurniture.solution.Solution;
 
 import java.util.ArrayList;
@@ -52,4 +52,19 @@ public class SolutionDatabase {
         checkProblemBounds(problem);
         return solutionLists.get(problem-1).getHighestScoringValidSolution();
     }
+
+
+    public String generateOverallSolutionReportFor(List<Problem> problems) {
+        StringBuilder sb = new StringBuilder();
+        for (Problem problem : problems) {
+            Optional<Solution> highestScoringValidSolutionForProblem = getHighestScoringValidSolutionFor(problem.getNumber());
+            if (highestScoringValidSolutionForProblem.isPresent()) {
+                sb.append(highestScoringValidSolutionForProblem.get().toOutputFormat(problem));
+                sb.append("\n");
+            }
+        }
+
+        return sb.toString();
+    }
+
 }

@@ -13,6 +13,7 @@ import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.*;
 import com.gui.SwingVisualizer;
+import com.roomfurniture.solution.storage.SolutionDatabase;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,26 +27,8 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         InputParser inputParser = new InputParser();
-        List<Problem> parse = inputParser.parse("customTest.txt");
-        Map<Problem, Solution> solutionMap = doStuff(parse);
-
-        for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
-            Solution value = entry.getValue();
-            Problem key = entry.getKey();
-            value.getDescriptors().set(0, new Descriptor(new Vertex(1,1),0));
-            System.out.println("Score is " + value.score(key));
-            JFrame bestFrame = SwingVisualizer.constructVisualizationFrame(key, value);
-            bestFrame.setTitle("Best solution");
-            EventQueue.invokeLater(() -> {
-                bestFrame.setVisible(true);
-            });
-            break;
-        }
-//
-        Furniture furniture = parse.get(0).getFurnitures().get(0);
-        double area = ShapeCalculator.calculateAreaOf(furniture.toShape());
-        System.out.println("Area : " + area);
-        System.out.println(furniture);
+        List<Problem> parse = inputParser.parse("problemsets.txt");
+        System.out.println(SolutionDatabase.createTeamSolutionDatabase().generateOverallSolutionReportFor(parse));
     }
 
 

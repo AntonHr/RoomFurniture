@@ -5,6 +5,7 @@ import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
+import com.roomfurniture.problem.Vertex;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -206,6 +207,33 @@ public class Solution {
             sb.append(d.toSerialized());
         }
         sb.append(";");
+        return sb.toString();
+    }
+
+    public String toOutputFormat(Problem problem) {
+        List<Furniture> itemsInTheRoom = getItemsInTheRoom(problem);
+        StringBuilder sb = new StringBuilder();
+        sb.append(problem.getNumber() + ": ");
+
+
+        for(int j = 0; j< itemsInTheRoom.size(); j++) {
+            Furniture furniture = itemsInTheRoom.get(j);
+            List<Vertex> vertices = furniture.getVertices();
+
+            for(int i = 0; i< vertices.size();i++) {
+                Vertex vertex = vertices.get(i);
+                sb.append("(" + vertex.x + ", " + vertex.y + ")");
+                if(i < vertices.size() -1) {
+                    sb.append(", ");
+                } else {
+                    sb.append(";");
+                }
+            }
+
+            if(j < itemsInTheRoom.size()-1) {
+                sb.append(" ");
+            }
+        }
         return sb.toString();
     }
 }
