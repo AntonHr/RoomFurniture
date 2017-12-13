@@ -93,7 +93,7 @@ public class DesktopLauncher {
     private static Solution optimizeSolution(Solution solution, Problem problem, ExecutorService service) {
         OptimizerProblem optimizerProblem = new OptimizerProblem(problem, solution);
 
-        BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(1000, new OptimizerProblemEvaluationStrategy(optimizerProblem),
+        BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(100, new OptimizerProblemEvaluationStrategy(optimizerProblem),
                 new SolutionCrossoverStrategy(), new SolutionMutationStrategy(problem), new OptimizerProblemGeneratorStrategy(optimizerProblem), new RouletteWheelSelectionStrategy<Solution>());
 
         ParallelGeneticAlgorithmRunner<Solution> runner = new ParallelGeneticAlgorithmRunner<Solution>(10, service, solutionBasicParallelGeneticAlgorithm);

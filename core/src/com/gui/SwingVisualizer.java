@@ -61,7 +61,7 @@ public class SwingVisualizer extends JPanel {
         g2.draw(roomShape);
 
 
-        Map<Boolean, List<Furniture>> result = Streams.zip(items.stream(), solution.getDescriptors().stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
+        Map<Boolean, List<Furniture>> result = items.stream().collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
 
         List<Furniture> furnitureInRoom = result.get(true);
 

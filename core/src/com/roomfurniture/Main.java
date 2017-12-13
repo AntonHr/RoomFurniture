@@ -54,14 +54,14 @@ public class Main {
             MutationStrategy<Solution> solutionMutationStrategy = new SolutionMutationStrategy(problem);
             GeneratorStrategy<Solution> solutionGeneratorStrategy = new SolutionGeneratorStrategy(problem);
             BasicParallelGeneticAlgorithm<Solution> parallelAlgorithm = new BasicParallelGeneticAlgorithm<>(
-                    5000,
+                    1000,
                     solutionEvaluationStrategy,
                     solutionCrossoverStrategy,
                     solutionMutationStrategy,
                     solutionGeneratorStrategy,
                     new RouletteWheelSelectionStrategy<>());
             ParallelGeneticAlgorithmRunner<Solution> parallelRunner = new ParallelGeneticAlgorithmRunner<>(10, parallelAlgorithm, (level, message) -> System.out.println(message));
-            parallelRunner.runTestIteration(2000);
+            parallelRunner.runTestIteration(1000);
             Solution solution = parallelRunner.findBestIndividual().get();
             System.out.println(solution);
 
