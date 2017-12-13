@@ -22,7 +22,7 @@ public class PhysicsSimulatorEvaluator {
     private boolean active = false;
     private boolean spawning = true;
     private Vector2 repelPoint;
-    private static float TRIAL_TIME = 0.1f; //s
+    private static float TRIAL_TIME = 0.05f; //s
     private float timeSinceLast = 0.0f;
 
 
@@ -151,8 +151,11 @@ public class PhysicsSimulatorEvaluator {
 
                 b.setActive(false);
 
-                if (fitsIntoTheRoom(b)) {
-                    if (!intersectsAnything(b)) {
+
+                for (int i = 0; i < 10; i++) {
+
+
+                    if (!intersectsAnything(b) && fitsIntoTheRoom(b)) {
                         b.setActive(true);
                         bodies.add(b);
                         nextBodyToSpawn = null;
@@ -163,17 +166,17 @@ public class PhysicsSimulatorEvaluator {
                         float magnitude = (float) (10000 * ShapeCalculator.calculateAreaOf(item.toShape()));
                         Vector2 direction = new Vector2().setToRandomDirection();
                         b.applyLinearImpulse(direction.scl(-magnitude), getBodyCenterPosition(b), true);
+
+                        break;
                     } else {
+                        b.setTransform(b.getPosition(), (float) (Math.random() * Math.PI * 2));
+
                         if (timeSinceLast > TRIAL_TIME) {
                             timeSinceLast = timeSinceLast % TRIAL_TIME;
                             skipCurrentItem(b);
+                            break;
                         }
                     }
-                } else {
-                    //skip this object
-                    //cause it doesn't fit in the room at this position
-
-                    skipCurrentItem(b);
                 }
 
 
