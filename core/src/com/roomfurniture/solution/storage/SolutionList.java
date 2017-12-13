@@ -5,6 +5,9 @@ import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.roomfurniture.solution.Solution;
 
@@ -144,12 +147,28 @@ public class SolutionList {
         AmazonS3 build = AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_2).build();
 
         try {
-            build.putObject(SCENARIOWEEK_2_SOLUTIONS, "solution_" + problemNo, new File("./solutions/solution_" + problemNo + ".txt"));
+            String key = "solution_" + problemNo;
+            PutObjectResult putObjectResult = build.putObject(SCENARIOWEEK_2_SOLUTIONS, key, new File("./solutions/solution_" + problemNo + ".txt"));
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
+    public static void updatePermissions() {
+        AWSCredentials anonymousAWSCredentials = new AnonymousAWSCredentials();
+
+        AmazonS3 build = AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_2).build();
+
+        for(int problemNo = 1; problemNo <= 30; problemNo++) {
+            try {
+                String key = "solution_" + problemNo;
+                build.setObjectAcl(SCENARIOWEEK_2_SOLUTIONS, key, CannedAccessControlList.PublicReadWrite);
+                System.out.println("Updated permissions of Solution " + problemNo);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
 
     @Override
     public String toString() {

@@ -14,6 +14,7 @@ import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.*;
 import com.gui.SwingVisualizer;
 import com.roomfurniture.solution.storage.SolutionDatabase;
+import com.roomfurniture.solution.storage.SolutionList;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,6 +29,7 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
+        SolutionList.updatePermissions();
         InputParser inputParser = new InputParser();
         List<Problem> parse = inputParser.parse("problemsets.txt");
         try {
