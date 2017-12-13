@@ -156,12 +156,10 @@ public class PhysicsSimulatorEvaluator {
                 Furniture correspondingItem = (Furniture) body.getUserData();
 
                 float magnitude = (float) (100 * ShapeCalculator.calculateAreaOf(correspondingItem.toShape()));
-                Vector2 direction = repelPoint.cpy().sub(body.getLocalCenter()).nor();
+                Vector2 direction = repelPoint.cpy().sub(getBodyCenterPosition(body)).nor();
 
                 if (direction.isZero())
                     direction = Vector2.X.cpy().setToRandomDirection();
-
-                System.out.println(direction.cpy().scl(-magnitude));
 
                 body.applyForceToCenter(direction.scl(-magnitude), true);
             }
@@ -238,9 +236,13 @@ public class PhysicsSimulatorEvaluator {
         this.spawnPoints = spawnPoints;
     }
 
-    private void moveToRepelPoint(Body b, Vector2 point) {
-        Vector2 bodyCenter = b.getLocalCenter().cpy().add(b.getPosition());
-        b.setTransform(point.cpy().sub(bodyCenter.cpy().sub(b.getPosition())), b.getAngle());
+    private Vector2 getBodyCenterPosition(Body body) {
+        return body.getLocalCenter().cpy().add(body.getPosition());
+    }
+
+    private void moveToRepelPoint(Body body, Vector2 point) {
+        Vector2 bodyCenter = getBodyCenterPosition(body);
+        body.setTransform(point.cpy().sub(bodyCenter.cpy().sub(body.getPosition())), body.getAngle());
     }
 
     public Vector2 getRepelPoint() {

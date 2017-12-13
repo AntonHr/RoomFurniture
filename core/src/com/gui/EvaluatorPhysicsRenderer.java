@@ -154,7 +154,8 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
 //
 //        batch.begin();
 //
-//        int y = 50;
+//        int y = 50;<<<<<<< HEAD
+
 //        font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
 //        font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
 //
