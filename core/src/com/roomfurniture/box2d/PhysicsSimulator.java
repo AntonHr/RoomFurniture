@@ -18,6 +18,9 @@ public class PhysicsSimulator {
     private final List<Body> bodies;
     private final List<Body> room;
     private boolean active = false;
+    private Vector2 repelPoint;
+
+    private List<Furniture> unusedItems;
 
     public PhysicsSimulator(Problem problem, Solution solution) {
         //world
@@ -86,10 +89,16 @@ public class PhysicsSimulator {
 
     public void update(float deltaTime) {
         if (active) {
-
             for (Body body : bodies) {
                 Furniture correspondingItem = (Furniture) body.getUserData();
-                body.applyForceToCenter(0, (float) (100 * ShapeCalculator.calculateAreaOf(correspondingItem.toShape())), true);
+
+                float magnitude = (float) (100 * ShapeCalculator.calculateAreaOf(correspondingItem.toShape()));
+                Vector2 direction = repelPoint.cpy().sub(body.getLocalCenter()).nor();
+
+                if (direction.isZero())
+                    direction = Vector2.X.setToRandomDirection();
+
+                body.applyForceToCenter(direction.scl(-magnitude), true);
             }
             world.step(deltaTime, 6, 2);
         }
@@ -97,5 +106,17 @@ public class PhysicsSimulator {
 
     public void letTheFunBegin() {
         active = true;
+    }
+
+    public void startSpawning(List<Furniture> unusedItems) {
+
+    }
+
+    public void setRepelPoint(Vector2 repelPoint) {
+        this.repelPoint = repelPoint;
+    }
+
+    public Vector2 getRepelPoint() {
+        return repelPoint;
     }
 }

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.box2d.PhysicsSimulator;
@@ -186,6 +187,8 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
                 break;
         }
 
+        renderRepelPoint();
+
 
         batch.begin();
 
@@ -197,6 +200,24 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 20);
 
         batch.end();
+    }
+
+    private void renderRepelPoint() {
+        if (physicsSimulator.getRepelPoint() == null)
+            return;
+
+        Vector2 repelPoint = physicsSimulator.getRepelPoint();
+        shapeRenderer.begin(MyShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.BLUE);
+
+        shapeRenderer.line(repelPoint.x - cam.viewportWidth * cam.zoom, repelPoint.y,
+                repelPoint.x + cam.viewportWidth * cam.zoom, repelPoint.y);
+
+        shapeRenderer.line(repelPoint.x, repelPoint.y - cam.viewportHeight * cam.zoom,
+                repelPoint.x, repelPoint.y + cam.viewportHeight * cam.zoom);
+
+
+        shapeRenderer.end();
     }
 
     private List<Furniture> spread(List<Furniture> items) {
@@ -412,6 +433,15 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
         return true;
     }
 
+    private void updateRepelPoint(Vector2 mousePosInWorld) {
+        physicsSimulator.setRepelPoint(mousePosInWorld);
+    }
+
+    Vector2 getMousePosInWorld() {
+        Vector3 unprojected = cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        return new Vector2(unprojected.x, unprojected.y);
+    }
+
     @Override
     public boolean keyUp(int keycode) {
         return false;
@@ -424,7 +454,8 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+        updateRepelPoint(getMousePosInWorld());
+        return true;
     }
 
     @Override
@@ -434,8 +465,10 @@ public class RoomFurnitureRenderer extends ApplicationAdapter implements InputPr
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+        updateRepelPoint(getMousePosInWorld());
+        return true;
     }
+
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
