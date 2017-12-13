@@ -29,11 +29,11 @@ public class ShapeCalculator {
     }
 
     public static boolean contains(Shape shapeA, Shape shapeB) {
-//        Area polygonA = new Area(shapeA);
-//        Area polygonB = new Area(shapeB);
-//        polygonB.subtract(polygonA);
-//        return polygonB.isEmpty();
-        return contains(getVertices(shapeA), getVertices(shapeB));
+        Area polygonA = new Area(shapeA);
+        Area polygonB = new Area(shapeB);
+        polygonB.subtract(polygonA);
+        return polygonB.isEmpty();
+//        return contains(getVertices(shapeA), getVertices(shapeB));
     }
 
     public static boolean containsPoint(List<Vertex> polygon, Vertex point) {
