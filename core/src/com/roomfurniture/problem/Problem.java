@@ -5,10 +5,12 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 
 public class Problem {
+    private int number = 0;
    public final Room room;
     private final List<Furniture> furnitures;
 
-    public Problem(Room room, List<Furniture> furnitures) {
+    public Problem(int number, Room room, List<Furniture> furnitures) {
+        this.number = number;
         this.room = room;
         this.furnitures = ImmutableList.copyOf(furnitures);
     }
@@ -27,5 +29,9 @@ public class Problem {
 
     public List<Furniture> getFurnitures() {
         return furnitures;
+    }
+
+    public int getNumber() {
+        return number;
     }
 }

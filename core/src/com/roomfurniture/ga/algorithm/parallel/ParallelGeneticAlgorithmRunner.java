@@ -15,6 +15,13 @@ public class ParallelGeneticAlgorithmRunner<T> implements GeneticAlgorithmRunner
     private final LoggingStrategy loggingStrategy;
     private final ExecutorService threadPoolExecutor;
 
+    public ParallelGeneticAlgorithmRunner(int threadPoolSize, ParallelGeneticAlgorithm<T> algorithm) {
+        this(threadPoolSize, algorithm,  (level, message) -> System.out.println(message));
+   }
+   public ParallelGeneticAlgorithmRunner(int threadPoolSize, ExecutorService service, ParallelGeneticAlgorithm<T> algorithm) {
+        this(threadPoolSize, algorithm,  (level, message) -> System.out.println(message));
+   }
+
     public ParallelGeneticAlgorithmRunner(int threadPoolSize, ParallelGeneticAlgorithm<T> algorithm, LoggingStrategy loggingStrategy) {
         this.threadPoolSize = threadPoolSize;
         this.algorithm = algorithm;

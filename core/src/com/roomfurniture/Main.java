@@ -13,38 +13,31 @@ import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.*;
 import com.gui.SwingVisualizer;
+import com.roomfurniture.solution.storage.SolutionDatabase;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         InputParser inputParser = new InputParser();
-        List<Problem> parse = inputParser.parse("customTest.txt");
-        Map<Problem, Solution> solutionMap = doStuff(parse);
-
-        for (Map.Entry<Problem, Solution> entry : solutionMap.entrySet()) {
-            Solution value = entry.getValue();
-            Problem key = entry.getKey();
-            value.getDescriptors().set(0, new Descriptor(new Vertex(1,1),0));
-            System.out.println("Score is " + value.score(key));
-            JFrame bestFrame = SwingVisualizer.constructVisualizationFrame(key, value);
-            bestFrame.setTitle("Best solution");
-            EventQueue.invokeLater(() -> {
-                bestFrame.setVisible(true);
-            });
-            break;
+        List<Problem> parse = inputParser.parse("problemsets.txt");
+        try {
+            FileWriter fileWriter = new FileWriter("./output.txt", false);
+            fileWriter.write(SolutionDatabase.createTeamSolutionDatabase().generateOverallSolutionReportFor(parse));
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-//
-        Furniture furniture = parse.get(0).getFurnitures().get(0);
-        double area = ShapeCalculator.calculateAreaOf(furniture.toShape());
-        System.out.println("Area : " + area);
-        System.out.println(furniture);
     }
 
 
@@ -61,7 +54,7 @@ public class Main {
             MutationStrategy<Solution> solutionMutationStrategy = new SolutionMutationStrategy(problem);
             GeneratorStrategy<Solution> solutionGeneratorStrategy = new SolutionGeneratorStrategy(problem);
             BasicParallelGeneticAlgorithm<Solution> parallelAlgorithm = new BasicParallelGeneticAlgorithm<>(
-                    1000,
+                    5000,
                     solutionEvaluationStrategy,
                     solutionCrossoverStrategy,
                     solutionMutationStrategy,

@@ -67,7 +67,7 @@ public class InputParser {
 //        System.out.println(problemNumber + ": " + roomShape);
 //        System.out.println(furnitures);
 
-        return Optional.of(new Problem(new Room(roomShape), furnitures));
+        return Optional.of(new Problem(problemNumber, new Room(roomShape), furnitures));
     }
 
     private List<Vertex> parseVertices(Scanner scanner, String pattern) {

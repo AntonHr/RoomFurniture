@@ -5,6 +5,7 @@ import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
+import com.roomfurniture.problem.Vertex;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -66,12 +67,55 @@ public class Solution {
 
 
         double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
-        if (areaSum / roomArea <= 0.3)
-            score *= 0.03;
-        score *= (1 + areaSum / roomArea);
+        // The optimizer often can make up for an initial lack of coverage, but not score
+//        if (areaSum / roomArea <= 0.3)
+//            score *= 0.03;
+//        score *= (1 + areaSum / roomArea);
 
         return Optional.of(score);
 
+    }
+
+
+    public List<Integer> findPlacedPositions(Problem problem) {
+        List<Furniture> furnitures = problem.getFurnitures();
+        Shape roomShape = problem.getRoom().toShape();
+        List<Integer> placedPositions = new ArrayList<>();
+        List<Furniture> furnitureInRoom = new ArrayList<>();
+
+        for(int i = 0; i < furnitures.size(); i++) {
+            Furniture transform = furnitures.get(i).transform(descriptors.get(i));
+            if(ShapeCalculator.contains(roomShape, transform.toShape())) {
+                furnitureInRoom.add(transform);
+                // collect indexes of valid positions
+                placedPositions.add(i);
+            }
+        }
+
+        Map<Boolean, List<Furniture>> result = Streams.zip(furnitures.stream(), descriptors.stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
+
+
+        Iterator<Furniture> iterator = furnitureInRoom.iterator();
+        Iterator<Integer> positioniterator = placedPositions.iterator();
+
+        while (iterator.hasNext()) {
+            Furniture furniture = iterator.next();
+            positioniterator.next();
+            for (Furniture otherFurniture : furnitureInRoom) {
+                if (otherFurniture != furniture)
+                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+                        // Keep furniture with highest score
+                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
+                            iterator.remove();
+                            positioniterator.remove();
+                            break;
+                        }
+                    }
+            }
+        }
+
+
+        return placedPositions;
     }
 
     public double findCoverage(Problem problem) {
@@ -138,5 +182,58 @@ public class Solution {
         }
 
         return itemsInRoom;
+    }
+
+    public static Optional<Solution> fromSerialized(Scanner scanner) {
+        List<Descriptor> result = new ArrayList<>();
+        Optional<Descriptor> descriptor = Descriptor.fromSerialized(scanner);
+        while(descriptor.isPresent()) {
+            result.add(descriptor.get());
+            descriptor = Descriptor.fromSerialized(scanner);
+            try {
+                scanner.skip(";");
+                break;
+            } catch (NoSuchElementException ignored) {}
+        }
+        if(result.size() != 0)
+            return Optional.of(new Solution(result));
+        else
+            return Optional.empty();
+    }
+
+    public String toSerialized() {
+        StringBuilder sb = new StringBuilder();
+        for(Descriptor d : descriptors) {
+            sb.append(d.toSerialized());
+        }
+        sb.append(";");
+        return sb.toString();
+    }
+
+    public String toOutputFormat(Problem problem) {
+        List<Furniture> itemsInTheRoom = getItemsInTheRoom(problem);
+        StringBuilder sb = new StringBuilder();
+        sb.append(problem.getNumber() + ": ");
+
+
+        for(int j = 0; j< itemsInTheRoom.size(); j++) {
+            Furniture furniture = itemsInTheRoom.get(j);
+            List<Vertex> vertices = furniture.getVertices();
+
+            for(int i = 0; i< vertices.size();i++) {
+                Vertex vertex = vertices.get(i);
+                sb.append("(" + vertex.x + ", " + vertex.y + ")");
+                if(i < vertices.size() -1) {
+                    sb.append(", ");
+                } else if(j<itemsInTheRoom.size() - 1) {
+                    sb.append(";");
+                }
+            }
+
+            if(j < itemsInTheRoom.size()-1) {
+                sb.append(" ");
+            }
+        }
+        return sb.toString();
     }
 }

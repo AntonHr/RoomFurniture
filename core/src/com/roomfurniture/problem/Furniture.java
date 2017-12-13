@@ -1,10 +1,10 @@
 package com.roomfurniture.problem;
 
+import com.roomfurniture.ShapeCalculator;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-import java.awt.geom.PathIterator;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Furniture {
@@ -61,18 +61,7 @@ public class Furniture {
 
 
     public List<Vertex> getVertices() {
-        PathIterator pathIterator = shape.getPathIterator(null);
-        List<Vertex> vertices = new ArrayList<>();
-
-        while (!pathIterator.isDone()) {
-            double[] kilme = new double[2];
-            pathIterator.currentSegment(kilme);
-            pathIterator.next();
-            vertices.add(new Vertex(kilme[0], kilme[1]));
-        }
-
-        vertices.remove(vertices.size() - 1);
-        return vertices;
+        return ShapeCalculator.getVertices(shape);
     }
 
     @Override

@@ -48,12 +48,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
         compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
-        compile group: 'org.apache.hadoop', name: 'hadoop-common', version: '2.9.0'
-        compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-core', version: '2.9.0'
-        //provided group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-jobclient', version: '2.9.0'
-        compile group: 'org.apache.hadoop', name: 'hadoop-annotations', version: '2.9.0'
-        compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce', version: '2.9.0', ext: 'pom'
-        compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-app', version: '2.9.0'
+
     }
 }
 
@@ -69,6 +64,15 @@ project(":core") {
         compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.4"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.4"
         compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
+        compile group: 'commons-logging', name: 'commons-logging', version: '1.1.1'
+        compile 'com.amazonaws:aws-java-sdk:1.11.248'
+
+        compile group: 'org.apache.hadoop', name: 'hadoop-common', version: '2.9.0'
+        compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-core', version: '2.9.0'
+        //provided group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-jobclient', version: '2.9.0'
+        compile group: 'org.apache.hadoop', name: 'hadoop-annotations', version: '2.9.0'
+        compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce', version: '2.9.0', ext: 'pom'
+        compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-app', version: '2.9.0'
 
     }
 }
