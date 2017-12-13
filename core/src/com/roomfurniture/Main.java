@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -61,14 +62,14 @@ public class Main {
             MutationStrategy<Solution> solutionMutationStrategy = new SolutionMutationStrategy(problem);
             GeneratorStrategy<Solution> solutionGeneratorStrategy = new SolutionGeneratorStrategy(problem);
             BasicParallelGeneticAlgorithm<Solution> parallelAlgorithm = new BasicParallelGeneticAlgorithm<>(
-                    1000,
+                    5000,
                     solutionEvaluationStrategy,
                     solutionCrossoverStrategy,
                     solutionMutationStrategy,
                     solutionGeneratorStrategy,
                     new RouletteWheelSelectionStrategy<>());
             ParallelGeneticAlgorithmRunner<Solution> parallelRunner = new ParallelGeneticAlgorithmRunner<>(10, parallelAlgorithm, (level, message) -> System.out.println(message));
-            parallelRunner.runTestIteration(10);
+            parallelRunner.runTestIteration(2000);
             Solution solution = parallelRunner.findBestIndividual().get();
             System.out.println(solution);
 

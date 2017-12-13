@@ -66,13 +66,15 @@ public class Solution {
 
 
         double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
-        if (areaSum / roomArea <= 0.3)
-            score *= 0.03;
-        score *= (1 + areaSum / roomArea);
+        // The optimizer often can make up for an initial lack of coverage, but not score
+//        if (areaSum / roomArea <= 0.3)
+//            score *= 0.03;
+//        score *= (1 + areaSum / roomArea);
 
         return Optional.of(score);
 
     }
+
 
     public List<Integer> findPlacedPositions(Problem problem) {
         List<Furniture> furnitures = problem.getFurnitures();
@@ -179,5 +181,31 @@ public class Solution {
         }
 
         return itemsInRoom;
+    }
+
+    public static Optional<Solution> fromSerialized(Scanner scanner) {
+        List<Descriptor> result = new ArrayList<>();
+        Optional<Descriptor> descriptor = Descriptor.fromSerialized(scanner);
+        while(descriptor.isPresent()) {
+            result.add(descriptor.get());
+            descriptor = Descriptor.fromSerialized(scanner);
+            try {
+                scanner.skip(";");
+                break;
+            } catch (NoSuchElementException ignored) {}
+        }
+        if(result.size() != 0)
+            return Optional.of(new Solution(result));
+        else
+            return Optional.empty();
+    }
+
+    public String toSerialized() {
+        StringBuilder sb = new StringBuilder();
+        for(Descriptor d : descriptors) {
+            sb.append(d.toSerialized());
+        }
+        sb.append(";");
+        return sb.toString();
     }
 }
