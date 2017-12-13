@@ -25,10 +25,6 @@ public class PlacingDescriptor {
     }
 
     public Furniture getFurniture(PlacingProblem problem) {
-        if(shapeNo >= problem.getFurnitures().size())
-        {
-            System.out.println("haha");
-        }
         return problem.getFurnitures().get(shapeNo);
     }
 }

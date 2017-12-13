@@ -51,8 +51,14 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
 //
 //        List<Furniture> furnitureInRoom = result.get(true);
 
-
-        PhysicsSimulatorEvaluator physicsSimulator = new PhysicsSimulatorEvaluator(problem.getRoom());
+        //getting items and points to spawn
+        Queue<Furniture> itemsToSpawn = new LinkedList<>();
+        Queue<Vertex> spawnPoints = new LinkedList<>();
+        for (PlacingDescriptor descriptor : placingSolution.getDescriptors()) {
+            itemsToSpawn.add(descriptor.getFurniture(problem));
+            spawnPoints.add(descriptor.getVertex(problem));
+        }
+        PhysicsSimulatorEvaluator physicsSimulator = new PhysicsSimulatorEvaluator(problem.getRoom(), itemsToSpawn, spawnPoints);
 
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
@@ -62,54 +68,46 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         EvaluatorPhysicsRenderer renderer = new EvaluatorPhysicsRenderer();
         LwjglApplication lwjglApplication = new LwjglApplication(renderer, config);
 
-
-        //getting items and points to spawn
-        Queue<Furniture> itemsToSpawn = new LinkedList<>();
-        Queue<Vertex> spawnPoints = new LinkedList<>();
-        for (PlacingDescriptor descriptor : placingSolution.getDescriptors()) {
-            itemsToSpawn.add(descriptor.getFurniture(problem));
-            spawnPoints.add(descriptor.getVertex(problem));
-        }
-
-        physicsSimulator.setUp(itemsToSpawn, spawnPoints);
-
-        float dt = 0.00001f; //s
+        float dt = 0.0001f; //s
         //float dt = 0.1f; //s
-        int ITERATION_COUNT = 1000000000;
+        int ITERATION_COUNT = 418778;
         for (int i = 0; i < ITERATION_COUNT; i++) {
             System.out.println(i + "/" + ITERATION_COUNT);
             physicsSimulator.update(dt);
+            //if (i % 10 == 0)
             renderer.update(physicsSimulator);
         }
-
         Gdx.app.exit();
 
-//        Iterator<Furniture> iterator = furnitureInRoom.iterator();
-//
-//
-//        //remove intersecting in the room
-//        while (iterator.hasNext()) {
-//            Furniture furniture = iterator.next();
-//            for (Furniture otherFurniture : furnitureInRoom) {
-//                if (otherFurniture != furniture)
-//                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
-//                        // Keep furniture with highest score
-//                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
-//                            iterator.remove();
-//                            break;
-//                        }
-//                    }
-//            }
-//        }
-//
-        double score = 0;
-//        double areaSum = 0.0;
-//
-//        for (Furniture furniture : furnitureInRoom) {
-//            areaSum += ShapeCalculator.calculateAreaOf(furniture.toShape());
-//            score += furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape());
-//        }
+        List<Furniture> furnitureInRoom = physicsSimulator.getTransformedItems();
 
+        Iterator<Furniture> iterator = furnitureInRoom.iterator();
+
+
+        //remove intersecting in the room
+        while (iterator.hasNext()) {
+            Furniture furniture = iterator.next();
+            for (Furniture otherFurniture : furnitureInRoom) {
+                if (otherFurniture != furniture)
+                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+                        // Keep furniture with highest score
+                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
+                            iterator.remove();
+                            break;
+                        }
+                    }
+            }
+        }
+        double score = 0;
+        double areaSum = 0.0;
+
+        for (Furniture furniture : furnitureInRoom) {
+            areaSum += ShapeCalculator.calculateAreaOf(furniture.toShape());
+            score += furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape());
+        }
+
+
+        System.out.println("Score after evaluation: " + score);
 
 //        double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
         // The optimizer often can make up for an initial lack of coverage, but not score

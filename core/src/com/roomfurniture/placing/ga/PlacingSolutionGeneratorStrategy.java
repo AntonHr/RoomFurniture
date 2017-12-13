@@ -1,8 +1,5 @@
 package com.roomfurniture.placing.ga;
 
-import com.google.common.collect.ContiguousSet;
-import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.Range;
 import com.google.common.collect.Streams;
 import com.roomfurniture.ga.algorithm.interfaces.GeneratorStrategy;
 import com.roomfurniture.placing.PlacingDescriptor;
@@ -16,14 +13,14 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PlacingSolutionGeneratorStrategy implements GeneratorStrategy<PlacingSolution>{
+public class PlacingSolutionGeneratorStrategy implements GeneratorStrategy<PlacingSolution> {
     private final int vertexCount;
     private List<Integer> furnitures;
 
     public PlacingSolutionGeneratorStrategy(PlacingProblem problem) {
 
         furnitures = new ArrayList<>();
-        for(int i = 0; i < problem.getFurnitures().size(); i++) {
+        for (int i = 0; i < problem.getFurnitures().size(); i++) {
             furnitures.add(i);
         }
 //        furnitures = ContiguousSet.create(Range.closed(0, problem.getFurnitures().size()), DiscreteDomain.integers());
@@ -33,7 +30,7 @@ public class PlacingSolutionGeneratorStrategy implements GeneratorStrategy<Placi
     @Override
     public PlacingSolution generate() {
 
-        List<Integer> furniturePermutation  = new ArrayList<>(furnitures);
+        List<Integer> furniturePermutation = new ArrayList<>(furnitures);
         Stream<Integer> vertexStream = new ArrayList<>(furnitures).stream().map(integer -> ThreadLocalRandom.current().nextInt(0, vertexCount));
 
         Collections.shuffle(furniturePermutation);

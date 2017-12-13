@@ -80,8 +80,7 @@ public class DesktopLauncher {
 
         PlacingProblem placingProblem = new PlacingProblem(parse.get(0),
                 Arrays.asList(
-                        new Vertex(2, 2),
-                        new Vertex(5, 5)
+                        new Vertex(-10, 10)
                 ));
 
         PlacingSolution placingSolution = new PlacingSolutionGeneratorStrategy(placingProblem).generate();

@@ -31,7 +31,11 @@ public class PhysicsSimulatorEvaluator {
     private Queue<Vertex> spawnPoints;
 
 
-    public PhysicsSimulatorEvaluator(Room room) {
+    public PhysicsSimulatorEvaluator(Room room, Queue<Furniture> itemsToSpawn, Queue<Vertex> spawnPoints) {
+
+        this.itemsToSpawn = itemsToSpawn;
+        this.spawnPoints = spawnPoints;
+
         //world
         world = new World(new Vector2(0, 0), true);
         bodies = new ArrayList<>();
@@ -79,9 +83,6 @@ public class PhysicsSimulatorEvaluator {
         roomWalls.add(body);
     }
 
-    private void render(RoomFurnitureRenderer renderer) {
-
-    }
 
     private Body createBody(Furniture item) {
         //body def
@@ -231,11 +232,7 @@ public class PhysicsSimulatorEvaluator {
 //        }
     }
 
-    public void setUp(Queue<Furniture> itemsToSpawn, Queue<Vertex> spawnPoints) {
-        this.itemsToSpawn = itemsToSpawn;
-        this.spawnPoints = spawnPoints;
-    }
-
+    //TODO: fix this in the other simulator
     private Vector2 getBodyCenterPosition(Body body) {
         return body.getLocalCenter().cpy().add(body.getPosition());
     }
@@ -296,6 +293,23 @@ public class PhysicsSimulatorEvaluator {
 
 
         return false;
+    }
+
+    public List<Furniture> getTransformedItems() {
+        List<Furniture> transformedItems = new ArrayList<>();
+
+        if (bodies.stream().filter(body -> !body.isActive()).count() > 1) {
+            throw new RuntimeException("more than 1 inactive item, something is wrong");
+        }
+
+        bodies.stream()
+                .filter(Body::isActive)
+                .forEach(body -> {
+                    Furniture item = (Furniture) body.getUserData();
+                    transformedItems.add(item.transform(new Descriptor(new Vertex(body.getPosition()), body.getAngle())));
+                });
+
+        return transformedItems;
     }
 //
 //    public void letTheFunBegin() {
