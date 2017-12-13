@@ -18,6 +18,8 @@ import com.roomfurniture.solution.storage.SolutionDatabase;
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +30,14 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         InputParser inputParser = new InputParser();
         List<Problem> parse = inputParser.parse("problemsets.txt");
-        System.out.println(SolutionDatabase.createTeamSolutionDatabase().generateOverallSolutionReportFor(parse));
+        try {
+            FileWriter fileWriter = new FileWriter("./output.txt", false);
+            fileWriter.write(SolutionDatabase.createTeamSolutionDatabase().generateOverallSolutionReportFor(parse));
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
