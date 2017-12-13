@@ -56,6 +56,8 @@ public class SolutionDatabase {
 
     public String generateOverallSolutionReportFor(List<Problem> problems) {
         StringBuilder sb = new StringBuilder();
+        sb.append("alicante\n");
+        sb.append("dif9dbq6g3frhgd0eorq7hn2uj\n");
         for (Problem problem : problems) {
             Optional<Solution> highestScoringValidSolutionForProblem = getHighestScoringValidSolutionFor(problem.getNumber());
             if (highestScoringValidSolutionForProblem.isPresent()) {

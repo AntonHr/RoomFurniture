@@ -225,7 +225,7 @@ public class Solution {
                 sb.append("(" + vertex.x + ", " + vertex.y + ")");
                 if(i < vertices.size() -1) {
                     sb.append(", ");
-                } else {
+                } else if(j<itemsInTheRoom.size() - 1) {
                     sb.append(";");
                 }
             }
