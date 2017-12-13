@@ -70,6 +70,7 @@ public class PhysicsSimulator {
 
         //shape
         PolygonShape shape = new PolygonShape();
+        //shape.setRadius(0.01f);
         shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
 
         //fixture
