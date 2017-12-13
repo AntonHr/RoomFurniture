@@ -9,15 +9,25 @@ import com.roomfurniture.solution.Solution;
 
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class OptimizerProblemGeneratorStrategy implements GeneratorStrategy<Solution>{
     private final Room room;
     private final int size;
+    private final double maxY;
+    private final double minY;
+    private final double minX;
+    private final double maxX;
 
     public OptimizerProblemGeneratorStrategy(OptimizerProblem problem) {
         size = problem.getSize();
         room = problem.getRoom();
+        maxX = problem.getRoom().getVerticies().stream().max(Comparator.comparingDouble(o -> o.x)).get().x;
+        minX = problem.getRoom().getVerticies().stream().min(Comparator.comparingDouble(o -> o.x)).get().x;
+        minY = problem.getRoom().getVerticies().stream().min(Comparator.comparingDouble(o -> o.x)).get().x;
+        maxY = problem.getRoom().getVerticies().stream().max(Comparator.comparingDouble(o -> o.x)).get().x;
+
     }
 
 
@@ -25,11 +35,7 @@ public class OptimizerProblemGeneratorStrategy implements GeneratorStrategy<Solu
     public Solution generate() {
         ArrayList<Descriptor> descriptors = new ArrayList<>();
         Rectangle2D bounds2D = room.toShape().getBounds2D();
-        double minX = bounds2D.getMinX();
-        double maxX = bounds2D.getMaxX();
-        double minY = bounds2D.getMinY();
-        double maxY = bounds2D.getMaxX();
-        double xRange = maxX - minX;
+           double xRange = maxX - minX;
         double yRange = maxY - minY;
 
         for (int i = 0; i < size; i++) {

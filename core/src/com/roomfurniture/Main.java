@@ -54,7 +54,7 @@ public class Main {
             MutationStrategy<Solution> solutionMutationStrategy = new SolutionMutationStrategy(problem);
             GeneratorStrategy<Solution> solutionGeneratorStrategy = new SolutionGeneratorStrategy(problem);
             BasicParallelGeneticAlgorithm<Solution> parallelAlgorithm = new BasicParallelGeneticAlgorithm<>(
-                    5000,
+                    1000,
                     solutionEvaluationStrategy,
                     solutionCrossoverStrategy,
                     solutionMutationStrategy,
@@ -62,6 +62,7 @@ public class Main {
                     new RouletteWheelSelectionStrategy<>());
             ParallelGeneticAlgorithmRunner<Solution> parallelRunner = new ParallelGeneticAlgorithmRunner<>(10, parallelAlgorithm, (level, message) -> System.out.println(message));
             parallelRunner.runTestIteration(1);
+
             Solution solution = parallelRunner.findBestIndividual().get();
             System.out.println(solution);
 
