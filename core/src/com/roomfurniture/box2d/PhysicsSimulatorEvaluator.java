@@ -257,7 +257,7 @@ public class PhysicsSimulatorEvaluator {
     }
 
     private void skipCurrentItem(Body b) {
-        world.destroyBody(b);
+        //world.destroyBody(b);
         nextBodyToSpawn = null;
     }
 
@@ -327,9 +327,9 @@ public class PhysicsSimulatorEvaluator {
     public List<Furniture> getTransformedItems() {
         List<Furniture> transformedItems = new ArrayList<>();
 
-        if (bodies.stream().filter(body -> !body.isActive()).count() > 1) {
-            throw new RuntimeException("more than 1 inactive item, something is wrong");
-        }
+//        if (bodies.stream().filter(body -> !body.isActive()).count() > 1) {
+//            throw new RuntimeException("more than 1 inactive item, something is wrong");
+//        }
 
         bodies.stream()
                 .filter(Body::isActive)
