@@ -66,7 +66,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         config.height = 1000;
 
         //EvaluatorPhysicsRenderer renderer = new EvaluatorPhysicsRenderer();
-//        LwjglApplication lwjglApplication = new LwjglApplication(renderer, config);
+        //LwjglApplication lwjglApplication = new LwjglApplication(renderer, config);
 
         float dt = 0.0001f; //s
         //float dt = 0.1f; //s
@@ -109,7 +109,17 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
 
         System.out.println("Score after evaluation: " + score);
 
-//        double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
+        double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
+
+
+        double finalAreaSum = areaSum;
+        double finalScore = score;
+        placingSolution.cacheResults(new HashMap<String, Object>() {{
+            put("coverage", finalAreaSum / roomArea);//0..1
+            put("score", finalScore);
+        }});
+
+
         // The optimizer often can make up for an initial lack of coverage, but not score
 //        if (areaSum / roomArea <= 0.3)
 //            score *= 0.03;
