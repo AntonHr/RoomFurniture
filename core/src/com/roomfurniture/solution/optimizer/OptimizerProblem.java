@@ -21,6 +21,9 @@ public class OptimizerProblem {
     private final List<Furniture> precalculatedPlacedFurniture;
     private final List<Furniture> unplacedFurniture;
     private final int size;
+    private final List<Descriptor> ignoredFurniture;
+    private final List<Integer> ignoredFurnitureIndexes;
+    private final int fullSolutionSize;
 
     public OptimizerProblem(Problem problem, Solution solution) {
         room = problem.getRoom();
@@ -28,7 +31,9 @@ public class OptimizerProblem {
 
         List<Furniture> furnitures = problem.getFurnitures();
         List<Furniture> placed = new ArrayList<>();
+        List<Descriptor> unplacedDescriptors = new ArrayList<>();
 
+        size = furnitures.size();
         unplacedFurniture = new ArrayList<>();
         placedDescriptors = new ArrayList<>();
 
@@ -36,6 +41,7 @@ public class OptimizerProblem {
         for(Integer index : placedPositions) {
             for(int i = lastIndex; i < index; i++) {
                 unplacedFurniture.add(furnitures.get(i));
+                unplacedDescriptors.add(solution.getDescriptors().get(i));
             }
             lastIndex = index + 1;
 
@@ -43,11 +49,42 @@ public class OptimizerProblem {
             placedDescriptors.add(solution.getDescriptors().get(index));
         }
 
-        size = furnitures.size();
+
         for(int i = lastIndex; i < size; i++) {
             unplacedFurniture.add(furnitures.get(i));
+            unplacedDescriptors.add(solution.getDescriptors().get(i));
         }
+
+         double roomArea = ShapeCalculator.calculateAreaOf(room.toShape());
+        double shapeArea = 0.0;
+
+        for(Furniture furniture : placed) {
+            shapeArea += ShapeCalculator.calculateAreaOf(furniture.toShape());
+        }
+
+        double remainingSpace = roomArea - shapeArea;
+        fullSolutionSize = unplacedFurniture.size();
+        ignoredFurniture = new ArrayList<>();
+        ignoredFurnitureIndexes = new ArrayList<>();
+        int index = 0;
+        Iterator<Furniture> unplacediterator = unplacedFurniture.iterator();
+        Iterator<Descriptor> unplacedDescriptorIterator = unplacedDescriptors.iterator();
+        while (unplacediterator.hasNext())  {
+            Furniture furniture = unplacediterator.next();
+            Descriptor currentDescriptor = unplacedDescriptorIterator.next();
+            if(ShapeCalculator.calculateAreaOf(furniture.toShape()) > remainingSpace) {
+                ignoredFurniture.add(currentDescriptor);
+                ignoredFurnitureIndexes.add(index);
+                unplacediterator.remove();
+                unplacedDescriptorIterator.remove();
+            }
+            index += 1;
+        }
+
        precalculatedPlacedFurniture = Streams.zip(placed.stream(), placedDescriptors.stream(), Furniture::transform).collect(Collectors.toList());
+
+
+
 
     }
 
@@ -57,7 +94,26 @@ public class OptimizerProblem {
 
         Iterator<Descriptor> problemIterator = placedDescriptors.iterator();
         Iterator<Descriptor> solutionIterator = solution.getDescriptors().iterator();
+        Iterator<Descriptor> ignoredIterator = ignoredFurniture.iterator();
+        List<Descriptor> fullsolution = new ArrayList<>();
+
         int lastIndex = 0;
+        for(int i = 0; i < ignoredFurnitureIndexes.size(); i++) {
+            Integer index = ignoredFurnitureIndexes.get(i);
+            for(int j = lastIndex; j < index; j++) {
+                fullsolution.add(j, solutionIterator.next());
+            }
+            lastIndex = index + 1;
+            fullsolution.add(ignoredIterator.next());
+        }
+
+        for(int j = lastIndex; j < fullSolutionSize; j++) {
+                fullsolution.add(j, solutionIterator.next());
+        }
+
+        solutionIterator = fullsolution.iterator();
+
+        lastIndex = 0;
         for(int i = 0; i < placedPositions.size(); i++) {
             Integer index = placedPositions.get(i);
 

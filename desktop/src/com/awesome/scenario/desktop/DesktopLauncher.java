@@ -61,13 +61,13 @@ public class DesktopLauncher {
             System.out.println("Original score: " + entry.getValue().score(entry.getKey()));
             System.out.println("Original Coverage: " + solution.findCoverage(problem) * 100 + "%");
             ExecutorService service = Executors.newFixedThreadPool(10);
-            Solution optimizedSolution = optimizeSolution(solution, problem, service);
+            Solution optimizedSolution = optimizeSolution(solution, problem, service, 1);
 
             Optional<Double> score = Optional.empty();
             double coverage = 0.0;
-            for(int i = 0; i< 4; i++){
+            for(int i = 0; i< 15; i++){
                 System.out.println("Optimization Pass " + i);
-                optimizedSolution = optimizeSolution(optimizedSolution, problem, service);
+                optimizedSolution = optimizeSolution(optimizedSolution, problem, service, i * 10 + 1);
                 score = optimizedSolution.score(problem);
                 System.out.println("Score is " + score);
                 coverage = optimizedSolution.findCoverage(problem);
@@ -90,7 +90,7 @@ public class DesktopLauncher {
 
     }
 
-    private static Solution optimizeSolution(Solution solution, Problem problem, ExecutorService service) {
+    private static Solution optimizeSolution(Solution solution, Problem problem, ExecutorService service, int value) {
         OptimizerProblem optimizerProblem = new OptimizerProblem(problem, solution);
 
         BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(100, new OptimizerProblemEvaluationStrategy(optimizerProblem),
@@ -98,7 +98,7 @@ public class DesktopLauncher {
 
         ParallelGeneticAlgorithmRunner<Solution> runner = new ParallelGeneticAlgorithmRunner<Solution>(10, service, solutionBasicParallelGeneticAlgorithm);
 
-        runner.runTestIteration(1000);
+        runner.runTestIteration(10 * value);
 
         return optimizerProblem.getOptimizedSolution(runner.findBestIndividual().get());
     }
