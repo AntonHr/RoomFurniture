@@ -4,12 +4,15 @@ import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PlacingSolution {
     private final List<PlacingDescriptor> descriptors;
+    private HashMap<String, Object> cache;
+
 
     public PlacingSolution(List<PlacingDescriptor> descriptors) {
         this.descriptors = descriptors;
@@ -33,5 +36,13 @@ public class PlacingSolution {
 
     public List<Furniture> getFurniture(PlacingProblem problem) {
         return descriptors.stream().map(placingDescriptor -> placingDescriptor.getFurniture(problem)).collect(Collectors.toList());
+    }
+
+    public void cacheResults(HashMap<String, Object> results) {
+        cache = results;
+    }
+
+    public HashMap<String, Object> getCachedResults() {
+        return cache;
     }
 }
