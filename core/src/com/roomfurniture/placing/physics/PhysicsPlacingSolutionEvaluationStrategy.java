@@ -52,6 +52,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
 //        for (int i = 0; i < ITERATION_COUNT; i++) {
 //            System.out.println(i + "/" + ITERATION_COUNT);
         int iterationCount = 0;
+        DesktopLauncher.renderer.update(physicsSimulator);
         while (!physicsSimulator.isDone()) {
             iterationCount++;
             if (iterationCount % 100000 == 0) {
@@ -59,8 +60,6 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
                 System.out.println("Items to spawn: " + physicsSimulator.itemsToSpawn.size() + "/ " + (physicsSimulator.bodies.size() - 1));
             }
             physicsSimulator.update(dt);
-            if (iterationCount % 10 == 0)
-                DesktopLauncher.renderer.update(physicsSimulator);
         }
 
         List<Furniture> furnitureInRoom = physicsSimulator.getTransformedItems();

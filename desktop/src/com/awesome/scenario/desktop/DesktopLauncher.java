@@ -148,7 +148,7 @@ public class DesktopLauncher {
 
         application = new LwjglApplication(renderer, config);
 
-        BasicGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicGeneticAlgorithm<>(100,
+        BasicGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicGeneticAlgorithm<>(10,
                 new PhysicsPlacingSolutionEvaluationStrategy(placingProblem),
                 new PlacingSolutionCrossoverStrategyAdapter(),
                 new PlacingSolutionMutationStrategyAdapter(0.5, 10),
@@ -164,17 +164,6 @@ public class DesktopLauncher {
         System.out.println(bestIndividual.get().getCachedResults());
 
 
-        //PhysicsSimulatorEvaluator physicsSimulator = bestIndividual.get().getPhysicsSimulator();
-        float dt = 0.0001f; //s
-//        float dt = 0.1f; //s
-        int ITERATION_COUNT = 418788000;
-        for (int i = 0; i < ITERATION_COUNT; i++) {
-//            System.out.println(i + "/" + ITERATION_COUNT);
-//            physicsSimulator.update(dt);
-//            if (i % 10 == 0)
-            //           renderer.update(physicsSimulator);
-        }
-//        Gdx.app.exit();
 
         HashMap<String, Object> cachedResults = bestIndividual.get().getCachedResults();
         Solution solution = (Solution) cachedResults.get("solution");

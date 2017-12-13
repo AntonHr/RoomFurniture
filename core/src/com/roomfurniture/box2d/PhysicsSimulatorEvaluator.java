@@ -20,7 +20,7 @@ public class PhysicsSimulatorEvaluator {
     private boolean active = false;
     private boolean spawning = true;
     private Vector2 repelPoint;
-    private static float TRIAL_TIME = 0.05f; //s
+    private static float TRIAL_TIME = 0.000005f; //s
     private float timeSinceLast = 0.0f;
 
 
@@ -343,7 +343,7 @@ public class PhysicsSimulatorEvaluator {
                 });
 
         return new Solution(descriptors.stream()
-                .map(descriptorOpt -> descriptorOpt.orElse(new Descriptor(new Vertex(Double.MAX_VALUE, Double.MAX_VALUE), 0)))
+                .map(descriptorOpt -> descriptorOpt.orElse(new Descriptor(new Vertex(-1000, -1000), 0)))
                 .collect(Collectors.toList()));
     }
 

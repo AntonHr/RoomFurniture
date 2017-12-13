@@ -130,26 +130,12 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
             }
 
 
-            switch (renderType) {
-                case 0:
-                    renderRoom();
-                    renderInItems(maxValue);
-                    renderOutItems(maxValue);
-                    break;
-                case 1:
-                    renderRoom();
-                    renderOutItems(maxValue);
-                    break;
-                case 2:
-                    renderRoom();
-                    renderInItems(maxValue);
-                    break;
-                case 3:
-                    box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
-                    break;
-            }
+            renderRoom();
+            renderInItems(maxValue);
+            renderOutItems(maxValue);
 
-            renderRepelPoint();
+
+            //renderRepelPoint();
 
 
             batch.begin();
@@ -158,8 +144,8 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
             font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
             font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
 
-            font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
-            font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 20);
+            //font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
+            //font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 20);
 
             batch.end();
         } else {
@@ -170,8 +156,12 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
             cam.update();
             shapeRenderer.setProjectionMatrix(cam.combined);
 
-            if (physicsSimulator != null) {
-                box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
+            try {
+                if (physicsSimulator != null) {
+                    box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
+                }
+            } catch (Exception e) {
+                System.out.println("Couldn't draw: " + e.getMessage());
             }
 
             renderRepelPoint();
@@ -507,8 +497,9 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
     public void renderSolution(Problem problem, Solution solution) {
         this.problem = problem;
         this.solution = solution;
-        solutionIsBeingRendered = true;
         constructObjects();
+
+        solutionIsBeingRendered = true;
     }
 
     private void constructObjects() {
