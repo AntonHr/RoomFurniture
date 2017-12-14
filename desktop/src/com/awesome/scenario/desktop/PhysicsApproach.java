@@ -48,7 +48,7 @@ public class PhysicsApproach {
     private static float allowedTimeForFitting = 0.0005f;
 
     // Force applied when spreading items to add
-    private static int impulseForce = 10000;
+    private static int impulseForce = 100;
 
     // Force given to shapes at creation
     private static int spawnForce = 100000;
@@ -100,8 +100,8 @@ public class PhysicsApproach {
 //                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, shouldRender, 10000, 0.25, 0.25),
                 new PlacingSolutionCrossoverStrategy(placingProblem),
                 new PlacingSolutionMutationStrategyAdapter(0.5, 10),
-//                new PlacingSolutionBiasedGeneratorStrategy(placingProblem, 10),
-                new PlacingSolutionGeneratorStrategy(placingProblem),
+                new PlacingSolutionBiasedGeneratorStrategy(placingProblem, 10),
+//                new PlacingSolutionGeneratorStrategy(placingProblem),
                 new RouletteWheelSelectionStrategy<>()
         );
 

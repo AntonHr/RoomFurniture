@@ -148,9 +148,9 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
             font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
             font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 40);
 
-            Vector3 screenPos= new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0.0f);
+            Vector3 screenPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0.0f);
             Vector3 worldPos = cam.unproject(screenPos);
-            font.draw(batch, "position: " + (worldPos.x)  + ", " + (worldPos.y), 10, y += 20);
+            font.draw(batch, "position: " + (worldPos.x) + ", " + (worldPos.y), 10, y += 20);
 
             batch.end();
         } else {
@@ -517,7 +517,7 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
         List<Furniture> notIncludedItems = new ArrayList<>();
 
 
-        Comparator<Furniture> comparator = Comparator.comparing(item -> item.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(item.toShape()));
+        Comparator<Furniture> comparator = Comparator.comparing(Furniture::getScorePerUnitArea);
         notIncludedItems.sort(comparator);
 
         notIncludedItems.addAll(problem.getFurnitures());
