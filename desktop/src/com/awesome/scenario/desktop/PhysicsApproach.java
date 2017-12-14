@@ -30,10 +30,10 @@ public class PhysicsApproach {
     // COMMON PARAMETERS
 
     // Number of skipped shapes before failure
-    private static int allowedSkips = 10;
+    private static int allowedSkips = 1000;
 
     // Number of items to place before can timeout
-    private static int itemsToPlace = 10;
+    private static int itemsToPlace = 100;
 
     // Number of singleThreaditerationCount before earlier conditions are checked
     private static int softMaxIterations = 500;
@@ -45,10 +45,10 @@ public class PhysicsApproach {
     private static float simulatedtimeBetweenUpdates = 0.0001f;
 
     // Increasing this parameter increases time for fitting
-    private static float allowedTimeForFitting = 0.5f;
+    private static float allowedTimeForFitting = 0.0005f;
 
     // Force applied when spreading items to add
-    private static int impulseForce = 100000;
+    private static int impulseForce = 1000000;
 
     // Force given to shapes at creation
     private static int spawnForce = 100000;
@@ -80,8 +80,9 @@ public class PhysicsApproach {
                 Arrays.asList(
   //                      new Vertex(0, 0)
 
-                        new Vertex(-99.81809997558594, 137.5753631591797),
-                        new Vertex(-98.0821304321289, 10.849782943725586)
+                        new Vertex(-6.231834411621094, 5.402829170227051),
+                        new Vertex(-2.286912441253662, 0.11434581875801086),
+                        new Vertex(-1.9438743591308594, 6.632043838500977)
 //                SpawnPointStorage.getSpawnPointsForProblem(problem.getNumber())
 //                        new Vertex(15,-15),
 //                        new Vertex(0,-1)
@@ -127,6 +128,12 @@ public class PhysicsApproach {
         if (!shouldRender)
             DesktopLauncher.application = new LwjglApplication(DesktopLauncher.renderer, config);
         DesktopLauncher.renderer.renderSolution(placingProblem.problem, solution);
+
+
+        if (placingProblem.problem.getNumber() > 0 && placingProblem.problem.getNumber() <= 30) {
+            SolutionDatabase.createPersonalSolutionDatabase().storeSolutionFor(placingProblem.problem.getNumber(), solution.score(placingProblem.problem).get(), (double) cachedResults.get("coverage"), solution);
+        }
+
     }
 
     public static void runMultiThreaded() {

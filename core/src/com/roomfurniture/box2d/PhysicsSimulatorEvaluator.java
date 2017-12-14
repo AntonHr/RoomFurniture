@@ -104,25 +104,24 @@ public class PhysicsSimulatorEvaluator {
         //body def
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-
-        //shape
-        PolygonShape shape = new PolygonShape();
-        //shape.setRadius(0.01f);
-        shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
-
-        //fixture
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
         Body body = world.createBody(bodyDef);
 
-        // TODO: Alex have a look at this
-//        Box2DSeparator.separate(body, fixtureDef, item.getVertices().stream().map(Vertex::toVector2).collect(Collectors.toList()), 30.0f);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.density = 1f;
 
-        Fixture fixture = body.createFixture(fixtureDef);
+        if (RoomFurnitureRenderer.getPoints(item.toShape()).length < 8 && ShapeCalculator.isConvex(item.toShape())) {
+            //shape
+            PolygonShape shape = new PolygonShape();
+            //shape.setRadius(0.01f);
+            shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
 
-        // Shape is the only disposable of the lot, so get rid of it
-
+            fixtureDef.shape = shape;
+            Fixture fixture = body.createFixture(fixtureDef);
+            //fixture
+        } else {
+            // TODO: Alex have a look at this
+            Box2DSeparator.separate(body, fixtureDef, item.getVertices().stream().map(Vertex::toVector2).collect(Collectors.toList()), 300.0f);
+        }
         body.setUserData(item);
         return body;
     }
