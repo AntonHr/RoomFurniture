@@ -352,9 +352,8 @@ public class SetSpawnRenderer extends ApplicationAdapter implements InputProcess
         System.out.println("Spawn points: ");
 //        System.out.println(list);
 
-        for(Vertex vertex:list)
-        {
-            System.out.println("new Vertex(" + +vertex.x +", "+ vertex.y+ "),");
+        for (Vertex vertex : list) {
+            System.out.println("new Vertex(" + +vertex.x + ", " + vertex.y + ")" + (vertex == list.get(list.size() - 1) ? "" : ","));
         }
     }
 

@@ -30,13 +30,13 @@ public class PhysicsApproach {
     // COMMON PARAMETERS
 
     // Number of skipped shapes before failure
-    private static int allowedSkips = 10;
+    private static int allowedSkips = 1000;
 
     // Number of items to place before can timeout
-    private static int itemsToPlace = 10;
+    private static int itemsToPlace = 100;
 
     // Number of singleThreaditerationCount before earlier conditions are checked
-    private static int softMaxIterations = 50;
+    private static int softMaxIterations = 500;
 
     // Whether the optimzer should try and only place high value things during it's optimization
     private static boolean optimizerShouldSortFirst = false;
@@ -45,10 +45,10 @@ public class PhysicsApproach {
     private static float simulatedtimeBetweenUpdates = 0.0001f;
 
     // Increasing this parameter increases time for fitting
-    private static float allowedTimeForFitting = 0.005f;
+    private static float allowedTimeForFitting = 0.0005f;
 
     // Force applied when spreading items to add
-    private static int impulseForce = 10000;
+    private static int impulseForce = 100;
 
     // Force given to shapes at creation
     private static int spawnForce = 100000;
@@ -57,7 +57,7 @@ public class PhysicsApproach {
     private static int singleThreadPopulationSize = 2;
     private static int singleThreaditerationCount = 10;
     private static int singleThreadOptimizerPopulationSize = 100;
-    private static int singleThreadOptimizerIterations = 2000;
+    private static int singleThreadOptimizerIterations = 1000;
     private static int singleThreadOptimizerNoToConsider = 10;
 
     // MULTI THREAD SETTINGS
@@ -76,6 +76,7 @@ public class PhysicsApproach {
         PlacingProblem placingProblem = new PlacingProblem(problem,
                 Arrays.asList(
                         //                      new Vertex(0, 0)
+
 
                         new Vertex(-15.431396484375, 5.3742265701293945),
                         new Vertex(-11.057693481445312, 6.946471691131592),
@@ -133,7 +134,7 @@ public class PhysicsApproach {
 //                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, shouldRender, 10000, 0.25, 0.25),
                 new PlacingSolutionCrossoverStrategy(placingProblem),
                 new PlacingSolutionMutationStrategyAdapter(0.5, 10),
-                new PlacingSolutionBiasedGeneratorStrategy(placingProblem, 5),
+                new PlacingSolutionBiasedGeneratorStrategy(placingProblem, 10),
 //                new PlacingSolutionGeneratorStrategy(placingProblem),
                 new RouletteWheelSelectionStrategy<>()
         );

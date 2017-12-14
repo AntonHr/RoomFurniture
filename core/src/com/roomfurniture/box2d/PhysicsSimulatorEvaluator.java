@@ -121,10 +121,10 @@ public class PhysicsSimulatorEvaluator {
 //            Fixture fixture = body.createFixture(fixtureDef);
 //            //fixture
 //        } else {
-            // TODO: Alex have a look at this
+        // TODO: Alex have a look at this
 //        System.out.println(item.getVertices());
 //        ShapeCalculator.simplifyShape(new ArrayList<>(item.getVertices()));
-            Box2DSeparator.separate(body, fixtureDef, ShapeCalculator.simplifyShape(item.getVertices()).stream().map(Vertex::toVector2).collect(Collectors.toList()), 3000.0f);
+        Box2DSeparator.separate(body, fixtureDef, ShapeCalculator.simplifyShape(item.getVertices()).stream().map(Vertex::toVector2).collect(Collectors.toList()), 3000.0f);
 //        }
         body.setUserData(item);
         return body;
@@ -164,6 +164,15 @@ public class PhysicsSimulatorEvaluator {
                 } else {
                     item = itemsToSpawn.poll();
                     Vertex spawnPoint = spawnPoints.poll();
+
+
+                    //randomize spawnPoint
+
+                    float magn = (float) Math.random() * 1;
+                    spawnPoint = new Vertex(spawnPoint.toVector2().add(new Vector2().setToRandomDirection().scl(magn)));
+
+                    //
+
 
                     b = createBody(item);
 
@@ -344,10 +353,7 @@ public class PhysicsSimulatorEvaluator {
         Furniture item = (Furniture) body.getUserData();
         item = item.transform(new Descriptor(new Vertex(body.getPosition()), body.getAngle()));
 
-        if (!ShapeCalculator.contains(room.toShape(), item.toShape())) {
-            return false;
-        }
-        return true;
+        return ShapeCalculator.contains(room.toShape(), item.toShape());
     }
 
     private boolean intersectsAnything(Body body) {
