@@ -2,6 +2,7 @@ package com.roomfurniture.box2d;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.gui.RoomFurnitureRenderer;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.*;
 import com.roomfurniture.solution.Solution;
@@ -36,9 +37,11 @@ public class PhysicsSimulatorEvaluator {
     private int softMaxIterations;
     private double successRatio;
     private double failureRatio;
+    private int impulseForce;
+    private int spawnForce;
 
 
-    public PhysicsSimulatorEvaluator(Room room, Queue<Furniture> itemsToSpawn, Queue<Vertex> spawnPoints, int softMaxIterations, double successRatio, double failureRatio, float trial_time) {
+    public PhysicsSimulatorEvaluator(Room room, Queue<Furniture> itemsToSpawn, Queue<Vertex> spawnPoints, int softMaxIterations, double successRatio, double failureRatio, float trial_time, int impulseForce, int spawnForce) {
 
         initialTaskSize = itemsToSpawn.size();
         this.itemsToSpawn = itemsToSpawn;
@@ -73,6 +76,8 @@ public class PhysicsSimulatorEvaluator {
         this.successRatio = successRatio;
         this.failureRatio = failureRatio;
         TRIAL_TIME = trial_time;
+        this.impulseForce = impulseForce;
+        this.spawnForce = spawnForce;
     }
 
     private void addRoomWall(Vertex corner1, Vertex corner2) {
@@ -101,20 +106,20 @@ public class PhysicsSimulatorEvaluator {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         //shape
-//        PolygonShape shape = new PolygonShape();
+        PolygonShape shape = new PolygonShape();
         //shape.setRadius(0.01f);
-//        shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
+       shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
 
         //fixture
         FixtureDef fixtureDef = new FixtureDef();
-//        fixtureDef.shape = shape;
+        fixtureDef.shape = shape;
         fixtureDef.density = 1f;
         Body body = world.createBody(bodyDef);
 
         // TODO: Alex have a look at this
-        Box2DSeparator.separate(body, fixtureDef, item.getVertices().stream().map(Vertex::toVector2).collect(Collectors.toList()), 30.0f);
+//        Box2DSeparator.separate(body, fixtureDef, item.getVertices().stream().map(Vertex::toVector2).collect(Collectors.toList()), 30.0f);
 
-//        Fixture fixture = body.createFixture(fixtureDef);
+        Fixture fixture = body.createFixture(fixtureDef);
 
         // Shape is the only disposable of the lot, so get rid of it
 
@@ -135,7 +140,7 @@ public class PhysicsSimulatorEvaluator {
             for (Body body : bodies) {
                 Furniture correspondingItem = (Furniture) body.getUserData();
 
-                float magnitude = (float) (0.1 * ShapeCalculator.calculateAreaOf(correspondingItem.toShape()));
+                float magnitude = (float) (spawnForce * ShapeCalculator.calculateAreaOf(correspondingItem.toShape()));
                 Vector2 direction = repelPoint.cpy().sub(getBodyCenterPosition(body)).nor();
 
                 if (direction.isZero())
@@ -182,7 +187,7 @@ public class PhysicsSimulatorEvaluator {
 
 
                         //set random implulse
-                        float magnitude = (float) (0.1 * ShapeCalculator.calculateAreaOf(item.toShape()));
+                        float magnitude = (float) (impulseForce * ShapeCalculator.calculateAreaOf(item.toShape()));
                         Vector2 direction = new Vector2().setToRandomDirection();
                         b.applyLinearImpulse(direction.scl(-magnitude), getBodyCenterPosition(b), true);
 

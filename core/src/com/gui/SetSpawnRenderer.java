@@ -347,10 +347,15 @@ public class SetSpawnRenderer extends ApplicationAdapter implements InputProcess
     }
 
     private void printSpawnPoint() {
-        List list = new ArrayList(spawnPoints);
+        List<Vertex> list = new ArrayList<>(spawnPoints);
         list.remove(list.size() - 1);
         System.out.println("Spawn points: ");
-        System.out.println(list);
+//        System.out.println(list);
+
+        for(Vertex vertex:list)
+        {
+            System.out.println("new Vertex(" + +vertex.x +", "+ vertex.y+ "),");
+        }
     }
 
     Vector2 getMousePosInWorld() {

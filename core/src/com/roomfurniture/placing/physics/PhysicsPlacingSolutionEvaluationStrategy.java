@@ -20,8 +20,10 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
     private double failureRatio;
     private float dt;
     private float trial_time;
+    private int impulseForce;
+    private int spawnForce;
 
-    public PhysicsPlacingSolutionEvaluationStrategy(PlacingProblem problem, boolean shouldRender, int softMaxIterations, double successRatio, double failureRatio, float dt, float trial_time) {
+    public PhysicsPlacingSolutionEvaluationStrategy(PlacingProblem problem, boolean shouldRender, int softMaxIterations, double successRatio, double failureRatio, float dt, float trial_time, int impulseForce, int spawnForce) {
         this.problem = problem;
         this.shouldRender = shouldRender;
         this.softMaxIterations = softMaxIterations;
@@ -29,6 +31,8 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         this.failureRatio = failureRatio;
         this.dt = dt;
         this.trial_time = trial_time;
+        this.impulseForce = impulseForce;
+        this.spawnForce = spawnForce;
     }
 
     @Override
@@ -55,7 +59,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
             itemsToSpawn.add(descriptor.getFurniture(problem));
             spawnPoints.add(descriptor.getVertex(problem));
         }
-        PhysicsSimulatorEvaluator physicsSimulator = new PhysicsSimulatorEvaluator(problem.getRoom(), itemsToSpawn, spawnPoints, softMaxIterations, successRatio, failureRatio, trial_time);
+        PhysicsSimulatorEvaluator physicsSimulator = new PhysicsSimulatorEvaluator(problem.getRoom(), itemsToSpawn, spawnPoints, softMaxIterations, successRatio, failureRatio, trial_time, impulseForce, spawnForce);
 
 
         //s
