@@ -14,9 +14,11 @@ import java.util.*;
 
 public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrategy<PlacingSolution> {
     private final PlacingProblem problem;
+    private boolean shouldRender;
 
-    public PhysicsPlacingSolutionEvaluationStrategy(PlacingProblem problem) {
+    public PhysicsPlacingSolutionEvaluationStrategy(PlacingProblem problem, boolean shouldRender) {
         this.problem = problem;
+        this.shouldRender = shouldRender;
     }
 
     @Override
@@ -52,12 +54,13 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
 //        for (int i = 0; i < ITERATION_COUNT; i++) {
 //            System.out.println(i + "/" + ITERATION_COUNT);
         int iterationCount = 0;
-        DesktopLauncher.renderer.update(physicsSimulator);
+        if(shouldRender)
+            DesktopLauncher.renderer.update(physicsSimulator);
         while (!physicsSimulator.isDone()) {
             iterationCount++;
             if (iterationCount % 100000 == 0) {
-                System.out.println("Iteration Count: " + iterationCount);
-                System.out.println("Items to spawn: " + physicsSimulator.itemsToSpawn.size() + "/ " + (physicsSimulator.bodies.size() - 1));
+//                System.out.println("Iteration Count: " + iterationCount);
+//                System.out.println("Items to spawn: " + physicsSimulator.itemsToSpawn.size() + "/ " + (physicsSimulator.bodies.size() - 1));
             }
             physicsSimulator.update(dt);
         }

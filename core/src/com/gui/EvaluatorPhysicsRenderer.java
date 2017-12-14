@@ -109,7 +109,8 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
     @Override
     public void render() {
         if (solutionIsBeingRendered) {
-            physicsSimulator.update(Gdx.graphics.getDeltaTime());
+            if(physicsSimulator != null)
+                physicsSimulator.update(Gdx.graphics.getDeltaTime());
 
             if (renderType != 3)
                 Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -262,7 +263,7 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
     }
 
     private void renderRepelPoint() {
-        if (physicsSimulator.getRepelPoint() == null)
+        if (physicsSimulator == null || physicsSimulator.getRepelPoint() == null)
             return;
 
         Vector2 repelPoint = physicsSimulator.getRepelPoint();

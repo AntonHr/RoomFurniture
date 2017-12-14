@@ -41,6 +41,16 @@ public class PermutationListCrossoverStrategy<T> implements CrossoverStrategy<Li
             }
         }
 
+        if((childA.size() + childB.size())/2 != parentA.size()) {
+            System.out.println("\n\n\n\n\n==================================================================\n" +
+                    "BigError Big Error lost some children\n" +
+                     "childA(" + childA.size() + "): " + childA +"\n" +
+                    "childB(" + childB.size() + "): " + childB + "\n" +
+                    "parentA(" + parentA.size() + "): " + parentA + "\n" +
+                    "parentB("+ parentB.size() +"): "+  parentB + "\n" +
+            "================================================================================\n\n\n\n\n");
+        }
+
 
         return ImmutableList.of(
                 childA,
