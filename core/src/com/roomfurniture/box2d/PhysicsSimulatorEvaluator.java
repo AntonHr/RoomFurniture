@@ -21,7 +21,7 @@ public class PhysicsSimulatorEvaluator {
     private boolean active = false;
     private boolean spawning = true;
     private Vector2 repelPoint;
-//    private static float TRIAL_TIME = 0.0005f; //s
+    //    private static float TRIAL_TIME = 0.0005f; //s
     private float TRIAL_TIME; //s
     private float timeSinceLast = 0.0f;
 
@@ -108,7 +108,7 @@ public class PhysicsSimulatorEvaluator {
         //shape
         PolygonShape shape = new PolygonShape();
         //shape.setRadius(0.01f);
-       shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
+        shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
 
         //fixture
         FixtureDef fixtureDef = new FixtureDef();
@@ -173,7 +173,7 @@ public class PhysicsSimulatorEvaluator {
                 b.setActive(false);
 
 
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 360; i++) {
 
 
                     boolean fitsIntoTheRoom = fitsIntoTheRoom(b);
@@ -195,12 +195,9 @@ public class PhysicsSimulatorEvaluator {
                     } else {
                         // TODO: Undo this change
                         // Maintain position
-                        if(ThreadLocalRandom.current().nextDouble() < 0.2 || !fitsIntoTheRoom) {
-                            float angle = (float) (Math.random() * Math.PI * 2);
-                            b.setTransform(b.getPosition(), angle);
+                        if (ThreadLocalRandom.current().nextDouble() < 0.2 || !fitsIntoTheRoom) {
+                            b.setTransform(b.getPosition(), (float) (b.getAngle() + i * Math.PI / 180));
                         }
-
-
 
 
                         if (timeSinceLast > TRIAL_TIME) {
