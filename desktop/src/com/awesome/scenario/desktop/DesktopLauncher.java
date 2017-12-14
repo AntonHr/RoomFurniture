@@ -11,7 +11,7 @@ public class DesktopLauncher {
     public static void main(String[] arg) {
 //        optimizeThenRender(solution, problem);
 //        PhysicsApproach.runMultiThreaded();
-        PhysicsApproach.runPhysicsSingleThreaded(true);
+        PhysicsApproach.runPhysicsSingleThreaded();
 
 //        PhysicsApproach.runSpawnPointPicker();
     }
