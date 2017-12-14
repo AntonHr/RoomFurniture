@@ -7,8 +7,10 @@ import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.*;
 import com.roomfurniture.solution.Solution;
 
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
 public class PhysicsSimulatorEvaluator {
@@ -172,9 +174,8 @@ public class PhysicsSimulatorEvaluator {
                 b.setActive(false);
 
 
+                boolean placed = false;
                 for (int i = 0; i < 360; i++) {
-
-
                     boolean fitsIntoTheRoom = fitsIntoTheRoom(b);
                     boolean doesntIntersectAnything = !intersectsAnything(b);
                     if (doesntIntersectAnything && fitsIntoTheRoom) {
@@ -183,7 +184,7 @@ public class PhysicsSimulatorEvaluator {
                         bodies.add(b);
                         nextBodyToSpawn = null;
                         timeSinceLast = 0;
-
+                        placed = true;
 
                         //set random implulse
                         float magnitude = (float) (impulseForce * ShapeCalculator.calculateAreaOf(item.toShape()));
@@ -209,12 +210,13 @@ public class PhysicsSimulatorEvaluator {
 
                         if (timeSinceLast > TRIAL_TIME) {
                             timeSinceLast = timeSinceLast % TRIAL_TIME;
-                            skipCurrentItem(b);
                             break;
                         }
                     }
                 }
-
+                if (!placed) {
+                    skipCurrentItem(b);
+                }
 
             } else {
                 repelPoint = null;

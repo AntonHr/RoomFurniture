@@ -48,7 +48,7 @@ public class PhysicsApproach {
     private static float allowedTimeForFitting = 0.0005f;
 
     // Force applied when spreading items to add
-    private static int impulseForce = 1000000;
+    private static int impulseForce = 10000;
 
     // Force given to shapes at creation
     private static int spawnForce = 100000;
