@@ -2,12 +2,18 @@ package com.roomfurniture.angle;
 
 import com.roomfurniture.problem.Vertex;
 
-/**
- * Created by asus on 14.12.2017 г..
- */
+
 public class Edge {
     private Vertex a;
     private Vertex b;
+
+    @Override
+    public String toString() {
+        return "Edge{" +
+                "a=" + a +
+                ", b=" + b +
+                '}';
+    }
 
     public Edge(Vertex a, Vertex b) {
         this.a = a;
