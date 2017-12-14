@@ -24,6 +24,8 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.awesome.scenario.desktop.BasicApproach.optimizeThenRender;
+
 public class DesktopLauncher {
 
     public static EvaluatorPhysicsRenderer renderer;
