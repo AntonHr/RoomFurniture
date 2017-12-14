@@ -53,8 +53,10 @@ public class PhysicsApproach {
         int iterations = 100;
         float simulatedtimeBetweenUpdates = 0.0001f;
         float allowedTimeForFitting = 0.0005f;
-        BasicGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicGeneticAlgorithm<>(100,
-                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, true, softMaxIterations, itemsToPlace /500.0, allowedSkips /500.0, simulatedtimeBetweenUpdates, allowedTimeForFitting),
+        int populationSize = 100;
+        double shapeCount = 500.0;
+        BasicGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicGeneticAlgorithm<>(populationSize,
+                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, true, softMaxIterations, itemsToPlace / shapeCount, allowedSkips / shapeCount, simulatedtimeBetweenUpdates, allowedTimeForFitting),
 //                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, shouldRender, 10000, 0.25, 0.25),
                 new PlacingSolutionCrossoverStrategy(placingProblem),
                 new PlacingSolutionMutationStrategyAdapter(0.5, 10),
