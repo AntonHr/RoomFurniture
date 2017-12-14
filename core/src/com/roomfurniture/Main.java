@@ -30,6 +30,14 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         List<Vertex> statVertices = new ArrayList<>(
+                Arrays.asList(new Vertex(0, 0), new Vertex(1, 0),
+                              new Vertex(1, 1), new Vertex(0, 1)));
+
+        List<Double> angles = new EdgeAligner().computeShapeAngles(statVertices);
+        System.out.println();
+
+        /*
+        List<Vertex> statVertices = new ArrayList<>(
           Arrays.asList(new Vertex(6, 0), new Vertex(8, 0), new Vertex(9, 1.73),
                         new Vertex(8, 3.46), new Vertex(6, 3.46), new Vertex(5, 1.73)));
 
@@ -65,6 +73,9 @@ public class Main {
         EventQueue.invokeLater(() -> {
             bestFrame.setVisible(true);
         });
+        */
+
+
 
         /*SolutionList.updatePermissions();
         InputParser inputParser = new InputParser();
