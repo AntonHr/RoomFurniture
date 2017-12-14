@@ -110,20 +110,22 @@ public class PhysicsSimulatorEvaluator {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.density = 1f;
-
-        if (RoomFurnitureRenderer.getPoints(item.toShape()).length < 8 && ShapeCalculator.isConvex(item.toShape())) {
-            //shape
-            PolygonShape shape = new PolygonShape();
-            //shape.setRadius(0.01f);
-            shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
-
-            fixtureDef.shape = shape;
-            Fixture fixture = body.createFixture(fixtureDef);
-            //fixture
-        } else {
+//
+//        if (RoomFurnitureRenderer.getPoints(item.toShape()).length < 8 && ShapeCalculator.isConvex(item.toShape())) {
+//            //shape
+//            PolygonShape shape = new PolygonShape();
+//            //shape.setRadius(0.01f);
+//            shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
+//
+//            fixtureDef.shape = shape;
+//            Fixture fixture = body.createFixture(fixtureDef);
+//            //fixture
+//        } else {
             // TODO: Alex have a look at this
-            Box2DSeparator.separate(body, fixtureDef, item.getVertices().stream().map(Vertex::toVector2).collect(Collectors.toList()), 300.0f);
-        }
+//        System.out.println(item.getVertices());
+//        ShapeCalculator.simplifyShape(new ArrayList<>(item.getVertices()));
+            Box2DSeparator.separate(body, fixtureDef, ShapeCalculator.simplifyShape(item.getVertices()).stream().map(Vertex::toVector2).collect(Collectors.toList()), 3000.0f);
+//        }
         body.setUserData(item);
         return body;
     }
