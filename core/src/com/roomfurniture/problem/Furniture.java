@@ -4,7 +4,6 @@ import com.roomfurniture.ShapeCalculator;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D;
 import java.util.List;
 
 public class Furniture {
@@ -15,22 +14,11 @@ public class Furniture {
     public Furniture(int id, double scorePerUnitArea, List<Vertex> vertices) {
         this.id = id;
         this.scorePerUnitArea = scorePerUnitArea;
-        this.shape = constructPath(vertices);
+        this.shape = ShapeCalculator.constructPath(vertices);
     }
 
     public void updateShape(List<Vertex> vertices) {
-        shape = constructPath(vertices);
-    }
-
-    private Path2D.Double constructPath(List<Vertex> vertices) {
-        Path2D.Double path = new Path2D.Double();
-        Vertex vertex = vertices.get(0);
-        path.moveTo(vertex.x, vertex.y);
-        for (int i = 1; i < vertices.size(); i++) {
-            path.lineTo(vertices.get(i).x, vertices.get(i).y);
-        }
-        path.closePath();
-        return path;
+        shape = ShapeCalculator.constructPath(vertices);
     }
 
     private Furniture(int id, double scorePerUnitArea, Shape polygon) {

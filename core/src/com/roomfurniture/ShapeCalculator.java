@@ -7,6 +7,7 @@ import com.roomfurniture.problem.Vertex;
 
 import java.awt.*;
 import java.awt.geom.Area;
+import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,5 +77,33 @@ public class ShapeCalculator {
         }
         vertices.remove(vertices.size() - 1);
         return vertices;
+    }
+
+    public static Path2D.Double constructPath(List<Vertex> vertices) {
+        Path2D.Double path = new Path2D.Double();
+        Vertex vertex = vertices.get(0);
+        path.moveTo(vertex.x, vertex.y);
+        for (int i = 1; i < vertices.size(); i++) {
+            path.lineTo(vertices.get(i).x, vertices.get(i).y);
+        }
+        path.closePath();
+        return path;
+    }
+
+    public static Vertex findBottomVertex(Shape shape) {
+        List<Vertex> vertices = ShapeCalculator.getVertices(shape);
+        Vertex bottomVertex = vertices.get(0);
+
+        for (Vertex v : vertices) {
+            if (v.y < bottomVertex.y) {
+                bottomVertex = v;
+            } else if (v.y == bottomVertex.y) {
+                if (v.x < bottomVertex.x) {
+                    v = bottomVertex;
+                }
+            }
+        }
+
+        return bottomVertex;
     }
 }

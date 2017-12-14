@@ -86,6 +86,26 @@ public final class GrahamScan {
         return new Furniture(0, newCost, vertexConvexList);
     }
 
+    public static Shape getConvexHull(Shape first, Shape second) {
+        List<Vertex> firstList = ShapeCalculator.getVertices(first);
+        List<Vertex> secondList = ShapeCalculator.getVertices(second);
+
+        List<Point2D.Double> pointList = new LinkedList<>();
+        for (Vertex vertex : firstList) {
+            pointList.add(new Point2D.Double(vertex.x, vertex.y));
+        }
+        for (Vertex vertex : secondList) {
+            pointList.add((new Point2D.Double(vertex.x, vertex.y)));
+        }
+        List<Point2D.Double> convexList = getConvexHull(pointList);
+        List<Vertex> vertexConvexList = new LinkedList<Vertex>();
+        for (Point2D.Double point : convexList) {
+            vertexConvexList.add(new Vertex(point.getX(), point.getY()));
+        }
+
+        return ShapeCalculator.constructPath(vertexConvexList);
+    }
+
     public static List<Point2D.Double> getConvexHull(int[] xs, int[] ys) throws IllegalArgumentException {
 
         if (xs.length != ys.length) {
