@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Problem {
     private int number = 0;
-   public final Room room;
-    private final List<Furniture> furnitures;
+    public final Room room;
+    private List<Furniture> furnitures;
 
     public Problem(int number, Room room, List<Furniture> furnitures) {
         this.number = number;
@@ -33,5 +33,9 @@ public class Problem {
 
     public int getNumber() {
         return number;
+    }
+
+    public void setFurniture(List<Furniture> furniture) {
+        this.furnitures = furniture;
     }
 }

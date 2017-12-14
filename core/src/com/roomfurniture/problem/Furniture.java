@@ -1,17 +1,18 @@
 package com.roomfurniture.problem;
 
+import com.badlogic.gdx.graphics.Color;
 import com.roomfurniture.ShapeCalculator;
 
-import java.awt.*;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.List;
-import java.util.function.Function;
 
 public class Furniture {
     private double scorePerUnitArea;
     private Shape shape;
     private int id;
+    private Color color;
 
     public Furniture(int id, double scorePerUnitArea, List<Vertex> vertices) {
         this.id = id;
@@ -94,5 +95,14 @@ public class Furniture {
         id = current.id;
         shape = current.toShape();
         scorePerUnitArea = current.scorePerUnitArea;
+    }
+
+    public void setColor(Color color) {
+
+        this.color = color;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

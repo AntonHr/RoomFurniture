@@ -18,9 +18,13 @@ import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
+import com.roomfurniture.solution.Solution;
+import com.roomfurniture.solution.storage.SolutionDatabase;
 
 import java.awt.*;
 import java.awt.geom.PathIterator;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -108,6 +112,19 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
 
     private void renderOutItems(double maxValue) {
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
+
+
+        physicsSimulator.bodies.forEach(b -> {
+
+            Furniture item = ((HashMap<String, Furniture>) b.getUserData()).get("reference");
+
+            if (fitsTheRoomAndDoesntCollide(item, allItems)) {
+                item.setColor(Color.BLUE);
+            } else
+                item.setColor(Color.GRAY);
+
+        });
+
         for (Furniture item : allItems) {
             float[] points = getPoints(item.toShape());
 
@@ -118,6 +135,9 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
                 shapeRenderer.setColor(Color.RED);
             }
 
+            if (item.getColor() != null) {
+                shapeRenderer.setColor(item.getColor());
+            }
 
             shapeRenderer.polygon(points);
         }
@@ -200,7 +220,22 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
         font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
         font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
 
+        font.draw(batch, "coverage: " + getCoverage() * 100 + "%", 10, y += 40);
+
         batch.end();
+    }
+
+    private double getCoverage() {
+
+        final double[] area = {0};
+        physicsSimulator.bodies.forEach(b -> {
+                    Furniture furniture = ((HashMap<String, Furniture>) b.getUserData()).get("reference");
+                    if (furniture.getColor().equals(Color.BLUE))
+                        area[0] += ShapeCalculator.calculateAreaOf(furniture.toShape());
+                }
+        );
+
+        return area[0] / ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
     }
 
 
@@ -234,7 +269,7 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
 
             do {
                 currentItem = currentItem.transform(new Descriptor(new Vertex(dir.cpy().scl(step)), 0));
-            } while (intersectsAnything(currentItem, spreadItems));
+            } while (intersectsAnythingForSpread(currentItem, spreadItems));
             spreadItems.add(currentItem);
             dir.rotate(14);
         }
@@ -242,7 +277,7 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
         return spreadItems;
     }
 
-    private boolean intersectsAnything(Furniture item, List<Furniture> otherItems) {
+    private boolean intersectsAnythingForSpread(Furniture item, List<Furniture> otherItems) {
         for (Furniture otherItem : otherItems) {
             if (!item.equals(otherItem)
                     && (ShapeCalculator.intersect(item.toShape(), otherItem.toShape())
@@ -258,6 +293,22 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
             return true;
 
         return false;
+    }
+
+    private boolean fitsTheRoomAndDoesntCollide(Furniture item, List<Furniture> otherItems) {
+        for (Furniture otherItem : otherItems) {
+            if (!item.equals(otherItem)
+                    && (ShapeCalculator.intersect(item.toShape(), otherItem.toShape())
+                    || ShapeCalculator.contains(item.toShape(), otherItem.toShape())
+                    || ShapeCalculator.contains(otherItem.toShape(), item.toShape()))) {
+                return false;
+            }
+        }
+
+        if (!ShapeCalculator.contains(problem.getRoom().toShape(), item.toShape()))
+            return false;
+
+        return true;
     }
 
     private float zoomInc = 1.05f;
@@ -426,11 +477,19 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
             renderType = (renderType + 1) % 4;
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
+            extractSolution();
+        }
 
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
             translateInc += translateUnit;
             zoomInc += zoomUnit;
             rotateInc += rotateUnit;
+
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.U)) {
+            physicsSimulator.undo();
 
         }
 
@@ -509,6 +568,25 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
         return true;
     }
 
+    public void extractSolution() {
+
+        System.out.println("Extracting solution");
+        Solution solution = physicsSimulator.getSolution(problem);
+        String string = solution.toOutputFormat(problem);
+
+        try {
+            FileWriter fileWriter = new FileWriter("./11solution.txt", false);
+            fileWriter.write(string);
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        System.out.println("Done!");
+
+    }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {

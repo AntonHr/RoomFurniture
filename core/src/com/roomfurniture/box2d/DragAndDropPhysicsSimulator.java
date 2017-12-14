@@ -1,13 +1,16 @@
 
 package com.roomfurniture.box2d;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.*;
 import com.roomfurniture.solution.Solution;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class DragAndDropPhysicsSimulator {
@@ -37,6 +40,7 @@ public class DragAndDropPhysicsSimulator {
     private int impulseForce;
     private int spawnForce;
     private Room room;
+    private Queue<Runnable> todo = new LinkedList<>();
 
 
     public DragAndDropPhysicsSimulator(Room room) {
@@ -110,6 +114,9 @@ public class DragAndDropPhysicsSimulator {
 
 
     public void update(float deltaTime) {
+
+        while (!todo.isEmpty())
+            todo.poll().run();
         iterations++;
 
 
@@ -149,7 +156,8 @@ public class DragAndDropPhysicsSimulator {
                 put("reference", reference);
             }});
 
-
+            reference.setColor(Color.BLUE);
+//            reference.setColor(Color.GRAY);
         });
 
 
@@ -218,10 +226,8 @@ public class DragAndDropPhysicsSimulator {
     }
 
 
-    private void skipCurrentItem(Body b) {
-        itemsSkipped++;
+    private void removeItem(Body b) {
         world.destroyBody(b);
-        nextBodyToSpawn = null;
     }
 
     //TODO: fix this in the other simulator
@@ -288,14 +294,28 @@ public class DragAndDropPhysicsSimulator {
             descriptors.add(Optional.empty());
         }
 
+        List<Furniture> replaceForProblem = new ArrayList<>();
+
+        for (int i = 0; i < problem.getFurnitures().size(); i++)
+            replaceForProblem.add(problem.getFurnitures().get(i));
+
         bodies.stream()
                 .filter(Body::isActive)
                 .forEach(body -> {
-                    Furniture item = (Furniture) body.getUserData();
+                    HashMap<String, Furniture> map = (HashMap<String, Furniture>) body.getUserData();
+
+                    Furniture item = map.get("reference");
+
                     int ind = item.findMeInInitialArray(problem.getFurnitures());
 
-                    descriptors.set(ind, Optional.of(new Descriptor(new Vertex(body.getPosition()), body.getAngle())));
+                    replaceForProblem.set(ind, item);
+
+
+                    descriptors.set(ind, Optional.of(new Descriptor(new Vertex(0, 0), 0)));
+                    //descriptors.set(ind, Optional.of(new Descriptor(new Vertex(body.getPosition()), body.getAngle())));
                 });
+
+        problem.setFurniture(replaceForProblem);
 
         return new Solution(descriptors.stream()
                 .map(descriptorOpt -> descriptorOpt.orElse(new Descriptor(new Vertex(-1000, -1000), 0)))
@@ -319,6 +339,28 @@ public class DragAndDropPhysicsSimulator {
                 });
         return transformedItems;
     }
+
+    public void undo() {
+        if (bodies.isEmpty())
+            return;
+        todo.add(() -> {
+            Body body = bodies.get(bodies.size() - 1);
+
+            HashMap<String, Furniture> map = ((HashMap<String, Furniture>) body.getUserData());
+            Furniture reference = map.get("reference");
+            Furniture initial = map.get("initialCopy");
+
+            reference.set(initial);
+            reference.setColor(null);
+
+
+            removeItem(bodies.get(bodies.size() - 1));
+            bodies.remove(bodies.size() - 1);
+
+
+        });
+    }
+
 //
 //    public void letTheFunBegin() {
 //        active = true;
