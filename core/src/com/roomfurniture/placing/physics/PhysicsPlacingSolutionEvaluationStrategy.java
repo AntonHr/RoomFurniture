@@ -15,10 +15,16 @@ import java.util.*;
 public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrategy<PlacingSolution> {
     private final PlacingProblem problem;
     private boolean shouldRender;
+    private int softMaxIterations;
+    private double successRatio;
+    private double failureRatio;
 
-    public PhysicsPlacingSolutionEvaluationStrategy(PlacingProblem problem, boolean shouldRender) {
+    public PhysicsPlacingSolutionEvaluationStrategy(PlacingProblem problem, boolean shouldRender, int softMaxIterations, double successRatio, double failureRatio) {
         this.problem = problem;
         this.shouldRender = shouldRender;
+        this.softMaxIterations = softMaxIterations;
+        this.successRatio = successRatio;
+        this.failureRatio = failureRatio;
     }
 
     @Override
@@ -45,7 +51,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
             itemsToSpawn.add(descriptor.getFurniture(problem));
             spawnPoints.add(descriptor.getVertex(problem));
         }
-        PhysicsSimulatorEvaluator physicsSimulator = new PhysicsSimulatorEvaluator(problem.getRoom(), itemsToSpawn, spawnPoints);
+        PhysicsSimulatorEvaluator physicsSimulator = new PhysicsSimulatorEvaluator(problem.getRoom(), itemsToSpawn, spawnPoints, softMaxIterations, successRatio, failureRatio);
 
 
         float dt = 0.0001f; //s

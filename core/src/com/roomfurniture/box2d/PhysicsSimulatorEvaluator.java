@@ -2,13 +2,12 @@ package com.roomfurniture.box2d;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.gui.RoomFurnitureRenderer;
 import com.roomfurniture.ShapeCalculator;
-import com.roomfurniture.placing.PlacingSolution;
 import com.roomfurniture.problem.*;
 import com.roomfurniture.solution.Solution;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class PhysicsSimulatorEvaluator {
@@ -17,10 +16,12 @@ public class PhysicsSimulatorEvaluator {
     public final List<Body> bodies;
     private final List<Body> roomWalls;
     private final Room room;
+    private final int initialTaskSize;
     private boolean active = false;
     private boolean spawning = true;
     private Vector2 repelPoint;
-    private static float TRIAL_TIME = 0.001f; //s
+//    private static float TRIAL_TIME = 0.0005f; //s
+    private static float TRIAL_TIME = 0.0005f; //s
     private float timeSinceLast = 0.0f;
 
 
@@ -29,10 +30,17 @@ public class PhysicsSimulatorEvaluator {
 
     public Queue<Furniture> itemsToSpawn;
     private Queue<Vertex> spawnPoints;
+    private int itemsAdded = 0;
+    private int itemsSkipped = 0;
+    private long iterations = 0;
+    private int softMaxIterations;
+    private double successRatio;
+    private double failureRatio;
 
 
-    public PhysicsSimulatorEvaluator(Room room, Queue<Furniture> itemsToSpawn, Queue<Vertex> spawnPoints) {
+    public PhysicsSimulatorEvaluator(Room room, Queue<Furniture> itemsToSpawn, Queue<Vertex> spawnPoints, int softMaxIterations, double successRatio, double failureRatio) {
 
+        initialTaskSize = itemsToSpawn.size();
         this.itemsToSpawn = itemsToSpawn;
         this.spawnPoints = spawnPoints;
 
@@ -61,6 +69,9 @@ public class PhysicsSimulatorEvaluator {
             previousCorner = currentCorner;
         }
         addRoomWall(previousCorner, room.getVerticies().get(0));
+        this.softMaxIterations = softMaxIterations;
+        this.successRatio = successRatio;
+        this.failureRatio = failureRatio;
     }
 
     private void addRoomWall(Vertex corner1, Vertex corner2) {
@@ -89,16 +100,20 @@ public class PhysicsSimulatorEvaluator {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         //shape
-        PolygonShape shape = new PolygonShape();
+//        PolygonShape shape = new PolygonShape();
         //shape.setRadius(0.01f);
-        shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
+//        shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
 
         //fixture
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
+//        fixtureDef.shape = shape;
         fixtureDef.density = 1f;
         Body body = world.createBody(bodyDef);
-        Fixture fixture = body.createFixture(fixtureDef);
+
+        // TODO: Alex have a look at this
+        Box2DSeparator.separate(body, fixtureDef, item.getVertices().stream().map(Vertex::toVector2).collect(Collectors.toList()), 30.0f);
+
+//        Fixture fixture = body.createFixture(fixtureDef);
 
         // Shape is the only disposable of the lot, so get rid of it
 
@@ -111,6 +126,7 @@ public class PhysicsSimulatorEvaluator {
 //    int iter = 0;
 //
     public void update(float deltaTime) {
+        iterations++;
 
 
         //apply forces
@@ -118,7 +134,7 @@ public class PhysicsSimulatorEvaluator {
             for (Body body : bodies) {
                 Furniture correspondingItem = (Furniture) body.getUserData();
 
-                float magnitude = (float) (100 * ShapeCalculator.calculateAreaOf(correspondingItem.toShape()));
+                float magnitude = (float) (0.1 * ShapeCalculator.calculateAreaOf(correspondingItem.toShape()));
                 Vector2 direction = repelPoint.cpy().sub(getBodyCenterPosition(body)).nor();
 
                 if (direction.isZero())
@@ -143,6 +159,7 @@ public class PhysicsSimulatorEvaluator {
                     b = createBody(item);
 
                     nextBodyToSpawn = b;
+                    // TODO: Extract variable here?
                     moveToRepelPoint(b, spawnPoint.toVector2());
                     repelPoint = spawnPoint.toVector2();
                 }
@@ -153,7 +170,10 @@ public class PhysicsSimulatorEvaluator {
                 for (int i = 0; i < 10; i++) {
 
 
-                    if (!intersectsAnything(b) && fitsIntoTheRoom(b)) {
+                    boolean fitsIntoTheRoom = fitsIntoTheRoom(b);
+                    boolean doesntIntersectAnything = !intersectsAnything(b);
+                    if (doesntIntersectAnything && fitsIntoTheRoom) {
+                        itemsAdded++;
                         b.setActive(true);
                         bodies.add(b);
                         nextBodyToSpawn = null;
@@ -161,13 +181,21 @@ public class PhysicsSimulatorEvaluator {
 
 
                         //set random implulse
-                        float magnitude = (float) (10000 * ShapeCalculator.calculateAreaOf(item.toShape()));
+                        float magnitude = (float) (0.1 * ShapeCalculator.calculateAreaOf(item.toShape()));
                         Vector2 direction = new Vector2().setToRandomDirection();
                         b.applyLinearImpulse(direction.scl(-magnitude), getBodyCenterPosition(b), true);
 
                         break;
                     } else {
-                        b.setTransform(b.getPosition(), (float) (Math.random() * Math.PI * 2));
+                        // TODO: Undo this change
+                        // Maintain position
+                        if(ThreadLocalRandom.current().nextDouble() < 0.2 || !fitsIntoTheRoom) {
+                            float angle = (float) (Math.random() * Math.PI * 2);
+                            b.setTransform(b.getPosition(), angle);
+                        }
+
+
+
 
                         if (timeSinceLast > TRIAL_TIME) {
                             timeSinceLast = timeSinceLast % TRIAL_TIME;
@@ -251,10 +279,17 @@ public class PhysicsSimulatorEvaluator {
     }
 
     public boolean isDone() {
-        return nextBodyToSpawn == null && itemsToSpawn.isEmpty();
+        boolean addedEnough = itemsAdded > initialTaskSize * successRatio && iterations > softMaxIterations;
+        boolean skippedTooMany = itemsSkipped > initialTaskSize * failureRatio && iterations > softMaxIterations;
+        if(skippedTooMany) {
+            System.out.println("Skipping due to early termination skipped " + itemsSkipped + "/ " + initialTaskSize + ", added " + itemsAdded + ", iterations " + iterations);
+        }
+
+        return (addedEnough || skippedTooMany || nextBodyToSpawn == null && itemsToSpawn.isEmpty());
     }
 
     private void skipCurrentItem(Body b) {
+        itemsSkipped++;
         world.destroyBody(b);
         nextBodyToSpawn = null;
     }
