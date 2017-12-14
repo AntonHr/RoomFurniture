@@ -21,7 +21,7 @@ public class Furniture {
         shape = ShapeCalculator.constructPath(vertices);
     }
 
-    private Furniture(int id, double scorePerUnitArea, Shape polygon) {
+    public Furniture(int id, double scorePerUnitArea, Shape polygon) {
         this.id = id;
         this.scorePerUnitArea = scorePerUnitArea;
         this.shape = polygon;
