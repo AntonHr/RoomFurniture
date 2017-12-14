@@ -14,10 +14,7 @@ import com.roomfurniture.ga.algorithm.parallel.BasicParallelGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithmRunner;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.solution.*;
-import com.roomfurniture.solution.optimizer.BasicOptimizerProblem;
-import com.roomfurniture.solution.optimizer.OptimizerProblem;
-import com.roomfurniture.solution.optimizer.OptimizerProblemEvaluationStrategy;
-import com.roomfurniture.solution.optimizer.OptimizerProblemGeneratorStrategy;
+import com.roomfurniture.solution.optimizer.*;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -64,13 +61,13 @@ public class BasicApproach {
         System.out.println("Original score: " + solution.score(problem));
         System.out.println("Original Coverage: " + solution.findCoverage(problem) * 100 + "%");
         ExecutorService service = Executors.newFixedThreadPool(10);
-        Solution optimizedSolution = optimizeSolution(solution, problem, service, 1000, 100);
+        Solution optimizedSolution = optimizeSolution(solution, problem, service, 1000, 100, 10, true);
 
         Optional<Double> score = Optional.empty();
         double coverage = 0.0;
         for (int i = 0; i < 4; i++) {
             System.out.println("Optimization Pass " + i);
-            optimizedSolution = optimizeSolution(optimizedSolution, problem, service, 1000, 100);
+            optimizedSolution = optimizeSolution(optimizedSolution, problem, service, 1000, 100, 10, true);
             score = optimizedSolution.score(problem);
             System.out.println("Score is " + score);
             coverage = optimizedSolution.findCoverage(problem);
@@ -90,8 +87,8 @@ public class BasicApproach {
         LwjglApplication lwjglApplication = new LwjglApplication(roomFurnitureRenderer, config);
     }
 
-    public static Solution optimizeSolution(Solution solution, Problem problem, ExecutorService service, int populationSize, int iterations) {
-        OptimizerProblem optimizerProblem = new BasicOptimizerProblem(problem, solution);
+    public static Solution optimizeSolution(Solution solution, Problem problem, ExecutorService service, int populationSize, int iterations, int noToConsider, boolean shouldSortFirst) {
+        OptimizerProblem optimizerProblem = new IgnoringOptimizerProblem(problem, solution, noToConsider, shouldSortFirst);
 
         BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(populationSize, new OptimizerProblemEvaluationStrategy(optimizerProblem),
                 new SolutionCrossoverStrategy(), new SolutionMutationStrategy(problem), new OptimizerProblemGeneratorStrategy(optimizerProblem), new RouletteWheelSelectionStrategy<Solution>());
