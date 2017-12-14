@@ -27,24 +27,49 @@ import java.util.concurrent.Executors;
 
 public class PhysicsApproach {
 
+    // COMMON PARAMETERS
+
+    // Number of skipped shapes before failure
     private static int allowedSkips = 10;
+
+    // Number of items to place before can timeout
     private static int itemsToPlace = 10;
+
+    // Number of singleThreaditerationCount before earlier conditions are checked
     private static int softMaxIterations = 500;
-    private static int iterations = 10;
+
+    // Whether the optimzer should try and only place high value things during it's optimization
+    private static boolean optimizerShouldSortFirst = false;
+
+    // Reducing this parameter increases accuracy, but makes the shapes move slower
     private static float simulatedtimeBetweenUpdates = 0.0001f;
+
+    // Increasing this parameter increases time for fitting
     private static float allowedTimeForFitting = 0.5f;
-    private static int singleThreadPopulationSize = 2;
+
+    // Force applied when spreading items to add
     private static int impulseForce = 100000;
+
+    // Force given to shapes at creation
     private static int spawnForce = 100000;
+
+    // SINGLE THREAD SETTINGS
+    private static int singleThreadPopulationSize = 2;
+    private static int singleThreaditerationCount = 10;
     private static int singleThreadOptimizerPopulationSize = 100;
     private static int singleThreadOptimizerIterations = 1000;
     private static int singleThreadOptimizerNoToConsider = 10;
+
+    // MULTI THREAD SETTINGS
     private static int multithreadedPopulationSize = 10;
     private static int multithreadedIterationCount = 100;
     private static int multithreadedOptimizerPopulationSize = 100;
     private static int multithreadedOptimizerIterations = 10;
-    private static boolean optimizerShouldSortFirst = false;
     private static int multithreadedOptimizernoToConsider = 10;
+
+
+
+
 
     public static void runPhysicsSingleThreaded() {
         List<Problem> parse = InputParser.getTestProblems();
@@ -83,7 +108,7 @@ public class PhysicsApproach {
 
 
         SimpleGeneticAlgorithmRunner placingSolutionParallelGeneticAlgorithmRunner = new SimpleGeneticAlgorithmRunner<PlacingSolution>(placingSolutionBasicParallelGeneticAlgorithm, (level, message) -> System.out.println(message));
-        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(iterations);
+        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(singleThreaditerationCount);
         Optional<PlacingSolution> bestIndividual = placingSolutionParallelGeneticAlgorithmRunner.findBestIndividual();
         System.out.println(bestIndividual.get());
         System.out.println(bestIndividual.get().getCachedResults());
