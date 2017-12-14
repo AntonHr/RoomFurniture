@@ -48,7 +48,7 @@ public class PhysicsApproach {
     private static float allowedTimeForFitting = 0.0005f;
 
     // Force applied when spreading items to add
-    private static int impulseForce = 1000000;
+    private static int impulseForce = 10000;
 
     // Force given to shapes at creation
     private static int spawnForce = 100000;
@@ -68,9 +68,6 @@ public class PhysicsApproach {
     private static int multithreadedOptimizernoToConsider = 10;
 
 
-
-
-
     public static void runPhysicsSingleThreaded() {
         List<Problem> parse = InputParser.getTestProblems();
         Problem problem = parse.get(0);
@@ -78,11 +75,12 @@ public class PhysicsApproach {
 //        problem = new Problem(10, problem.getRoom(),Arrays.asList(new Furniture(0,1, problem.getFurnitures().get(0).toShape())));
         PlacingProblem placingProblem = new PlacingProblem(problem,
                 Arrays.asList(
-  //                      new Vertex(0, 0)
+                        //                      new Vertex(0, 0)
 
-                        new Vertex(-6.231834411621094, 5.402829170227051),
-                        new Vertex(-2.286912441253662, 0.11434581875801086),
-                        new Vertex(-1.9438743591308594, 6.632043838500977)
+
+                        new Vertex(-0.5729168653488159, -2.054429054260254),
+                        new Vertex(12.114582061767578, -13.292692184448242),
+                        new Vertex(24.24481964111328, -30.63849639892578)
 //                SpawnPointStorage.getSpawnPointsForProblem(problem.getNumber())
 //                        new Vertex(15,-15),
 //                        new Vertex(0,-1)
@@ -102,8 +100,8 @@ public class PhysicsApproach {
 //                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, shouldRender, 10000, 0.25, 0.25),
                 new PlacingSolutionCrossoverStrategy(placingProblem),
                 new PlacingSolutionMutationStrategyAdapter(0.5, 10),
-                new PlacingSolutionBiasedGeneratorStrategy(placingProblem, 10),
-//               new PlacingSolutionGeneratorStrategy(placingProblem),
+//                new PlacingSolutionBiasedGeneratorStrategy(placingProblem, 10),
+                new PlacingSolutionGeneratorStrategy(placingProblem),
                 new RouletteWheelSelectionStrategy<>()
         );
 
@@ -143,15 +141,17 @@ public class PhysicsApproach {
 //                        new Vertex(25, -30),
 //                        new Vertex(15, -15),
 //                        new Vertex(0, -1)
-                        new Vertex(-98.0821304321289, 10.849782943725586),
-                        new Vertex(-99.81809997558594, 137.5753631591797)
+                        new Vertex(-0.5338521003723145, -1.9143553972244263),
+                        new Vertex(12.705730438232422, -13.947439193725586),
+                        new Vertex(29.255212783813477, -27.840179443359375),
+                        new Vertex(28.507816314697266, -32.981590270996094)
                 )
 //                SpawnPointStorage.getSpawnPointsForProblem(parse.get(0).getNumber())
         );
 
         double shapeCount = parse.get(0).getFurnitures().size();
         BasicParallelGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(multithreadedPopulationSize,
-                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, false, softMaxIterations, itemsToPlace/shapeCount, allowedSkips/shapeCount, simulatedtimeBetweenUpdates, allowedTimeForFitting, impulseForce, spawnForce),
+                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, false, softMaxIterations, itemsToPlace / shapeCount, allowedSkips / shapeCount, simulatedtimeBetweenUpdates, allowedTimeForFitting, impulseForce, spawnForce),
                 new PlacingSolutionCrossoverStrategy(placingProblem),
                 new PlacingSolutionMutationStrategyAdapter(0.2, 10),
 //                new PlacingSolutionBiasedGeneratorStrategy(placingProblem, itemsToPlace),
@@ -170,7 +170,7 @@ public class PhysicsApproach {
         Solution solution = (Solution) cachedResults.get("solution");
         System.out.println("Number of placed items " + solution.findPlacedPositions(placingProblem.problem).size() + "/" + placingProblem.problem.getFurnitures().size());
 
-        solution = BasicApproach.optimizeSolution(solution, placingProblem.problem, Executors.newFixedThreadPool(10),multithreadedOptimizerPopulationSize, multithreadedOptimizerIterations, multithreadedOptimizernoToConsider, optimizerShouldSortFirst);
+        solution = BasicApproach.optimizeSolution(solution, placingProblem.problem, Executors.newFixedThreadPool(10), multithreadedOptimizerPopulationSize, multithreadedOptimizerIterations, multithreadedOptimizernoToConsider, optimizerShouldSortFirst);
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.width = 2000;

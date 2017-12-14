@@ -1,25 +1,23 @@
+
 package com.roomfurniture.box2d;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.gui.RoomFurnitureRenderer;
 import com.roomfurniture.ShapeCalculator;
-import com.roomfurniture.problem.*;
+import com.roomfurniture.problem.Descriptor;
+import com.roomfurniture.problem.Furniture;
+import com.roomfurniture.problem.Problem;
+import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class PhysicsSimulatorEvaluator {
+public class SimplePhysicsSimulator {
 
     public final World world;
     public final List<Body> bodies;
-    private final List<Body> roomWalls;
-    private final Room room;
-    private final int initialTaskSize;
     private boolean active = false;
     private boolean spawning = true;
     private Vector2 repelPoint;
@@ -31,7 +29,6 @@ public class PhysicsSimulatorEvaluator {
     private Body nextBodyToSpawn;
 
 
-    public Queue<Furniture> itemsToSpawn;
     private Queue<Vertex> spawnPoints;
     private int itemsAdded = 0;
     private int itemsSkipped = 0;
@@ -43,12 +40,7 @@ public class PhysicsSimulatorEvaluator {
     private int spawnForce;
 
 
-    public PhysicsSimulatorEvaluator(Room room, Queue<Furniture> itemsToSpawn, Queue<Vertex> spawnPoints, int softMaxIterations, double successRatio, double failureRatio, float trial_time, int impulseForce, int spawnForce) {
-
-        initialTaskSize = itemsToSpawn.size();
-        this.itemsToSpawn = itemsToSpawn;
-        this.spawnPoints = spawnPoints;
-
+    public SimplePhysicsSimulator() {
         //world
         world = new World(new Vector2(0, 0), true);
         bodies = new ArrayList<>();
@@ -61,170 +53,60 @@ public class PhysicsSimulatorEvaluator {
 //        });
 
         //room
-        this.room = room;
-        roomWalls = new ArrayList<>();
 
-        Vertex previousCorner = null;
-        for (Vertex currentCorner : room.getVerticies()) {
-            if (previousCorner == null) {
-                previousCorner = currentCorner;
-                continue;
-            }
-            addRoomWall(previousCorner, currentCorner);
-            previousCorner = currentCorner;
-        }
-        addRoomWall(previousCorner, room.getVerticies().get(0));
-        this.softMaxIterations = softMaxIterations;
-        this.successRatio = successRatio;
-        this.failureRatio = failureRatio;
-        TRIAL_TIME = trial_time;
-        this.impulseForce = impulseForce;
-        this.spawnForce = spawnForce;
-    }
-
-    private void addRoomWall(Vertex corner1, Vertex corner2) {
+        //body def
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         //shape
-        EdgeShape shape = new EdgeShape();
-        shape.set((float) corner1.x, (float) corner1.y, (float) corner2.x, (float) corner2.y);
+        PolygonShape shape = new PolygonShape();
+        //shape.setRadius(0.01f);
+        shape.set(new float[]{
+                0, 0,
+                0, 10,
+                10, 10,
+                10, 0});
 
         //fixture
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
         Body body = world.createBody(bodyDef);
+
+        body.setTransform(body.getPosition().cpy().add(10, 10), body.getAngle());
+
+        // TODO: Alex have a look at this
+//        Box2DSeparator.separate(body, fixtureDef, item.getVertices().stream().map(Vertex::toVector2).collect(Collectors.toList()), 30.0f);
+
         Fixture fixture = body.createFixture(fixtureDef);
 
         // Shape is the only disposable of the lot, so get rid of it
-        roomWalls.add(body);
+
+        bodies.add(body);
     }
 
 
-    private Body createBody(Furniture item) {
-        //body def
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        Body body = world.createBody(bodyDef);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.density = 1f;
-//
-//        if (RoomFurnitureRenderer.getPoints(item.toShape()).length < 8 && ShapeCalculator.isConvex(item.toShape())) {
-//            //shape
-//            PolygonShape shape = new PolygonShape();
-//            //shape.setRadius(0.01f);
-//            shape.set(RoomFurnitureRenderer.getPoints(item.toShape()));
-//
-//            fixtureDef.shape = shape;
-//            Fixture fixture = body.createFixture(fixtureDef);
-//            //fixture
-//        } else {
-            // TODO: Alex have a look at this
-//        System.out.println(item.getVertices());
-//        ShapeCalculator.simplifyShape(new ArrayList<>(item.getVertices()));
-            Box2DSeparator.separate(body, fixtureDef, ShapeCalculator.simplifyShape(item.getVertices()).stream().map(Vertex::toVector2).collect(Collectors.toList()), 3000.0f);
-//        }
-        body.setUserData(item);
-        return body;
-    }
-
-    //
-//
-//    int iter = 0;
-//
     public void update(float deltaTime) {
         iterations++;
 
 
-        //apply forces
-        if (repelPoint != null)
-            for (Body body : bodies) {
-                Furniture correspondingItem = (Furniture) body.getUserData();
-
-                float magnitude = (float) (spawnForce * ShapeCalculator.calculateAreaOf(correspondingItem.toShape()));
-                Vector2 direction = repelPoint.cpy().sub(getBodyCenterPosition(body)).nor();
-
-                if (direction.isZero())
-                    direction = Vector2.X.cpy().setToRandomDirection();
-
-                body.applyForceToCenter(direction.scl(-magnitude), true);
-            }
-
-        if (spawning) {
-            if (!itemsToSpawn.isEmpty() || nextBodyToSpawn != null) {
-                timeSinceLast += deltaTime;
-
-                Body b;
-                Furniture item;
-                if (nextBodyToSpawn != null) {
-                    b = nextBodyToSpawn;
-                    item = (Furniture) b.getUserData();
-                } else {
-                    item = itemsToSpawn.poll();
-                    Vertex spawnPoint = spawnPoints.poll();
-
-                    b = createBody(item);
-
-                    nextBodyToSpawn = b;
-                    // TODO: Extract variable here?
-                    moveToRepelPoint(b, spawnPoint.toVector2());
-                    repelPoint = spawnPoint.toVector2();
-                }
-
-                b.setActive(false);
+        // TODO: Undo this change
+        // Maintain position
 
 
-                boolean placed = false;
-                for (int i = 0; i < 360; i++) {
-                    boolean fitsIntoTheRoom = fitsIntoTheRoom(b);
-                    boolean doesntIntersectAnything = !intersectsAnything(b);
-                    if (doesntIntersectAnything && fitsIntoTheRoom) {
-                        itemsAdded++;
-                        b.setActive(true);
-                        bodies.add(b);
-                        nextBodyToSpawn = null;
-                        timeSinceLast = 0;
-                        placed = true;
+        for (int i = 0; i < bodies.size(); i++) {
+            Body b = bodies.get(i);
+            Vector2 localCenter = b.getLocalCenter();
+            Vector2 center1 = new Vector2(b.getWorldPoint(localCenter));
 
-                        //set random implulse
-                        float magnitude = (float) (impulseForce * ShapeCalculator.calculateAreaOf(item.toShape()));
-                        Vector2 direction = new Vector2().setToRandomDirection();
-                        b.applyLinearImpulse(direction.scl(-magnitude), getBodyCenterPosition(b), true);
-
-                        break;
-                    } else {
-                        // TODO: Undo this change
-                        // Maintain position
+            b.setTransform(b.getPosition(), (float) (b.getAngle() + Math.PI / 180));
 
 
-                        Vector2 localCenter = b.getLocalCenter();
-                        Vector2 center1 = new Vector2(b.getWorldPoint(localCenter));
+            Vector2 center2 = new Vector2(b.getWorldPoint(localCenter));
 
-                        b.setTransform(b.getPosition(), (float) (b.getAngle() + i * Math.PI / 180));
+            b.setTransform(b.getPosition().sub(center2.sub(center1)), b.getAngle());
 
-
-                        Vector2 center2 = new Vector2(b.getWorldPoint(localCenter));
-
-                        b.setTransform(b.getPosition().sub(center2.sub(center1)), b.getAngle());
-
-
-                        if (timeSinceLast > TRIAL_TIME) {
-                            timeSinceLast = timeSinceLast % TRIAL_TIME;
-                            break;
-                        }
-                    }
-                }
-                if (!placed) {
-                    skipCurrentItem(b);
-                }
-
-            } else {
-                repelPoint = null;
-            }
         }
-
 
         world.step(deltaTime, 6, 2);
 
@@ -292,15 +174,6 @@ public class PhysicsSimulatorEvaluator {
 //        }
     }
 
-    public boolean isDone() {
-        boolean addedEnough = itemsAdded > initialTaskSize * successRatio && iterations > softMaxIterations;
-        boolean skippedTooMany = itemsSkipped > initialTaskSize * failureRatio && iterations > softMaxIterations;
-//        if(skippedTooMany ) {
-//            System.out.println("Skipping due to early termination skipped " + itemsSkipped + "/ " + initialTaskSize + ", added " + itemsAdded + ", iterations " + iterations);
-//        }
-
-        return (addedEnough || skippedTooMany || nextBodyToSpawn == null && itemsToSpawn.isEmpty());
-    }
 
     private void skipCurrentItem(Body b) {
         itemsSkipped++;
@@ -339,16 +212,6 @@ public class PhysicsSimulatorEvaluator {
 //    }
 //
 
-
-    private boolean fitsIntoTheRoom(Body body) {
-        Furniture item = (Furniture) body.getUserData();
-        item = item.transform(new Descriptor(new Vertex(body.getPosition()), body.getAngle()));
-
-        if (!ShapeCalculator.contains(room.toShape(), item.toShape())) {
-            return false;
-        }
-        return true;
-    }
 
     private boolean intersectsAnything(Body body) {
         Furniture item = (Furniture) body.getUserData();
