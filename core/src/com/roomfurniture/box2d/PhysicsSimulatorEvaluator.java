@@ -21,7 +21,7 @@ public class PhysicsSimulatorEvaluator {
     private boolean spawning = true;
     private Vector2 repelPoint;
 //    private static float TRIAL_TIME = 0.0005f; //s
-    private static float TRIAL_TIME = 0.0005f; //s
+    private float TRIAL_TIME; //s
     private float timeSinceLast = 0.0f;
 
 
@@ -38,7 +38,7 @@ public class PhysicsSimulatorEvaluator {
     private double failureRatio;
 
 
-    public PhysicsSimulatorEvaluator(Room room, Queue<Furniture> itemsToSpawn, Queue<Vertex> spawnPoints, int softMaxIterations, double successRatio, double failureRatio) {
+    public PhysicsSimulatorEvaluator(Room room, Queue<Furniture> itemsToSpawn, Queue<Vertex> spawnPoints, int softMaxIterations, double successRatio, double failureRatio, float trial_time) {
 
         initialTaskSize = itemsToSpawn.size();
         this.itemsToSpawn = itemsToSpawn;
@@ -72,6 +72,7 @@ public class PhysicsSimulatorEvaluator {
         this.softMaxIterations = softMaxIterations;
         this.successRatio = successRatio;
         this.failureRatio = failureRatio;
+        TRIAL_TIME = trial_time;
     }
 
     private void addRoomWall(Vertex corner1, Vertex corner2) {

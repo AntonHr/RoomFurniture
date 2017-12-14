@@ -17,6 +17,7 @@ import com.roomfurniture.placing.ga.PlacingSolutionCrossoverStrategy;
 import com.roomfurniture.placing.ga.PlacingSolutionMutationStrategyAdapter;
 import com.roomfurniture.placing.physics.PhysicsPlacingSolutionEvaluationStrategy;
 import com.roomfurniture.problem.Problem;
+import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
 import com.roomfurniture.solution.storage.SolutionDatabase;
 
@@ -29,13 +30,13 @@ public class PhysicsApproach {
         Problem problem = parse.get(0);
 //        problem = new Problem(10, problem.getRoom(),Arrays.asList(new Furniture(0,1, problem.getFurnitures().get(0).toShape())));
         PlacingProblem placingProblem = new PlacingProblem(problem,
-       //         Arrays.asList(
-        //                new Vertex(0, 0)
+                Arrays.asList(
+                        new Vertex(0, 0)
 
-                SpawnPointStorage.getSpawnPointsForProblem(problem.getNumber())
+//                SpawnPointStorage.getSpawnPointsForProblem(problem.getNumber())
 //                        new Vertex(15,-15),
 //                        new Vertex(0,-1)
-         //       )
+                )
         );
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         DesktopLauncher.renderer = new EvaluatorPhysicsRenderer();
@@ -46,8 +47,14 @@ public class PhysicsApproach {
         if (shouldRender)
             DesktopLauncher.application = new LwjglApplication(DesktopLauncher.renderer, config);
 
+        int allowedSkips = 10;
+        int itemsToPlace = 10;
+        int softMaxIterations = 500;
+        int iterations = 100;
+        float simulatedtimeBetweenUpdates = 0.0001f;
+        float allowedTimeForFitting = 0.0005f;
         BasicGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicGeneticAlgorithm<>(100,
-                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, true, 500, 10/500.0, 10/500.0),
+                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, true, softMaxIterations, itemsToPlace /500.0, allowedSkips /500.0, simulatedtimeBetweenUpdates, allowedTimeForFitting),
 //                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, shouldRender, 10000, 0.25, 0.25),
                 new PlacingSolutionCrossoverStrategy(placingProblem),
                 new PlacingSolutionMutationStrategyAdapter(0.5, 10),
@@ -58,7 +65,7 @@ public class PhysicsApproach {
 
 
         SimpleGeneticAlgorithmRunner placingSolutionParallelGeneticAlgorithmRunner = new SimpleGeneticAlgorithmRunner<PlacingSolution>(placingSolutionBasicParallelGeneticAlgorithm, (level, message) -> System.out.println(message));
-        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(100);
+        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(iterations);
         Optional<PlacingSolution> bestIndividual = placingSolutionParallelGeneticAlgorithmRunner.findBestIndividual();
         System.out.println(bestIndividual.get());
         System.out.println(bestIndividual.get().getCachedResults());
@@ -66,6 +73,13 @@ public class PhysicsApproach {
 
         HashMap<String, Object> cachedResults = bestIndividual.get().getCachedResults();
         Solution solution = (Solution) cachedResults.get("solution");
+
+        System.out.println("Number of placed items " + solution.findPlacedPositions(placingProblem.problem).size() + "/" + placingProblem.problem.getFurnitures().size());
+
+        solution = BasicApproach.optimizeSolution(solution, placingProblem.problem, Executors.newFixedThreadPool(10), 100, 1000, 10, true);
+
+        System.out.println("Number of placed items " + solution.findPlacedPositions(placingProblem.problem).size() + "/" + placingProblem.problem.getFurnitures().size());
+
 
         if (!shouldRender)
             DesktopLauncher.application = new LwjglApplication(DesktopLauncher.renderer, config);
@@ -86,7 +100,7 @@ public class PhysicsApproach {
         int itemsToPlace = 10;
         int numberOfAllowedSkips = 10;
         BasicParallelGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(100,
-                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, false, 200, itemsToPlace / 500.0, numberOfAllowedSkips /500.0),
+                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, false, 200, itemsToPlace / 500.0, numberOfAllowedSkips /500.0, 0.0001f, 0.0005f),
                 new PlacingSolutionCrossoverStrategy(placingProblem),
                 new PlacingSolutionMutationStrategyAdapter(0.2, 10),
                 new PlacingSolutionBiasedGeneratorStrategy(placingProblem, itemsToPlace),

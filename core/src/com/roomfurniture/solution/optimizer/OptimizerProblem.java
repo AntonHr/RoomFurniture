@@ -5,9 +5,6 @@ import com.roomfurniture.solution.Solution;
 
 import java.util.Optional;
 
-/**
- * Created by Gopiandcode on 14/12/2017.
- */
 public interface OptimizerProblem {
     Solution getOptimizedSolution(Solution solution);
 
