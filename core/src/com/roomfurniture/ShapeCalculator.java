@@ -144,9 +144,9 @@ public class ShapeCalculator {
             previousDistinctCoordinate = Optional.of(currentCoordinate);
         }
 //        result.add(original.get(original.size() - 1));
-         if (result.size() != points.size()) {
-            System.out.println(result + " != " + points);
-        }
+//         if (result.size() != points.size()) {
+//            System.out.println(result + " != " + points);
+//        }
 
         return result;
     }
