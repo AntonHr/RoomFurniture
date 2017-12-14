@@ -10,6 +10,7 @@ import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ShapeCalculator {
 
@@ -96,6 +97,58 @@ public class ShapeCalculator {
                 return false;
         }
         return true;
+    }
+
+//    public static List<Vertex> simplifyShape(List<Vertex> points) {
+//        if (points.size() < 3)
+//            throw new RuntimeException("Attempted to simplify a line.");
+//        else if (points.size() == 3)
+//            return new ArrayList<>(points);
+//
+//        List<Vertex> result = new ArrayList<>();
+//        for (int i = -1; i < points.size() - 1; i++) {
+//            Vertex a = points.get((i + points.size()) % points.size());
+//            Vertex b = points.get((i + 1 + points.size()) % points.size());
+//            Vertex c = points.get((i + 2 + points.size()) % points.size());
+//
+//            if (!Vertex.isCollinear(a, b, c)) {
+//                result.add(b);
+//            } else {
+//                System.out.println("Are colinear: " + a + ", " + b + ", " + c);
+//            }
+//        }
+//
+//        if (result.size() != points.size()) {
+//            System.out.println(result + " != " + points);
+//        }
+//        return result;
+//    }
+
+    public static List<Vertex> simplifyShape(List<Vertex> points) {
+        List<Vertex> original = new ArrayList<>(points);
+        original.add(points.get(0));
+
+        ArrayList<Vertex> result = new ArrayList();
+        Optional<Vertex> previousDistinctCoordinate = Optional.empty();
+        for (int i = 0; i <= original.size() - 2; i++) {
+            Vertex currentCoordinate = original.get(i);
+            Vertex nextCoordinate = original.get(i + 1);
+            if (currentCoordinate.equals(nextCoordinate)) {
+                continue;
+            }
+            if (previousDistinctCoordinate.isPresent()
+                    && Vertex.isCollinear(previousDistinctCoordinate.get(), currentCoordinate, nextCoordinate)) {
+                continue;
+            }
+            result.add(currentCoordinate);
+            previousDistinctCoordinate = Optional.of(currentCoordinate);
+        }
+//        result.add(original.get(original.size() - 1));
+         if (result.size() != points.size()) {
+            System.out.println(result + " != " + points);
+        }
+
+        return result;
     }
 
 }
