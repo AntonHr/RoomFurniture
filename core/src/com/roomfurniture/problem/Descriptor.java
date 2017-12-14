@@ -43,4 +43,8 @@ public class Descriptor {
 
         return Optional.empty();
     }
+
+    public Descriptor copy() {
+        return new Descriptor(position.copy(), rotation);
+    }
 }

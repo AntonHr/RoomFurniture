@@ -15,6 +15,17 @@ public class InputParser {
 
     private Pattern defaultDelimiter = new Scanner("").delimiter();
 
+    public static List<Problem> getTestProblems() {
+        InputParser inputParser = new InputParser();
+        List<Problem> parse = null;
+        try {
+            parse = inputParser.parse("test.txt");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return parse;
+    }
+
     public List<Problem> parse(String filename) throws FileNotFoundException {
         File file = new File(filename);
         Scanner scanner = new Scanner(file);

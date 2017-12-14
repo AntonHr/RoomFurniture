@@ -13,20 +13,24 @@ public class ParallelGeneticAlgorithmRunner<T> implements GeneticAlgorithmRunner
     private int threadPoolSize;
     private ParallelGeneticAlgorithm<T> algorithm;
     private final LoggingStrategy loggingStrategy;
-    private final ExecutorService threadPoolExecutor;
+    private ExecutorService threadPoolExecutor;
 
     public ParallelGeneticAlgorithmRunner(int threadPoolSize, ParallelGeneticAlgorithm<T> algorithm) {
         this(threadPoolSize, algorithm,  (level, message) -> System.out.println(message));
    }
    public ParallelGeneticAlgorithmRunner(int threadPoolSize, ExecutorService service, ParallelGeneticAlgorithm<T> algorithm) {
-        this(threadPoolSize, algorithm,  (level, message) -> System.out.println(message));
+        this(threadPoolSize, service, algorithm,  (level, message) -> System.out.println(message));
+   }
+   public ParallelGeneticAlgorithmRunner(int threadPoolSize, ParallelGeneticAlgorithm<T> algorithm, LoggingStrategy loggingStrategy) {
+       this(threadPoolSize,Executors.newFixedThreadPool(threadPoolSize), algorithm, loggingStrategy);
+       System.out.println("Made threaadpool");
    }
 
-    public ParallelGeneticAlgorithmRunner(int threadPoolSize, ParallelGeneticAlgorithm<T> algorithm, LoggingStrategy loggingStrategy) {
+    public ParallelGeneticAlgorithmRunner(int threadPoolSize, ExecutorService service, ParallelGeneticAlgorithm<T> algorithm, LoggingStrategy loggingStrategy) {
         this.threadPoolSize = threadPoolSize;
         this.algorithm = algorithm;
         this.loggingStrategy = loggingStrategy;
-        threadPoolExecutor = Executors.newFixedThreadPool(threadPoolSize);
+        this.threadPoolExecutor = service;
     }
 
     public void runTestIteration(int iterations) {

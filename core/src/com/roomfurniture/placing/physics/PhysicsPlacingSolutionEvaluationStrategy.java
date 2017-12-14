@@ -1,37 +1,38 @@
 package com.roomfurniture.placing.physics;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
-import com.gui.EvaluatorPhysicsRenderer;
-import com.gui.RoomFurnitureRenderer;
-import com.roomfurniture.InputParser;
+import com.awesome.scenario.desktop.DesktopLauncher;
 import com.roomfurniture.ShapeCalculator;
-import com.roomfurniture.box2d.PhysicsSimulator;
 import com.roomfurniture.box2d.PhysicsSimulatorEvaluator;
 import com.roomfurniture.ga.algorithm.interfaces.EvaluationStrategy;
 import com.roomfurniture.placing.PlacingDescriptor;
 import com.roomfurniture.placing.PlacingProblem;
 import com.roomfurniture.placing.PlacingSolution;
 import com.roomfurniture.problem.Furniture;
-import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
 
-import java.awt.*;
-import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrategy<PlacingSolution> {
     private final PlacingProblem problem;
+    private boolean shouldRender;
+    private int softMaxIterations;
+    private double successRatio;
+    private double failureRatio;
+    private float dt;
+    private float trial_time;
+    private int impulseForce;
+    private int spawnForce;
 
-    public PhysicsPlacingSolutionEvaluationStrategy(PlacingProblem problem) {
+    public PhysicsPlacingSolutionEvaluationStrategy(PlacingProblem problem, boolean shouldRender, int softMaxIterations, double successRatio, double failureRatio, float dt, float trial_time, int impulseForce, int spawnForce) {
         this.problem = problem;
+        this.shouldRender = shouldRender;
+        this.softMaxIterations = softMaxIterations;
+        this.successRatio = successRatio;
+        this.failureRatio = failureRatio;
+        this.dt = dt;
+        this.trial_time = trial_time;
+        this.impulseForce = impulseForce;
+        this.spawnForce = spawnForce;
     }
 
     @Override
@@ -58,26 +59,25 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
             itemsToSpawn.add(descriptor.getFurniture(problem));
             spawnPoints.add(descriptor.getVertex(problem));
         }
-        PhysicsSimulatorEvaluator physicsSimulator = new PhysicsSimulatorEvaluator(problem.getRoom(), itemsToSpawn, spawnPoints);
+        PhysicsSimulatorEvaluator physicsSimulator = new PhysicsSimulatorEvaluator(problem.getRoom(), itemsToSpawn, spawnPoints, softMaxIterations, successRatio, failureRatio, trial_time, impulseForce, spawnForce);
 
 
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 2000;
-        config.height = 1000;
-
-        //EvaluatorPhysicsRenderer renderer = new EvaluatorPhysicsRenderer();
-        //LwjglApplication lwjglApplication = new LwjglApplication(renderer, config);
-
-        float dt = 0.0001f; //s
-        //float dt = 0.1f; //s
-        int ITERATION_COUNT = 4187;
-        for (int i = 0; i < ITERATION_COUNT; i++) {
+        //s
+        //        float dt = 0.1f; //s
+//        int ITERATION_COUNT = 4187;
+//        for (int i = 0; i < ITERATION_COUNT; i++) {
 //            System.out.println(i + "/" + ITERATION_COUNT);
+        int iterationCount = 0;
+        if(shouldRender)
+            DesktopLauncher.renderer.update(physicsSimulator);
+        while (!physicsSimulator.isDone()) {
+            iterationCount++;
+//            if (iterationCount % 100000 == 0) {
+//                System.out.println("Iteration Count: " + iterationCount);
+//                System.out.println("Items to spawn: " + physicsSimulator.itemsToSpawn.size() + "/ " + (physicsSimulator.bodies.size() - 1));
+//            }
             physicsSimulator.update(dt);
-            //if (i % 10 == 0)
- //           renderer.update(physicsSimulator);
         }
-        //Gdx.app.exit();
 
         List<Furniture> furnitureInRoom = physicsSimulator.getTransformedItems();
 
@@ -107,7 +107,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         }
 
 
-        System.out.println("Score after evaluation: " + score);
+//        System.out.println("Score after evaluation: " + score);
 
         double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
 
@@ -117,7 +117,9 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         placingSolution.cacheResults(new HashMap<String, Object>() {{
             put("coverage", finalAreaSum / roomArea);//0..1
             put("score", finalScore);
+            put("solution", physicsSimulator.getSolution(problem.problem));
         }});
+        placingSolution.storePhysicsSimulator(physicsSimulator);
 
 
         // The optimizer often can make up for an initial lack of coverage, but not score

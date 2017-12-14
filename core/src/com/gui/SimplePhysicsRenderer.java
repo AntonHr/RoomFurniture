@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.box2d.PhysicsSimulatorEvaluator;
+import com.roomfurniture.box2d.SimplePhysicsSimulator;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
@@ -27,7 +28,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements InputProcessor {
+public class SimplePhysicsRenderer extends ApplicationAdapter implements InputProcessor {
 
 
     static final int WIDTH = 100;
@@ -41,7 +42,7 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
     private MyShapeRenderer shapeRenderer;
     private OrthographicCamera cam;
 
-    private PhysicsSimulatorEvaluator physicsSimulator;
+    private SimplePhysicsSimulator physicsSimulator;
 
     private int renderType = 0;
 
@@ -136,7 +137,7 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
             renderOutItems(maxValue);
 
 
-            //renderRepelPoint();
+            renderRepelPoint();
 
 
             batch.begin();
@@ -265,10 +266,9 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
     }
 
     private void renderRepelPoint() {
-        if (physicsSimulator == null || physicsSimulator.getRepelPoint() == null)
-            return;
+        physicsSimulator.update(Gdx.graphics.getDeltaTime());
 
-        Vector2 repelPoint = physicsSimulator.getRepelPoint();
+        Vector2 repelPoint = new Vector2(0, 0);
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.BLUE);
 
@@ -495,7 +495,7 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
         return false;
     }
 
-    public void update(PhysicsSimulatorEvaluator physicsSimulator) {
+    public void update(SimplePhysicsSimulator physicsSimulator) {
         this.physicsSimulator = physicsSimulator;
     }
 
@@ -517,7 +517,7 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
         List<Furniture> notIncludedItems = new ArrayList<>();
 
 
-        Comparator<Furniture> comparator = Comparator.comparing(Furniture::getScorePerUnitArea);
+        Comparator<Furniture> comparator = Comparator.comparing(item -> item.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(item.toShape()));
         notIncludedItems.sort(comparator);
 
         notIncludedItems.addAll(problem.getFurnitures());

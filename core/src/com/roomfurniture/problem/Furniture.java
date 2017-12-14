@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.List;
+import java.util.function.Function;
 
 public class Furniture {
     private final double scorePerUnitArea;
@@ -22,7 +23,7 @@ public class Furniture {
         shape = constructPath(vertices);
     }
 
-    private Path2D.Double constructPath(List<Vertex> vertices) {
+    private Shape constructPath(List<Vertex> vertices) {
         Path2D.Double path = new Path2D.Double();
         Vertex vertex = vertices.get(0);
         path.moveTo(vertex.x, vertex.y);
@@ -33,7 +34,7 @@ public class Furniture {
         return path;
     }
 
-    private Furniture(int id, double scorePerUnitArea, Shape polygon) {
+    public Furniture(int id, double scorePerUnitArea, Shape polygon) {
         this.id = id;
         this.scorePerUnitArea = scorePerUnitArea;
         this.shape = polygon;
@@ -59,6 +60,9 @@ public class Furniture {
         return new Furniture(id, this.scorePerUnitArea, shape);
     }
 
+    public double getScore() {
+        return scorePerUnitArea * ShapeCalculator.calculateAreaOf(shape);
+    }
 
     public List<Vertex> getVertices() {
         return ShapeCalculator.getVertices(shape);
@@ -67,5 +71,12 @@ public class Furniture {
     @Override
     public boolean equals(Object obj) {
         return this.id == ((Furniture) obj).id;
+    }
+
+    public int findMeInInitialArray(List<Furniture> initialItemArray) {
+        int ind = initialItemArray.indexOf(this);
+        if (ind == -1)
+            throw new RuntimeException("ooopos");
+        return ind;
     }
 }

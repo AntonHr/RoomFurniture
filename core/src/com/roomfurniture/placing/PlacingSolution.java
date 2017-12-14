@@ -1,5 +1,6 @@
 package com.roomfurniture.placing;
 
+import com.roomfurniture.box2d.PhysicsSimulatorEvaluator;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 public class PlacingSolution {
     private final List<PlacingDescriptor> descriptors;
     private HashMap<String, Object> cache;
+    private PhysicsSimulatorEvaluator physicsSimulator;
 
 
     public PlacingSolution(List<PlacingDescriptor> descriptors) {
@@ -44,5 +46,13 @@ public class PlacingSolution {
 
     public HashMap<String, Object> getCachedResults() {
         return cache;
+    }
+
+    public void storePhysicsSimulator(PhysicsSimulatorEvaluator physicsSimulator) {
+        this.physicsSimulator = physicsSimulator;
+    }
+
+    public PhysicsSimulatorEvaluator getPhysicsSimulator() {
+        return physicsSimulator;
     }
 }
