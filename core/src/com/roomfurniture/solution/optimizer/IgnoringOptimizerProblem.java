@@ -1,9 +1,11 @@
 package com.roomfurniture.solution.optimizer;
 
 import com.google.common.collect.Streams;
+import com.roomfurniture.InputParser;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.*;
 import com.roomfurniture.solution.Solution;
+import com.roomfurniture.solution.SolutionGeneratorStrategy;
 
 import java.awt.*;
 import java.util.*;
@@ -106,17 +108,20 @@ public class IgnoringOptimizerProblem implements OptimizerProblem {
 
          for(int i =0 ;i <placedDescriptors.size(); i++) {
             Integer index = placedPositions.get(i);
+            assert (index < fullSize);
             Descriptor desc = placedDescriptors.get(i);
             result[index] = Optional.of(desc);
          }
 
          for(int i = 0; i < solution.getDescriptors().size(); i++) {
              FurnitureRepresentation repr = unplacedFurniture.get(i);
+             assert (repr.getIndex() < fullSize);
              result[repr.getIndex()] = Optional.of(solution.getDescriptors().get(i));
          }
 
          for(int i = 0; i < ignoreFurniture.size(); i++) {
-             FurnitureRepresentation repr = unplacedFurniture.get(i);
+             FurnitureRepresentation repr = ignoreFurniture.get(i);
+             assert (repr.getIndex() < fullSize);
              result[repr.getIndex()] = Optional.of(outsideRoom.copy());
          }
 
@@ -184,4 +189,6 @@ public class IgnoringOptimizerProblem implements OptimizerProblem {
     public Room getRoom() {
         return room;
     }
+
 }
+
