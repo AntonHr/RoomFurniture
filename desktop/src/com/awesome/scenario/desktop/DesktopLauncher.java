@@ -37,15 +37,7 @@ public class DesktopLauncher {
        // PhysicsApproach.runMultiThreaded();
 //        PhysicsApproach.runPhysicsSingleThreaded();
 
-
-        List<Problem> problems = InputParser.getTestProblems();
-
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 2000;
-        config.height = 1000;
-
-
-        DesktopLauncher.application = new LwjglApplication(new SetSpawnRenderer(problems.get(0)), config);
+        PhysicsApproach.runSpawnPointPicker();
     }
 
 

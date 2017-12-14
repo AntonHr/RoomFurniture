@@ -3,6 +3,7 @@ package com.awesome.scenario.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.gui.EvaluatorPhysicsRenderer;
+import com.gui.SetSpawnRenderer;
 import com.roomfurniture.InputParser;
 import com.roomfurniture.SpawnPointStorage;
 import com.roomfurniture.ga.algorithm.BasicGeneticAlgorithm;
@@ -136,5 +137,16 @@ public class PhysicsApproach {
             SolutionDatabase.createTeamSolutionDatabase().storeSolutionFor(placingProblem.problem.getNumber(), solution.score(placingProblem.problem).get(), (double) cachedResults.get("coverage"), solution);
         }
 
+    }
+
+    public static void runSpawnPointPicker() {
+        List<Problem> problems = InputParser.getTestProblems();
+
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        config.width = 2000;
+        config.height = 1000;
+
+
+        DesktopLauncher.application = new LwjglApplication(new SetSpawnRenderer(problems.get(0)), config);
     }
 }
