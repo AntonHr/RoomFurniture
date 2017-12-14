@@ -48,7 +48,7 @@ public class Box2DSeparator {
             polyShape = new PolygonShape();
             polyShape.set((Vector2[]) verticesVec.toArray(Vector2.class));
 
-            polyShape.setRadius(0);
+            //polyShape.setRadius(0);
 
             fixtureDef.shape = polyShape;
             body.createFixture(fixtureDef);
