@@ -78,9 +78,9 @@ public class PhysicsApproach {
                         //                      new Vertex(0, 0)
 
 
-                        new Vertex(-6.231834411621094, 5.402829170227051),
-                        new Vertex(-2.286912441253662, 0.11434581875801086),
-                        new Vertex(-1.9438743591308594, 6.632043838500977)
+                        new Vertex(-0.5729168653488159, -2.054429054260254),
+                        new Vertex(12.114582061767578, -13.292692184448242),
+                        new Vertex(24.24481964111328, -30.63849639892578)
 //                SpawnPointStorage.getSpawnPointsForProblem(problem.getNumber())
 //                        new Vertex(15,-15),
 //                        new Vertex(0,-1)

@@ -194,18 +194,17 @@ public class PhysicsSimulatorEvaluator {
                     } else {
                         // TODO: Undo this change
                         // Maintain position
-                        if (!fitsIntoTheRoom) {
-
-                            Vector2 localCenter = b.getLocalCenter();
-                            Vector2 center1 = new Vector2(b.getWorldPoint(localCenter));
-
-                            b.setTransform(b.getPosition(), (float) (b.getAngle() + i * Math.PI / 180));
 
 
-                            Vector2 center2 = new Vector2(b.getWorldPoint(localCenter));
+                        Vector2 localCenter = b.getLocalCenter();
+                        Vector2 center1 = new Vector2(b.getWorldPoint(localCenter));
 
-                            b.setTransform(b.getPosition().sub(center2.sub(center1)), b.getAngle());
-                        }
+                        b.setTransform(b.getPosition(), (float) (b.getAngle() + i * Math.PI / 180));
+
+
+                        Vector2 center2 = new Vector2(b.getWorldPoint(localCenter));
+
+                        b.setTransform(b.getPosition().sub(center2.sub(center1)), b.getAngle());
 
 
                         if (timeSinceLast > TRIAL_TIME) {
