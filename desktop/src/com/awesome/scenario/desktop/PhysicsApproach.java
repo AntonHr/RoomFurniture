@@ -12,6 +12,7 @@ import com.roomfurniture.ga.algorithm.parallel.BasicParallelGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithmRunner;
 import com.roomfurniture.placing.PlacingProblem;
 import com.roomfurniture.placing.PlacingSolution;
+import com.roomfurniture.placing.ga.PlacingSolutionBiasedGeneratorStrategy;
 import com.roomfurniture.placing.ga.PlacingSolutionCrossoverStrategy;
 import com.roomfurniture.placing.ga.PlacingSolutionGeneratorStrategy;
 import com.roomfurniture.placing.ga.PlacingSolutionMutationStrategyAdapter;
@@ -47,10 +48,12 @@ public class PhysicsApproach {
             DesktopLauncher.application = new LwjglApplication(DesktopLauncher.renderer, config);
 
         BasicGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicGeneticAlgorithm<>(2,
-                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, shouldRender, 10000, 0.25, 0.25),
+                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, true, 500, 10/500.0, 10/500.0),
+//                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, shouldRender, 10000, 0.25, 0.25),
                 new PlacingSolutionCrossoverStrategy(placingProblem),
                 new PlacingSolutionMutationStrategyAdapter(0.5, 10),
-                new PlacingSolutionGeneratorStrategy(placingProblem),
+                new PlacingSolutionBiasedGeneratorStrategy(placingProblem, 10),
+//                new PlacingSolutionGeneratorStrategy(placingProblem),
                 new RouletteWheelSelectionStrategy<>()
         );
 
@@ -82,15 +85,16 @@ public class PhysicsApproach {
         );
 
         BasicParallelGeneticAlgorithm<PlacingSolution> placingSolutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(100,
-                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, false, 10000, 0.25, 0.05),
+                new PhysicsPlacingSolutionEvaluationStrategy(placingProblem, false, 200, 10/500.0, 10/500.0),
                 new PlacingSolutionCrossoverStrategy(placingProblem),
                 new PlacingSolutionMutationStrategyAdapter(0.2, 10),
-                new PlacingSolutionGeneratorStrategy(placingProblem),
+                new PlacingSolutionBiasedGeneratorStrategy(placingProblem, 10),
+//                new PlacingSolutionGeneratorStrategy(placingProblem),
                 new RouletteWheelSelectionStrategy<>()
         );
 
         ParallelGeneticAlgorithmRunner<PlacingSolution> placingSolutionParallelGeneticAlgorithmRunner = new ParallelGeneticAlgorithmRunner<>(10, placingSolutionBasicParallelGeneticAlgorithm);
-        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(1000);
+        placingSolutionParallelGeneticAlgorithmRunner.runTestIteration(100);
         Optional<PlacingSolution> bestIndividual = placingSolutionParallelGeneticAlgorithmRunner.findBestIndividual();
         HashMap<String, Object> cachedResults = bestIndividual.get().getCachedResults();
 

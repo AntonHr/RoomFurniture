@@ -281,9 +281,9 @@ public class PhysicsSimulatorEvaluator {
     public boolean isDone() {
         boolean addedEnough = itemsAdded > initialTaskSize * successRatio && iterations > softMaxIterations;
         boolean skippedTooMany = itemsSkipped > initialTaskSize * failureRatio && iterations > softMaxIterations;
-        if(skippedTooMany) {
-            System.out.println("Skipping due to early termination skipped " + itemsSkipped + "/ " + initialTaskSize + ", added " + itemsAdded + ", iterations " + iterations);
-        }
+//        if(skippedTooMany ) {
+//            System.out.println("Skipping due to early termination skipped " + itemsSkipped + "/ " + initialTaskSize + ", added " + itemsAdded + ", iterations " + iterations);
+//        }
 
         return (addedEnough || skippedTooMany || nextBodyToSpawn == null && itemsToSpawn.isEmpty());
     }

@@ -23,4 +23,8 @@ public class Vertex {
     public Vector2 toVector2() {
         return new Vector2((float) x, (float) y);
     }
+
+    public Vertex copy() {
+        return new Vertex(x,y);
+    }
 }

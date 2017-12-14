@@ -14,6 +14,7 @@ import com.roomfurniture.ga.algorithm.parallel.BasicParallelGeneticAlgorithm;
 import com.roomfurniture.ga.algorithm.parallel.ParallelGeneticAlgorithmRunner;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.solution.*;
+import com.roomfurniture.solution.optimizer.BasicOptimizerProblem;
 import com.roomfurniture.solution.optimizer.OptimizerProblem;
 import com.roomfurniture.solution.optimizer.OptimizerProblemEvaluationStrategy;
 import com.roomfurniture.solution.optimizer.OptimizerProblemGeneratorStrategy;
@@ -90,7 +91,7 @@ public class BasicApproach {
     }
 
     public static Solution optimizeSolution(Solution solution, Problem problem, ExecutorService service, int populationSize, int iterations) {
-        OptimizerProblem optimizerProblem = new OptimizerProblem(problem, solution);
+        OptimizerProblem optimizerProblem = new BasicOptimizerProblem(problem, solution);
 
         BasicParallelGeneticAlgorithm<Solution> solutionBasicParallelGeneticAlgorithm = new BasicParallelGeneticAlgorithm<>(populationSize, new OptimizerProblemEvaluationStrategy(optimizerProblem),
                 new SolutionCrossoverStrategy(), new SolutionMutationStrategy(problem), new OptimizerProblemGeneratorStrategy(optimizerProblem), new RouletteWheelSelectionStrategy<Solution>());

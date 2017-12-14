@@ -60,6 +60,9 @@ public class Furniture {
         return new Furniture(id, this.scorePerUnitArea, shape);
     }
 
+    public double getScore() {
+        return scorePerUnitArea * ShapeCalculator.calculateAreaOf(shape);
+    }
 
     public List<Vertex> getVertices() {
         return ShapeCalculator.getVertices(shape);

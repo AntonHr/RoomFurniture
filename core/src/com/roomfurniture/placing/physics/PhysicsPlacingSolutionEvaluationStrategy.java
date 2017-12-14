@@ -64,10 +64,10 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
             DesktopLauncher.renderer.update(physicsSimulator);
         while (!physicsSimulator.isDone()) {
             iterationCount++;
-            if (iterationCount % 100000 == 0) {
+//            if (iterationCount % 100000 == 0) {
 //                System.out.println("Iteration Count: " + iterationCount);
 //                System.out.println("Items to spawn: " + physicsSimulator.itemsToSpawn.size() + "/ " + (physicsSimulator.bodies.size() - 1));
-            }
+//            }
             physicsSimulator.update(dt);
         }
 
