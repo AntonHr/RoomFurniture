@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.gui.EvaluatorPhysicsRenderer;
 import com.gui.RoomFurnitureRenderer;
+import com.gui.SetSpawnRenderer;
 import com.roomfurniture.InputParser;
 import com.roomfurniture.box2d.PhysicsSimulator;
 import com.roomfurniture.ga.algorithm.RouletteWheelSelectionStrategy;
@@ -33,8 +34,18 @@ public class DesktopLauncher {
 
     public static void main(String[] arg) {
 //        optimizeThenRender(solution, problem);
-        PhysicsApproach.runMultiThreaded();
+       // PhysicsApproach.runMultiThreaded();
 //        PhysicsApproach.runPhysicsSingleThreaded();
+
+
+        List<Problem> problems = InputParser.getTestProblems();
+
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        config.width = 2000;
+        config.height = 1000;
+
+
+        DesktopLauncher.application = new LwjglApplication(new SetSpawnRenderer(problems.get(0)), config);
     }
 
 

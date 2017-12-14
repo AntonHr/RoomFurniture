@@ -25,6 +25,11 @@ public class Vertex {
     }
 
     public Vertex copy() {
-        return new Vertex(x,y);
+        return new Vertex(x, y);
+    }
+
+    public void set(Vertex vertex) {
+        x = vertex.x;
+        y = vertex.y;
     }
 }

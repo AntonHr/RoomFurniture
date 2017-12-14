@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements InputProcessor {
+public class SetSpawnRenderer extends ApplicationAdapter implements InputProcessor {
 
 
     static final int WIDTH = 100;
@@ -45,23 +45,25 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
 
     private int renderType = 0;
 
-    private Box2DDebugRenderer box2DDebugRenderer;
-
-    private List<Furniture> itemsInRoom;
     private List<Furniture> notIncludedItems;
 
     private Problem problem;
-    private Solution solution;
 
-    private boolean solutionIsBeingRendered = false;
 
+    private List<Vertex> spawnPoints = new ArrayList<>();
+
+    {
+        spawnPoints.add(new Vertex(0, 0));
+    }
+
+    public SetSpawnRenderer(Problem problem) {
+        this.problem = problem;
+    }
 
     @Override
     public void create() {
         Gdx.input.setInputProcessor(this);
-        // constructObjects();
-
-        box2DDebugRenderer = new Box2DDebugRenderer();
+        //constructObjects();
 
         font = new BitmapFont();
         font.setColor(Color.BLACK);
@@ -80,155 +82,50 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
     }
 
 
-//    private void constructObjects() {
-//        //solution
-//
-//        this.itemsInRoom = solution.getItemsInTheRoom(problem);
-//
-//
-//        //spread
-//        List<Furniture> notIncludedItems = new ArrayList<>();
-//
-//
-//        Comparator<Furniture> comparator = Comparator.comparing(item -> item.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(item.toShape()));
-//        notIncludedItems.sort(comparator);
-//
-//        notIncludedItems.addAll(problem.getFurnitures());
-//
-//
-//        for (Furniture furniture : itemsInRoom) {
-//            int ind = notIncludedItems.indexOf(furniture);
-//            if (ind != -1)
-//                notIncludedItems.remove(ind);
-//        }
-//
-//        this.notIncludedItems = spread(notIncludedItems);
-//    }
-
-
     @Override
     public void render() {
-        if (solutionIsBeingRendered) {
-//            if(physicsSimulator != null)
-//                physicsSimulator.update(Gdx.graphics.getDeltaTime());
-
-            if (renderType != 3)
-                Gdx.gl.glClearColor(1, 1, 1, 1);
-            else
-                Gdx.gl.glClearColor(0, 0, 0, 1);
-
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-            handleInput();
-            cam.update();
-
-            shapeRenderer.setProjectionMatrix(cam.combined);
-
-            //colours
-            double maxValue = 0;
-            for (Furniture item : problem.getFurnitures()) {
-                maxValue = Math.max(maxValue, item.getScorePerUnitArea());
-            }
-
-
-            renderRoom();
-            renderInItems(maxValue);
-            renderOutItems(maxValue);
-
-
-            //renderRepelPoint();
-
-
-            batch.begin();
-
-            int y = 50;
-            font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
-            font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
-
-            font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
-            font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 40);
-
-            Vector3 screenPos= new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0.0f);
-            Vector3 worldPos = cam.unproject(screenPos);
-            font.draw(batch, "position: " + (worldPos.x)  + ", " + (worldPos.y), 10, y += 20);
-
-            batch.end();
-        } else {
+        if (renderType != 3)
+            Gdx.gl.glClearColor(1, 1, 1, 1);
+        else
             Gdx.gl.glClearColor(0, 0, 0, 1);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-            handleInput();
-            cam.update();
-            shapeRenderer.setProjectionMatrix(cam.combined);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-            try {
-                if (physicsSimulator != null) {
-                    box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
-                }
-            } catch (Exception e) {
-                System.out.println("Couldn't draw: " + e.getMessage());
-            }
+        handleInput();
+        cam.update();
 
-            renderRepelPoint();
+        shapeRenderer.setProjectionMatrix(cam.combined);
+
+        //colours
+        double maxValue = 0;
+        for (Furniture item : problem.getFurnitures()) {
+            maxValue = Math.max(maxValue, item.getScorePerUnitArea());
         }
 
 
-        //
-//
-//        physicsSimulator.update(Gdx.graphics.getDeltaTime());
-//
-//        if (renderType != 3)
-//            Gdx.gl.glClearColor(1, 1, 1, 1);
-//        else
-//            Gdx.gl.glClearColor(0, 0, 0, 1);
-//
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//
-//        handleInput();
-//        cam.update();
-//
-//        shapeRenderer.setProjectionMatrix(cam.combined);
-//
-//        //colours
-//        double maxValue = 0;
-//        for (Furniture item : problem.getFurnitures()) {
-//            maxValue = Math.max(maxValue, item.getScorePerUnitArea());
-//        }
-//
-//
-//        switch (renderType) {
-//            case 0:
-//                renderRoom();
-//                renderInItems(maxValue);
-//                renderOutItems(maxValue);
-//                break;
-//            case 1:
-//                renderRoom();
-//                renderOutItems(maxValue);
-//                break;
-//            case 2:
-//                renderRoom();
-//                renderInItems(maxValue);
-//                break;
-//            case 3:
-//                box2DDebugRenderer.render(physicsSimulator.world, cam.combined);
-//                break;
-//        }
-//
-//        renderRepelPoint();
-//
-//
-//        batch.begin();
-//
-//        int y = 50;<<<<<<< HEAD
+        renderRoom();
+        //renderOutItems(maxValue);
+        renderSpawnPoints();
 
-//        font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
-//        font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
-//
-//        font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
-//        font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 20);
-//
-//        batch.end();
+
+        batch.begin();
+
+        int y = 50;
+        font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
+        font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
+        Vector3 screenPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0.0f);
+        Vector3 worldPos = cam.unproject(screenPos);
+        font.draw(batch, "position: " + (worldPos.x) + ", " + (worldPos.y), 10, y += 20);
+
+        batch.end();
+    }
+
+    private void renderSpawnPoints() {
+        int i = 0;
+        for (Vertex vertex : spawnPoints) {
+            renderRepelPoint(vertex.toVector2(), i == spawnPoints.size() - 1);
+            i++;
+        }
     }
 
     private void renderOutItems(double maxValue) {
@@ -243,18 +140,6 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
     }
 
 
-    private void renderInItems(double maxValue) {
-        //solution
-        shapeRenderer.begin(MyShapeRenderer.ShapeType.Filled);
-        for (Furniture item : itemsInRoom) {
-            float[] points = getPoints(item.toShape());
-
-            shapeRenderer.setColor(valueToColor((float) (item.getScorePerUnitArea() / maxValue)));
-            shapeRenderer.polygon(points);
-        }
-        shapeRenderer.end();
-    }
-
     private void renderRoom() {
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Line);
         float[] roomPoints = getPoints(problem.getRoom().toShape());
@@ -264,20 +149,21 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
         shapeRenderer.end();
     }
 
-    private void renderRepelPoint() {
-        if (physicsSimulator == null || physicsSimulator.getRepelPoint() == null)
-            return;
+    private void renderRepelPoint(Vector2 point, boolean active) {
 
-        Vector2 repelPoint = physicsSimulator.getRepelPoint();
+
         shapeRenderer.begin(MyShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.BLUE);
 
-        shapeRenderer.line(repelPoint.x - cam.viewportWidth * cam.zoom, repelPoint.y,
-                repelPoint.x + cam.viewportWidth * cam.zoom, repelPoint.y);
+        if (active) {
+            shapeRenderer.line(point.x - cam.viewportWidth * cam.zoom, point.y,
+                    point.x + cam.viewportWidth * cam.zoom, point.y);
 
-        shapeRenderer.line(repelPoint.x, repelPoint.y - cam.viewportHeight * cam.zoom,
-                repelPoint.x, repelPoint.y + cam.viewportHeight * cam.zoom);
-
+            shapeRenderer.line(point.x, point.y - cam.viewportHeight * cam.zoom,
+                    point.x, point.y + cam.viewportHeight * cam.zoom);
+        } else {
+            shapeRenderer.circle(point.x, point.y, 0.5f, 360);
+        }
 
         shapeRenderer.end();
     }
@@ -449,7 +335,22 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
 
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+            spawnPoints.add(new Vertex(0, 0));
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+            printSpawnPoint();
+        }
+
         return true;
+    }
+
+    private void printSpawnPoint() {
+        List list = new ArrayList(spawnPoints);
+        list.remove(list.size() - 1);
+        System.out.println("Spawn points: ");
+        System.out.println(list);
     }
 
     Vector2 getMousePosInWorld() {
@@ -469,8 +370,19 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        moveSpawnPoint(screenX, screenY);
 
-        return false;
+        return true;
+    }
+
+    private void moveSpawnPoint(int screenX, int screenY) {
+        if (!spawnPoints.isEmpty()) {
+            Vertex activePoint = spawnPoints.get(spawnPoints.size() - 1);
+
+            Vector3 unproject = cam.unproject(new Vector3(screenX, screenY, 0));
+
+            activePoint.set(new Vertex(unproject.x, unproject.y));
+        }
     }
 
     @Override
@@ -480,8 +392,8 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-
-        return false;
+        moveSpawnPoint(screenX, screenY);
+        return true;
     }
 
 
@@ -495,24 +407,8 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
         return false;
     }
 
-    public void update(PhysicsSimulatorEvaluator physicsSimulator) {
-        this.physicsSimulator = physicsSimulator;
-    }
-
-    public void renderSolution(Problem problem, Solution solution) {
-        this.problem = problem;
-        this.solution = solution;
-        constructObjects();
-
-        solutionIsBeingRendered = true;
-    }
 
     private void constructObjects() {
-        //solution
-
-        this.itemsInRoom = solution.getItemsInTheRoom(problem);
-
-
         //spread
         List<Furniture> notIncludedItems = new ArrayList<>();
 
@@ -521,13 +417,6 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
         notIncludedItems.sort(comparator);
 
         notIncludedItems.addAll(problem.getFurnitures());
-
-
-        for (Furniture furniture : itemsInRoom) {
-            int ind = notIncludedItems.indexOf(furniture);
-            if (ind != -1)
-                notIncludedItems.remove(ind);
-        }
 
         this.notIncludedItems = spread(notIncludedItems);
     }
