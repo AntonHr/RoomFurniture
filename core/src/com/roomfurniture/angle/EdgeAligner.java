@@ -1,5 +1,6 @@
 package com.roomfurniture.angle;
 
+import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Vertex;
 
 import java.util.ArrayList;
@@ -31,5 +32,18 @@ public class EdgeAligner {
         angles.add(new Angle(edges.get(edges.size() - 1), edges.get(0)));
 
         return angles;
+    }
+
+    public Descriptor alignTwoAngles(Angle stationary, Angle moving) {
+        Vertex vStat = stationary.getVertex();
+        Vertex vMov = moving.getVertex();
+
+        return null;
+    }
+
+    public Descriptor alignAngleSets(List<Angle> stationary, List<Angle> moving) {
+
+
+        return null;
     }
 }
