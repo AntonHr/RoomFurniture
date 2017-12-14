@@ -34,7 +34,7 @@ public class Furniture {
         return path;
     }
 
-    private Furniture(int id, double scorePerUnitArea, Shape polygon) {
+    public Furniture(int id, double scorePerUnitArea, Shape polygon) {
         this.id = id;
         this.scorePerUnitArea = scorePerUnitArea;
         this.shape = polygon;

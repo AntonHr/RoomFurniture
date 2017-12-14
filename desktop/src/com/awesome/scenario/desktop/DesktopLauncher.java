@@ -32,7 +32,7 @@ public class DesktopLauncher {
     public static void main(String[] arg) {
 //        optimizeThenRender(solution, problem);
         PhysicsApproach.runMultiThreaded();
-//        runPhysicsSingleThreaded();
+//        PhysicsApproach.runPhysicsSingleThreaded();
     }
 
 

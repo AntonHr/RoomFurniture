@@ -93,7 +93,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         }
 
 
-        System.out.println("Score after evaluation: " + score);
+//        System.out.println("Score after evaluation: " + score);
 
         double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
 
