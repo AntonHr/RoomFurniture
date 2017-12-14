@@ -15,9 +15,9 @@ public class DesktopLauncher {
     public static void main(String[] arg) {
 //        optimizeThenRender(solution, problem);
 //        PhysicsApproach.runMultiThreaded();
-//        PhysicsApproach.runPhysicsSingleThreaded();
+        PhysicsApproach.runPhysicsSingleThreaded();
 
-        PhysicsApproach.runSpawnPointPicker();
+//        PhysicsApproach.runSpawnPointPicker();
 
 //
 //        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
