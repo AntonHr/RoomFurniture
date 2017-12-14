@@ -6,12 +6,12 @@ import com.roomfurniture.problem.Vertex;
  * Created by asus on 14.12.2017 г..
  */
 public class Edge {
-    private Vertex a;
-    private Vertex b;
+    private Vertex beginVertex;
+    private Vertex endVertex;
 
-    public Edge(Vertex a, Vertex b) {
-        this.a = a;
-        this.b = b;
+    public Edge(Vertex beginVertex, Vertex endVertex) {
+        this.beginVertex = beginVertex;
+        this.endVertex = endVertex;
     }
 
     public double angleTo(Edge secondEdge) {
@@ -28,18 +28,18 @@ public class Edge {
     }
 
     public double getLength() {
-        return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+        return Math.sqrt(Math.pow(beginVertex.x - endVertex.x, 2) + Math.pow(beginVertex.y - endVertex.y, 2));
     }
 
     public Vertex getVector() {
-        return new Vertex(b.x - a.x, b.y - a.y);
+        return new Vertex(endVertex.x - beginVertex.x, endVertex.y - beginVertex.y);
     }
 
-    public Vertex getA() {
-        return a;
+    public Vertex getBeginVertex() {
+        return beginVertex;
     }
 
-    public Vertex getB() {
-        return b;
+    public Vertex getEndVertex() {
+        return endVertex;
     }
 }

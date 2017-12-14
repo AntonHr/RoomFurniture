@@ -1,6 +1,5 @@
 package com.roomfurniture.angle;
 
-import com.amazonaws.services.devicefarm.model.Run;
 import com.roomfurniture.problem.Vertex;
 
 import java.util.ArrayList;
@@ -20,10 +19,10 @@ public class Angle {
 
     public Vertex getVertex() {
         List<Vertex> vertices = new ArrayList<>();
-        vertices.add(a.getA());
-        vertices.add(a.getB());
-        vertices.add(b.getA());
-        vertices.add(b.getB());
+        vertices.add(a.getBeginVertex());
+        vertices.add(a.getEndVertex());
+        vertices.add(b.getBeginVertex());
+        vertices.add(b.getEndVertex());
 
         for (Vertex k: vertices) {
             for (Vertex p: vertices) {
