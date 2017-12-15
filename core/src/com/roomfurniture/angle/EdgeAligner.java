@@ -12,12 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by asus on 14.12.2017 г..
- */
 public class EdgeAligner {
 
-    private List<Edge> verticesToEdges(List<Vertex> vertices) {
+    private static List<Edge> verticesToEdges(List<Vertex> vertices) {
         List<Edge> edges = new ArrayList<>();
 
         for (int i = 0; i < vertices.size() - 1; i++) {
@@ -29,7 +26,8 @@ public class EdgeAligner {
         return edges;
     }
 
-    public List<Angle> computeShapeAngles(List<Vertex> vertices) {
+
+    public static List<Angle> computeShapeAngles(List<Vertex> vertices) {
         List<Edge> edges = verticesToEdges(vertices);
         List<Angle> angles = new ArrayList<>();
 

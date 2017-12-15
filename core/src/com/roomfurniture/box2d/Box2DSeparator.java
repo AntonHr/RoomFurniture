@@ -20,10 +20,10 @@ public class Box2DSeparator {
      * <li>There must be no overlapping segments and no "holes".</li>
      * </ul> <p/>
      *
-     * @param body        The b2Body, in which the new fixtures will be stored.
-     * @param fixtureDef  A b2FixtureDef, containing all the properties (friction, density, etc.) which the new fixtures will inherit.
+     * @param body           The b2Body, in which the new fixtures will be stored.
+     * @param fixtureDef     A b2FixtureDef, containing all the properties (friction, density, etc.) which the new fixtures will inherit.
      * @param verticesoldVec The vertices of the non-convex polygon, in clockwise order.
-     * @param scale       The scale which you use to draw shapes in Box2D. The bigger the scale, the better the precision. The recommended value is 30.
+     * @param scale          The scale which you use to draw shapes in Box2D. The bigger the scale, the better the precision. The recommended value is 30.
      */
     public static void separate(Body body, FixtureDef fixtureDef, List<Vector2> verticesoldVec, float scale) {
         int i, n = verticesoldVec.size(), j, m;
@@ -47,6 +47,9 @@ public class Box2DSeparator {
 
             polyShape = new PolygonShape();
             polyShape.set((Vector2[]) verticesVec.toArray(Vector2.class));
+
+            //polyShape.setRadius(0);
+
             fixtureDef.shape = polyShape;
             body.createFixture(fixtureDef);
         }

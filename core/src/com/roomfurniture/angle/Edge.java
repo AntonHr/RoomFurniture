@@ -2,9 +2,7 @@ package com.roomfurniture.angle;
 
 import com.roomfurniture.problem.Vertex;
 
-/**
- * Created by asus on 14.12.2017 г..
- */
+
 public class Edge {
     private Vertex beginVertex;
     private Vertex endVertex;
@@ -13,6 +11,14 @@ public class Edge {
         this.beginVertex = beginVertex;
         this.endVertex = endVertex;
     }
+    @Override
+    public String toString() {
+        return "Edge{" +
+                "a=" + beginVertex +
+                ", b=" + endVertex +
+                '}';
+    }
+
 
     public double angleTo(Edge secondEdge) {
         Vertex v1 = this.getVector();
