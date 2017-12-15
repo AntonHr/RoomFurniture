@@ -27,6 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
 
@@ -118,7 +119,14 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
 
             Furniture item = ((HashMap<String, Furniture>) b.getUserData()).get("reference");
 
-            if (fitsTheRoomAndDoesntCollide(item, allItems)) {
+
+            List<Furniture> itemsInside = physicsSimulator.bodies.stream()
+                    .map(body -> {
+                        HashMap map = (HashMap) body.getUserData();
+                        return (Furniture) map.get("reference");
+                    }).collect(Collectors.toList());
+
+            if (fitsTheRoomAndDoesntCollide(item, itemsInside)) {
                 item.setColor(Color.BLUE);
             } else
                 item.setColor(Color.GRAY);

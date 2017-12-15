@@ -348,34 +348,39 @@ public class DragAndDropPhysicsSimulator {
             return;
 
         final Body[] toDelete = new Body[1];
+        try {
+            todo.add(() -> {
 
-        todo.add(() -> {
 
-            bodies.forEach(body -> {
-                HashMap<String, Furniture> map = ((HashMap<String, Furniture>) body.getUserData());
+                bodies.forEach(body -> {
+                    HashMap<String, Furniture> map = ((HashMap<String, Furniture>) body.getUserData());
+                    Furniture reference = map.get("reference");
+                    Furniture initial = map.get("initialCopy");
+
+                    if (reference.equals(selectedItem))
+                        toDelete[0] = body;
+
+                });
+
+                //body = bodies.get(bodies.size() - 1);
+
+                HashMap<String, Furniture> map = ((HashMap<String, Furniture>) toDelete[0].getUserData());
                 Furniture reference = map.get("reference");
                 Furniture initial = map.get("initialCopy");
 
-                if (reference.equals(selectedItem))
-                    toDelete[0] = body;
+                reference.set(initial);
+                reference.setColor(null);
+
+
+                removeItem(bodies.get(bodies.size() - 1));
+                bodies.remove(bodies.size() - 1);
+
 
             });
+        } catch (Throwable e) {
+            System.out.println(e.getMessage());
+        }
 
-            //body = bodies.get(bodies.size() - 1);
-
-            HashMap<String, Furniture> map = ((HashMap<String, Furniture>) toDelete[0].getUserData());
-            Furniture reference = map.get("reference");
-            Furniture initial = map.get("initialCopy");
-
-            reference.set(initial);
-            reference.setColor(null);
-
-
-            removeItem(bodies.get(bodies.size() - 1));
-            bodies.remove(bodies.size() - 1);
-
-
-        });
     }
 
 //
