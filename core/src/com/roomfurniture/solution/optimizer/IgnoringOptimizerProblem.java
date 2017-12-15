@@ -79,8 +79,8 @@ public class IgnoringOptimizerProblem implements OptimizerProblem {
         //
         // unplaced := list of all unplaced furnitures
 
+        unplacedFurniture.sort(Comparator.comparingDouble(o -> o.getFurniture().getScore()));
         if(shouldSortFirst) {
-            unplacedFurniture.sort(Comparator.comparingDouble(o -> o.getFurniture().getScore()));
             Collections.reverse(unplacedFurniture);
         }
 

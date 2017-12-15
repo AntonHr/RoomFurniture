@@ -12,9 +12,12 @@ import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
 import com.roomfurniture.solution.Solution;
+import com.roomfurniture.solution.storage.SolutionDatabase;
 
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class DesktopLauncher {
@@ -45,7 +48,7 @@ public class DesktopLauncher {
         List<Furniture> furnitures = new ArrayList<>();
         List<Furniture> collect = problem.getFurnitures().stream().sorted(Comparator.comparingDouble(Furniture::getScore)).collect(Collectors.toList());
         Collections.reverse(collect);
-        Problem testProblem = new Problem(1, problem.getRoom(), collect);
+        Problem testProblem = new Problem(problem.getNumber(), problem.getRoom(), collect);
         Furniture furniture = collect.get(4);
 //k        Furniture furniture = problem.getFurnitures().get(2);
         furnitures.add(furniture);
@@ -96,6 +99,17 @@ public class DesktopLauncher {
 
         Solution testSolution = solveProblem(testProblem);
 
+
+        ExecutorService service = Executors.newFixedThreadPool(10);
+        testSolution = BasicApproach.optimizeSolution(testSolution, testProblem, service, 1000, 1000, 10, true);
+        testSolution = BasicApproach.optimizeSolution(testSolution, testProblem, service, 1000, 1000, 10, false);
+        testSolution = BasicApproach.optimizeSolution(testSolution, testProblem, service, 1000, 1000, 10, true);
+        testSolution = BasicApproach.optimizeSolution(testSolution, testProblem, service, 1000, 1000, 10, false);
+        testSolution = BasicApproach.optimizeSolution(testSolution, testProblem, service, 1000, 1000, 10, true);
+        testSolution = BasicApproach.optimizeSolution(testSolution, testProblem, service, 1000, 1000, 10, false);
+        testSolution = BasicApproach.optimizeSolution(testSolution, testProblem, service, 1000, 1000, 10, true);
+        testSolution = BasicApproach.optimizeSolution(testSolution, testProblem, service, 1000, 1000, 10, false);
+
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 //        DragAndDrop renderer = new DragAndDrop(problem, new DragAndDropPhysicsSimulator(problem.getRoom()));
 
@@ -112,6 +126,10 @@ public class DesktopLauncher {
 
         DesktopLauncher.application = new LwjglApplication(renderer, config);
         renderer.renderSolution(testProblem,testSolution );
+
+         if (testProblem.getNumber() > 0 && testProblem.getNumber() <= 30) {
+            SolutionDatabase.createTeamSolutionDatabase().storeSolutionFor(testProblem.getNumber(), testSolution.score(testProblem).get(),testSolution.findCoverage(testProblem), testSolution);
+        }
     }
 
     public static List<AngleSet> geMatchingAngleSets(Furniture furniture, List<AngleSet> angleSets1) {
@@ -128,42 +146,49 @@ public class DesktopLauncher {
         List<AngleSet> angleSets = AngleSet.generateInitialAngleSet(problem);
         angleSets = foldAngleSets(angleSets);
         angleSets = foldAngleSets(angleSets);
+        angleSets = foldAngleSets(angleSets);
         List<Descriptor> descriptors = solveFurniturePositioningFor(problem, 0, angleSets);
         return new Solution(descriptors);
 
     }
 
-    public static List<Descriptor> solveFurniturePositioningFor(Problem problem, int index, List<AngleSet> angleSets) {
-        if(index >= problem.getFurnitures().size() || index >= 200)
+    public final static List<Descriptor> solveFurniturePositioningFor(Problem problem, int index, List<AngleSet> angleSets) {
+        if(index >= problem.getFurnitures().size())
             return new ArrayList<>();
-        else {
-            Furniture furniture = problem.getFurnitures().get(index);
-            List<AngleSet> furnitureAngleSets = geMatchingAngleSets(furniture, angleSets);
-            for(AngleSet set : furnitureAngleSets) {
-                List<Angle> angles = set.getAngles();
-                List<FurnitureAngleSet> furnitureAngles = set.getSolutions().get(furniture);
-                for(FurnitureAngleSet solutionSet : furnitureAngles) {
-                    List<Angle> solutionAngles = solutionSet.getAngles();
-                    for (int i = 0; i < angles.size(); i++) {
-                        Descriptor descriptor = EdgeAligner.alignTwoAngles(angles.get(i), solutionAngles.get(i));
-                        Furniture possible = furniture.transform(descriptor);
-                        if(ShapeCalculator.contains(problem.getRoom().toShape(), possible.toShape())) {
-                            System.out.println("Solution found");
-                           // TODO Check if recursive branch creates conflicts
-                            List<Descriptor> result = solveFurniturePositioningFor(problem, index + 1, angleSets);
-                            result.add(0, descriptor);
-                            return result;
+        else if(index >= 200) {
+            ArrayList<Descriptor> descriptors = new ArrayList<>();
+            for(int i = index; i < problem.getFurnitures().size(); i++) {
+                descriptors.add(new Descriptor(new Vertex(0,0),0));
+            }
+            return descriptors;
+        } else {
+                Furniture furniture = problem.getFurnitures().get(index);
+                List<AngleSet> furnitureAngleSets = geMatchingAngleSets(furniture, angleSets);
+                for(AngleSet set : furnitureAngleSets) {
+                    List<Angle> angles = set.getAngles();
+                    List<FurnitureAngleSet> furnitureAngles = set.getSolutions().get(furniture);
+                    for(FurnitureAngleSet solutionSet : furnitureAngles) {
+                        List<Angle> solutionAngles = solutionSet.getAngles();
+                        for (int i = 0; i < angles.size(); i++) {
+                            Descriptor descriptor = EdgeAligner.alignTwoAngles(angles.get(i), solutionAngles.get(i));
+                            Furniture possible = furniture.transform(descriptor);
+                            if(ShapeCalculator.contains(problem.getRoom().toShape(), possible.toShape())) {
+                                System.out.println("Solution found");
+                                // TODO Check if recursive branch creates conflicts
+                                List<Descriptor> result = solveFurniturePositioningFor(problem, index + 1, angleSets);
+                                result.add(0, descriptor);
+                                return result;
+                            }
                         }
                     }
                 }
-            }
 
-            System.out.println("No solution found");
-             List<Descriptor> result = solveFurniturePositioningFor(problem, index + 1, angleSets);
-              result.add(0, new Descriptor(new Vertex(0,0),0));
-              return result;
+                System.out.println("No solution found");
+                List<Descriptor> result = solveFurniturePositioningFor(problem, index + 1, angleSets);
+                result.add(0, new Descriptor(new Vertex(0,0),0));
+                return result;
+            }
         }
-    }
 
     public static List<AngleSet> foldAngleSets(List<AngleSet> angleSets) {
         List<AngleSet> conjoined = new ArrayList<>();
