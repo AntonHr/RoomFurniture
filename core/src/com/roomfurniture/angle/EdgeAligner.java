@@ -59,11 +59,17 @@ public class EdgeAligner {
         return centroid;
     }
 
-    public Descriptor alignTwoAngles(Angle stationary, Angle moving) {
+    public static Descriptor alignTwoAngles(Angle stationary, Angle moving) {
         double rotationAngle = VertexExtensionUtility.getAngle(stationary.getB().getVector(), moving.getB().getVector());
 
-        double xTrans = stationary.getTopVertex().x - moving.getTopVertex().x;
-        double yTrans = stationary.getTopVertex().y - moving.getTopVertex().y;
+        Vertex topVertex = moving.getTopVertex();
+        Point2D result = new Point2D.Double();
+        AffineTransform rotation = new AffineTransform();
+        rotation.rotate(rotationAngle, 0, 0);
+        rotation.transform(new Point2D.Double(topVertex.x, topVertex.y), result);
+
+        double xTrans = stationary.getTopVertex().x - result.getX();
+        double yTrans = stationary.getTopVertex().y - result.getY();
 
         return new Descriptor(new Vertex(xTrans, yTrans), rotationAngle);
     }

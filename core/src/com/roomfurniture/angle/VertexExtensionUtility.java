@@ -14,7 +14,19 @@ public class VertexExtensionUtility {
         return Math.sqrt(a.x * a.x + a.y * a.y);
     }
 
+
     public static double getAngle(Vertex a, Vertex b) {
-        return Math.acos(dotProduct(a, b) / getLength(a) * getLength(b));
+        double dotProduct = dotProduct(a, b);
+
+        double a1 = dotProduct / (getLength(a) * getLength(b));
+        if(Math.abs(dotProduct) < 0.0000001)  {
+            double crossProduct = a.x * b.y + a.y * b.x;
+            if(crossProduct > 0) {
+                return -1 *  Math.acos(a1);
+            }
+
+        }
+
+        return Math.acos(a1);
     }
 }

@@ -131,12 +131,17 @@ public class SwingVisualizer extends JPanel {
     public static void main(String[] args) throws FileNotFoundException {
         InputParser inputParser = new InputParser();
         List<Problem> problems = inputParser.parse("test.txt");
-        JFrame frame = constructVisualizationFrame(problems.get(0), new SolutionGeneratorStrategy(problems.get(0)).generate());
+        Problem problem = problems.get(0);
+        visualizeProblem(problem, new SolutionGeneratorStrategy(problem).generate());
+
+    }
+
+    public static void visualizeProblem(Problem problem, Solution generate) throws FileNotFoundException {
+        JFrame frame = constructVisualizationFrame(problem, generate);
 
         EventQueue.invokeLater(() -> {
             frame.setVisible(true);
         });
-
     }
 
     public static JFrame constructVisualizationFrame(Problem problem, Solution solution) throws FileNotFoundException {

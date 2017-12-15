@@ -13,10 +13,10 @@ public class Angle {
 
     @Override
     public String toString() {
-        return "Angle{" +
-                "a=" + a +
-                ", b=" + b +
-                '}';
+        return "(" +
+                Math.toDegrees(getAngleValue()) + " deg," +
+                findTopVertex() +
+                ')';
     }
 
     private Vertex topVertex;

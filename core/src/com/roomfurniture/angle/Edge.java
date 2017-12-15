@@ -28,7 +28,7 @@ public class Edge {
         double length2 = secondEdge.getLength();
 
         double dotProduct = v1.x * v2.x + v1.y * v2.y;
-        double angle = dotProduct / length1 * length2;
+        double angle = dotProduct / (length1 * length2);
 
         return Math.acos(angle);
     }

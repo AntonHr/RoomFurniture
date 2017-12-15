@@ -20,6 +20,18 @@ public class AngleSet {
                 '}';
     }
 
+    public List<Angle> getAngles() {
+        return angles;
+    }
+
+    public List<List<FurnitureAngleSet>> getSolutions() {
+        return solutions;
+    }
+
+    public List<FurnitureRepresentation> getFurnitures() {
+        return furnitures;
+    }
+
     public AngleSet(List<Angle> result, List<List<FurnitureAngleSet>> newSolution, List<FurnitureRepresentation> furnitures) {
         angles = result;
         solutions = newSolution;
