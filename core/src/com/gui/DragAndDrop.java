@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.box2d.DragAndDropPhysicsSimulator;
@@ -510,11 +511,23 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             if (selectedItem != null) {
-                physicsSimulator.addBody(selectedItem);
+                if (!alreadyThere(selectedItem))
+                    physicsSimulator.addBody(selectedItem);
             }
         }
 
         return true;
+    }
+
+    private boolean alreadyThere(Furniture selectedItem) {
+        for (Body body : physicsSimulator.bodies) {
+            HashMap map = (HashMap) body.getUserData();
+            Furniture item = (Furniture) map.get("reference");
+            if (item.equals(selectedItem)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
