@@ -18,13 +18,13 @@ public class Edge {
         Vertex v1 = this.getVector();
         Vertex v2 = secondEdge.getVector();
 
-        double l1 = this.getLength();
-        double l2 = secondEdge.getLength();
+        double length1 = this.getLength();
+        double length2 = secondEdge.getLength();
 
         double dotProduct = v1.x * v2.x + v1.y * v2.y;
-        double angle = dotProduct / this.getLength() * secondEdge.getLength();
+        double angle = dotProduct / length1 * length2;
 
-        return angle;
+        return Math.acos(angle);
     }
 
     public double getLength() {

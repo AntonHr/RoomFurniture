@@ -1,10 +1,16 @@
 package com.roomfurniture.angle;
 
+import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Vertex;
 
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by asus on 14.12.2017 г..
@@ -36,16 +42,35 @@ public class EdgeAligner {
         return angles;
     }
 
-    public Descriptor alignTwoAngles(Angle stationary, Angle moving) {
-        Vertex vStat = stationary.getVertex();
-        Vertex vMov = moving.getVertex();
+    private Vertex findCentroidBetweenEdges(Edge a, Edge b) {
+        Set<Vertex> verticesSet = new HashSet<Vertex>();
+        verticesSet.add(a.getBeginVertex());
+        verticesSet.add(a.getEndVertex());
+        verticesSet.add(b.getBeginVertex());
+        verticesSet.add(b.getEndVertex());
 
-        return null;
+        Vertex centroid = new Vertex(0 ,0);
+        for (Vertex v : verticesSet) {
+            centroid.x += v.x;
+            centroid.y += v.y;
+        }
+
+        centroid.x /= 3;
+        centroid.y /= 3;
+
+        return centroid;
+    }
+
+    public Descriptor alignTwoAngles(Angle stationary, Angle moving) {
+        double rotationAngle = VertexExtensionUtility.getAngle(stationary.getB().getVector(), moving.getB().getVector());
+
+        double xTrans = stationary.getTopVertex().x - moving.getTopVertex().x;
+        double yTrans = stationary.getTopVertex().y - moving.getTopVertex().y;
+
+        return new Descriptor(new Vertex(xTrans, yTrans), rotationAngle);
     }
 
     public Descriptor alignAngleSets(List<Angle> stationary, List<Angle> moving) {
-
-
         return null;
     }
 }
