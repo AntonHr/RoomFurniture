@@ -3,6 +3,7 @@ package com.awesome.scenario.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.gui.EvaluatorPhysicsRenderer;
+import com.gui.RoomFurnitureRenderer;
 import com.gui.SwingVisualizer;
 import com.roomfurniture.InputParser;
 import com.roomfurniture.ShapeCalculator;
@@ -10,6 +11,7 @@ import com.roomfurniture.angle.Angle;
 import com.roomfurniture.angle.AngleSet;
 import com.roomfurniture.angle.EdgeAligner;
 import com.roomfurniture.angle.FurnitureAngleSet;
+import com.roomfurniture.box2d.PhysicsSimulator;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
@@ -18,10 +20,7 @@ import com.roomfurniture.solution.Solution;
 import com.roomfurniture.solution.storage.SolutionDatabase;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -51,7 +50,8 @@ public class AlgorithmApproach {
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
-        EvaluatorPhysicsRenderer renderer = new EvaluatorPhysicsRenderer();
+//        EvaluatorPhysicsRenderer renderer = new EvaluatorPhysicsRenderer();
+        RoomFurnitureRenderer renderer = new RoomFurnitureRenderer(testProblem,testSolution, new PhysicsSimulator(problem, testSolution));
 
         try {
             SwingVisualizer.visualizeProblem(testProblem, testSolution);
@@ -61,12 +61,20 @@ public class AlgorithmApproach {
 
         config.width = 2000;
         config.height = 1000;
+//        System.out.println(testSolution.toOutputFormat(testProblem));
 
         DesktopLauncher.application = new LwjglApplication(renderer, config);
-        renderer.renderSolution(testProblem,testSolution );
+
+        //renderer.renderSolution(testProblem,testSolution );
+             Optional<Double> score = testSolution.score(testProblem);
+            System.out.println(testSolution.toOutputFormat(testProblem));
+
 
         if (testProblem.getNumber() > 0 && testProblem.getNumber() <= 30) {
-           SolutionDatabase.createTeamSolutionDatabase().storeSolutionFor(testProblem.getNumber(), testSolution.score(testProblem).get(),testSolution.findCoverage(testProblem), testSolution);
+//        System.out.println(Solution.fromSerialized(new Scanner(testSolution.toSerialized())).get().toOutputFormat(testProblem) + "\n" + testSolution.toOutputFormat(testProblem));
+
+
+            SolutionDatabase.createPersonalSolutionDatabase().storeSolutionFor(testProblem.getNumber(), testSolution.score(testProblem).get(),testSolution.findCoverage(testProblem), testSolution);
        }
     }
 

@@ -60,6 +60,7 @@ public class Solution {
         double score = 0;
         double areaSum = 0.0;
 
+        furnitureCache = furnitureInRoom;
         for (Furniture furniture : furnitureInRoom) {
             areaSum += ShapeCalculator.calculateAreaOf(furniture.toShape());
             score += furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape());
@@ -77,6 +78,7 @@ public class Solution {
     }
 
 
+    List<Furniture> furnitureCache = new ArrayList<>();
     public List<Integer> findPlacedPositions(Problem problem) {
         List<Furniture> furnitures = problem.getFurnitures();
         Shape roomShape = problem.getRoom().toShape();
@@ -147,6 +149,7 @@ public class Solution {
         for (Furniture furniture : furnitureInRoom) {
             areaSum += ShapeCalculator.calculateAreaOf(furniture.toShape());
         }
+        furnitureCache = furnitureInRoom;
 
 
         double roomArea = ShapeCalculator.calculateAreaOf(problem.getRoom().toShape());
@@ -211,13 +214,35 @@ public class Solution {
     }
 
     public String toOutputFormat(Problem problem) {
-        List<Furniture> itemsInTheRoom = getItemsInTheRoom(problem);
+        List<Furniture> furnitures = problem.getFurnitures();
+        Shape roomShape = problem.getRoom().toShape();
+
+        Map<Boolean, List<Furniture>> result = Streams.zip(furnitures.stream(), descriptors.stream(), Furniture::transform).collect(Collectors.partitioningBy(furniture -> ShapeCalculator.contains(roomShape, furniture.toShape())));
+
+        List<Furniture> furnitureInRoom = result.get(true);
+
+        Iterator<Furniture> iterator = furnitureInRoom.iterator();
+
+        while (iterator.hasNext()) {
+            Furniture furniture = iterator.next();
+            for (Furniture otherFurniture : furnitureInRoom) {
+                if (otherFurniture != furniture)
+                    if (ShapeCalculator.intersect(furniture.toShape(), otherFurniture.toShape())) {
+                        // Keep furniture with highest score
+                        if (otherFurniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(otherFurniture.toShape()) >= furniture.getScorePerUnitArea() * ShapeCalculator.calculateAreaOf(furniture.toShape())) {
+                            iterator.remove();
+                            break;
+                        }
+                    }
+            }
+        }
+
+        furnitureInRoom = furnitureCache;
+
+
         StringBuilder sb = new StringBuilder();
-        sb.append(problem.getNumber() + ": ");
-
-
-        for(int j = 0; j< itemsInTheRoom.size(); j++) {
-            Furniture furniture = itemsInTheRoom.get(j);
+        for(int j = 0; j< furnitureInRoom.size(); j++) {
+            Furniture furniture = furnitureInRoom.get(j);
             List<Vertex> vertices = furniture.getVertices();
 
             for(int i = 0; i< vertices.size();i++) {
@@ -225,12 +250,12 @@ public class Solution {
                 sb.append("(" + vertex.x + ", " + vertex.y + ")");
                 if(i < vertices.size() -1) {
                     sb.append(", ");
-                } else if(j<itemsInTheRoom.size() - 1) {
+                } else if(j<furnitureInRoom.size() - 1) {
                     sb.append(";");
                 }
             }
 
-            if(j < itemsInTheRoom.size()-1) {
+            if(j <furnitureInRoom.size()-1) {
                 sb.append(" ");
             }
         }

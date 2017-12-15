@@ -1,9 +1,14 @@
 package com.roomfurniture.solution.storage;
 
 
+import com.roomfurniture.InputParser;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.solution.Solution;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -69,4 +74,28 @@ public class SolutionDatabase {
         return sb.toString();
     }
 
+    public static  void main(String[] args) throws FileNotFoundException {
+        int count = 0;
+        List<Problem> allProblems = new InputParser().parse("./problemsets.txt");
+        SolutionDatabase personalSolutionDatabase = SolutionDatabase.createPersonalSolutionDatabase();
+        for(Problem problem : allProblems) {
+            List<Solution> allSolutionsFor = personalSolutionDatabase.getAllSolutionsFor(problem.getNumber());
+            for(Solution solution : allSolutionsFor) {
+                double coverage = solution.findCoverage(problem) * 100;
+                Double score = solution.score(problem).orElse(0.0);
+                System.out.println(coverage);
+                if(coverage > 30) {
+                    try {
+                        String format = String.format("./recalculated/updated/%d-%.2f_solution_%.2f%%_correct.txt",  problem.getNumber(), score, coverage);
+                        FileWriter fileWriter = new FileWriter(format);
+                        fileWriter.write(solution.toOutputFormat(problem));
+                        fileWriter.flush();
+                        fileWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
 }
