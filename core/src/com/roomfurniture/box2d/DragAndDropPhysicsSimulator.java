@@ -340,13 +340,30 @@ public class DragAndDropPhysicsSimulator {
         return transformedItems;
     }
 
-    public void undo() {
+    public void undo(Furniture selectedItem) {
         if (bodies.isEmpty())
             return;
-        todo.add(() -> {
-            Body body = bodies.get(bodies.size() - 1);
 
-            HashMap<String, Furniture> map = ((HashMap<String, Furniture>) body.getUserData());
+        if (selectedItem == null)
+            return;
+
+        final Body[] toDelete = new Body[1];
+
+        todo.add(() -> {
+
+            bodies.forEach(body -> {
+                HashMap<String, Furniture> map = ((HashMap<String, Furniture>) body.getUserData());
+                Furniture reference = map.get("reference");
+                Furniture initial = map.get("initialCopy");
+
+                if (reference.equals(selectedItem))
+                    toDelete[0] = body;
+
+            });
+
+            //body = bodies.get(bodies.size() - 1);
+
+            HashMap<String, Furniture> map = ((HashMap<String, Furniture>) toDelete[0].getUserData());
             Furniture reference = map.get("reference");
             Furniture initial = map.get("initialCopy");
 

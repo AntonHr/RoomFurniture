@@ -489,7 +489,7 @@ public class DragAndDrop extends ApplicationAdapter implements InputProcessor {
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.U)) {
-            physicsSimulator.undo();
+            physicsSimulator.undo(selectedItem);
 
         }
 
