@@ -11,9 +11,10 @@ import java.util.List;
 public class Furniture {
     private double scorePerUnitArea;
     private Shape shape;
-    private int id;
-    private Color color;
 
+    private int id;
+
+    private Color color;
     public Furniture(int id, double scorePerUnitArea, List<Vertex> vertices) {
         this.id = id;
         this.scorePerUnitArea = scorePerUnitArea;
@@ -51,6 +52,10 @@ public class Furniture {
     public String toString() {
         return "Furniture{" +
                 "scorePerUnitArea=" + scorePerUnitArea + ", vertices=" + getVertices() + '}';
+    }
+
+    public int getId() {
+        return id;
     }
 
     public double getScorePerUnitArea() {

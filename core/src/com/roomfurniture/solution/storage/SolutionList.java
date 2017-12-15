@@ -92,7 +92,7 @@ public class SolutionList {
         this.netEnabled = netEnabled;
         this.problem = problem; }
 
-    private List<SolutionEntry> getInternalSolutions() {
+    public List<SolutionEntry> getInternalSolutions() {
         File file = new File("./solutions/solution_" + problem + ".txt");
         try {
             Scanner scanner = new Scanner(file);
