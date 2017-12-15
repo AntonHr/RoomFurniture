@@ -36,7 +36,7 @@ public class FurnitureRepresentation {
     public Integer findAngleIndex(Angle angle) {
         int i = this.angles.indexOf(angle);
         if(i == -1)
-            throw new RuntimeException("Not Present angle queried");
+            throw new RuntimeException("Not Present angle queried " + angle + " has never been seen in " + angles );
         return i;
     }
 

@@ -46,8 +46,8 @@ public class Angle {
         vertices.add(b.getBeginVertex());
         vertices.add(b.getEndVertex());
 
-        for (Vertex k: vertices) {
-            for (Vertex p: vertices) {
+        for (Vertex k : vertices) {
+            for (Vertex p : vertices) {
                 if (k == p) return k;
             }
         }
@@ -92,18 +92,18 @@ public class Angle {
     }
 
     public static boolean isContainedAngleValue(double roomAngle, double furnitureAngle) {
-        if(Math.abs(roomAngle - furnitureAngle) < 0.0000001) {
-           return true;
+        if (Math.abs(roomAngle - furnitureAngle) < 0.0000001) {
+            return true;
         }
         // if the room angle is > 90 degrees then inward point - to fit, must be greater
-        else if(roomAngle > Math.toRadians(90)) {
-            if(roomAngle < furnitureAngle)
+        else if (roomAngle > Math.toRadians(90)) {
+            if (roomAngle < furnitureAngle)
                 return true;
             else
                 return false;
             // if the room angle is  < 90 degrees then outward point - to fit, must be smaller
         } else {
-            if(roomAngle > furnitureAngle)
+            if (roomAngle > furnitureAngle)
                 return true;
             else
                 return false;
@@ -111,31 +111,55 @@ public class Angle {
     }
 
     public static boolean congurentAngleSet(List<Angle> roomAngles, List<Angle> furnitureAngles) {
-        assert(roomAngles.size() == furnitureAngles.size());
-        if(roomAngles.size() == 1) {
+        assert (roomAngles.size() == furnitureAngles.size());
+        if (roomAngles.size() == 1) {
             double furnitureAngle = furnitureAngles.get(0).getAngleValue();
             double roomAngle = roomAngles.get(0).getAngleValue();
             return isContainedAngleValue(roomAngle, furnitureAngle);
         } else {
-            Angle lastRoomAngle = roomAngles.get(0) ;
-            Angle lastFurnitureAngle = furnitureAngles.get(0) ;
+            Angle lastRoomAngle = roomAngles.get(0);
+            Angle lastFurnitureAngle = furnitureAngles.get(0);
 
-            for(int i = 1; i < roomAngles.size(); i++) {
+            for (int i = 1; i < roomAngles.size(); i++) {
                 Angle currentRoomAngle = roomAngles.get(i);
                 Angle currentFurnitureAngle = furnitureAngles.get(i);
 
                 Edge furnitureLocation = getRelativeDirectionBetween(lastFurnitureAngle, currentFurnitureAngle);
                 Edge roomLocation = getRelativeDirectionBetween(lastRoomAngle, currentRoomAngle);
 
-                if(furnitureLocation.getLength() > roomLocation.getLength() - 0.0000001) {
-                    return false;
+                if (currentRoomAngle.getAngleValue() > Math.PI / 2) {
+//                    if (furnitureLocation.getLength() > roomLocation.getLength() - 0.00001) {
+//                        return false;
+//                    }
+                    return true;
                 }
             }
             return true;
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Angle angle = (Angle) o;
+
+        if (Math.abs(angle.getAngleValue() - getAngleValue()) > 0.0000001) return false;
+        if (Math.abs(angle.getTopVertex().x - getTopVertex().x) > 0.0000001) return false;
+        if (Math.abs(angle.getTopVertex().y - getTopVertex().y) > 0.0000001) return false;
+        return true;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = a != null ? a.hashCode() : 0;
+        result = 31 * result + (b != null ? b.hashCode() : 0);
+        result = 31 * result + (topVertex != null ? topVertex.hashCode() : 0);
+        result = 31 * result + (bottomVertices != null ? bottomVertices.hashCode() : 0);
+        return result;
+    }
 }
 
 

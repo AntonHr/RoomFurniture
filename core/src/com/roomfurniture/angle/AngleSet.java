@@ -5,10 +5,11 @@ import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Problem;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AngleSet {
     private List<Angle> angles;
-    private List<List<FurnitureAngleSet>> solutions;
+    private HashMap<Furniture,List<FurnitureAngleSet>> solutions;
     private List<FurnitureRepresentation> furnitures;
 
     @Override
@@ -24,18 +25,19 @@ public class AngleSet {
         return angles;
     }
 
-    public List<List<FurnitureAngleSet>> getSolutions() {
-        return solutions;
-    }
 
     public List<FurnitureRepresentation> getFurnitures() {
         return furnitures;
     }
 
-    public AngleSet(List<Angle> result, List<List<FurnitureAngleSet>> newSolution, List<FurnitureRepresentation> furnitures) {
+    private AngleSet(List<Angle> result, HashMap<Furniture,List<FurnitureAngleSet>> newSolution, List<FurnitureRepresentation> furnitures) {
         angles = result;
         solutions = newSolution;
         this.furnitures = furnitures;
+    }
+
+    public HashMap<Furniture, List<FurnitureAngleSet>> getSolutions() {
+        return solutions;
     }
 
     public static List<AngleSet> generateInitialAngleSet(Problem problem) {
@@ -43,19 +45,18 @@ public class AngleSet {
         List<AngleSet> set = new ArrayList<>();
         for(Angle angle:angles) {
             List<FurnitureRepresentation> furnitures = new ArrayList<>();
-            List<List<FurnitureAngleSet>> solutions = new ArrayList<>();
+            HashMap<Furniture, List<FurnitureAngleSet>> solutions = new HashMap<>();
 
             for (Furniture furniture : problem.getFurnitures()) {
                 FurnitureRepresentation value = FurnitureRepresentation.generateRepresentationOf(furniture);
                 furnitures.add(value);
-                solutions.add(value.generateInitialAngleSet());
+                solutions.put(furniture, value.generateInitialAngleSet());
             }
             ArrayList<Angle> angleList = new ArrayList<>();
             angleList.add(angle);
 
             set.add(new AngleSet(angleList, solutions, furnitures));
         }
-
         return set;
     }
 
@@ -64,14 +65,16 @@ public class AngleSet {
 
         result.addAll(angleSetA.angles);
         result.addAll(angleSetB.angles);
+        result = result.stream().distinct().collect(Collectors.toList());
 
-        Iterator<List<FurnitureAngleSet>> angleSetAIterator = angleSetA.solutions.iterator();
-        Iterator<List<FurnitureAngleSet>> angleSetBIterator = angleSetB.solutions.iterator();
-        List<List<FurnitureAngleSet>> newSolution = new ArrayList<>();
+        Iterator<Furniture> angleSetAIterator = angleSetA.solutions.keySet().iterator();
+//        Iterator<Furniture> angleSetBIterator = angleSetB.solutions.keySet().iterator();
+        HashMap<Furniture, List<FurnitureAngleSet>> newSolution = new HashMap<>();
 
         while (angleSetAIterator.hasNext()) {
-            List<FurnitureAngleSet> aAngleSet = angleSetAIterator.next();
-            List<FurnitureAngleSet> bAngleSet = angleSetBIterator.next();
+            Furniture next = angleSetAIterator.next();
+            List<FurnitureAngleSet> aAngleSet = angleSetA.solutions.get(next);
+            List<FurnitureAngleSet> bAngleSet = angleSetB.solutions.get(next);
             List<FurnitureAngleSet> newResult = new ArrayList<>();
 
             for (FurnitureAngleSet aAngle : aAngleSet) {
@@ -85,11 +88,9 @@ public class AngleSet {
                 }
             }
 
-            newSolution.add(newResult);
+            newSolution.put(next, newResult);
         }
 
-        if (newSolution.stream().allMatch(List::isEmpty))
-            return Optional.empty();
         return Optional.of(new AngleSet(result, newSolution, angleSetA.furnitures));
     }
 }

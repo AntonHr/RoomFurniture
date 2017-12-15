@@ -34,8 +34,10 @@ public class FurnitureAngleSet {
     public static Optional<FurnitureAngleSet> conjoinCongruentAngleSets(FurnitureAngleSet angleSetA, FurnitureAngleSet angleSetB) {
         assert(angleSetA.furniture == angleSetB.furniture);
 
-        List<Integer> aIndex = angleSetA.getAngles().stream().map(angleSetA.furniture::findAngleIndex).sorted().collect(Collectors.toList());
-        List<Integer> bIndex = angleSetB.getAngles().stream().map(angleSetB.furniture::findAngleIndex).sorted().collect(Collectors.toList());
+        List<Integer> aIndex;
+        List<Integer> bIndex;
+            aIndex = angleSetA.getAngles().stream().map(angleSetA.furniture::findAngleIndex).sorted().collect(Collectors.toList());
+            bIndex = angleSetB.getAngles().stream().map(angleSetB.furniture::findAngleIndex).sorted().collect(Collectors.toList());
 
         Integer smallestA = aIndex.get(0);
         Integer largestA = aIndex.get(aIndex.size() - 1);
@@ -49,10 +51,14 @@ public class FurnitureAngleSet {
                 Angle angleA = angleSetA.getAngles().get(0);
                 Angle angleB = angleSetB.getAngles().get(0);
                 List<Angle> result = new ArrayList<>();
-                if(smallestA < smallestB)
+                if(smallestA < smallestB) {
                     result.add(angleA);
-                else
                     result.add(angleB);
+                }
+                else {
+                    result.add(angleB);
+                    result.add(angleA);
+                }
                 return Optional.of(new FurnitureAngleSet(angleSetA.furniture, result));
             } else
                 return Optional.empty();
