@@ -1,6 +1,7 @@
 package com.roomfurniture.solution;
 
 import com.roomfurniture.ga.algorithm.interfaces.GeneratorStrategy;
+import com.roomfurniture.problem.BasicProblem;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Problem;
 import com.roomfurniture.problem.Vertex;
@@ -8,7 +9,6 @@ import com.roomfurniture.problem.Vertex;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SolutionGeneratorStrategy implements GeneratorStrategy<Solution> {
@@ -31,7 +31,7 @@ public class SolutionGeneratorStrategy implements GeneratorStrategy<Solution> {
     public Solution generate() {
         //TODO(Kiran): Implement strategy
         ArrayList<Descriptor> descriptors = new ArrayList<>();
-        Rectangle2D bounds2D = p.room.toShape().getBounds2D();
+        Rectangle2D bounds2D = p.getRoom().toShape().getBounds2D();
         double xRange = maxX - minX;
         double yRange = maxY - minY;
 

@@ -145,7 +145,7 @@ public class EvaluatorPhysicsRenderer extends ApplicationAdapter implements Inpu
             font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
             font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
 
-            font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
+            font.draw(batch, "Score is " + problem.score(solution).get(), 10, y += 20);
             font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 40);
 
             Vector3 screenPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0.0f);

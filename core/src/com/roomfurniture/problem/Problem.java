@@ -1,37 +1,24 @@
 package com.roomfurniture.problem;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
+import com.roomfurniture.ShapeCalculator;
+import com.roomfurniture.solution.Solution;
 
+import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class Problem {
-    private int number = 0;
-   public final Room room;
-    private final List<Furniture> furnitures;
+public interface Problem {
+    Room getRoom();
 
-    public Problem(int number, Room room, List<Furniture> furnitures) {
-        this.number = number;
-        this.room = room;
-        this.furnitures = ImmutableList.copyOf(furnitures);
-    }
+    List<Furniture> getFurnitures();
 
-    @Override
-    public String toString() {
-        return "Problem{" +
-                "room=" + room +
-                ", furnitures=" + furnitures +
-                '}';
-    }
+    int getNumber();
 
-    public Room getRoom() {
-        return room;
-    }
+    int findMeInInitialArray(Furniture furniture);
 
-    public List<Furniture> getFurnitures() {
-        return furnitures;
-    }
-
-    public int getNumber() {
-        return number;
-    }
+    Optional<Double> score(Solution solution);
 }

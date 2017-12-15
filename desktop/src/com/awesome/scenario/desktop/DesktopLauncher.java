@@ -6,10 +6,13 @@ import com.gui.DragAndDrop;
 import com.gui.EvaluatorPhysicsRenderer;
 import com.gui.SimplePhysicsRenderer;
 import com.roomfurniture.InputParser;
+import com.roomfurniture.angle.AngleSet;
 import com.roomfurniture.box2d.DragAndDropPhysicsSimulator;
 import com.roomfurniture.box2d.PhysicsSimulatorEvaluator;
 import com.roomfurniture.box2d.SimplePhysicsSimulator;
 import com.roomfurniture.problem.Problem;
+
+import java.util.List;
 
 public class DesktopLauncher {
 
@@ -20,20 +23,24 @@ public class DesktopLauncher {
 //        optimizeThenRender(solution, problem);
 //        PhysicsApproach.runMultiThreaded();
 //        PhysicsApproach.runPhysicsSingleThreaded();
+//        List<Problem> testProblems = InputParser.getTestProblems();
+//        System.out.println(AngleSet.generateInitialAngleSet(testProblems.get(0)));
+        PhysicsApproach.runPhysicsSingleThreaded();
 
 //        PhysicsApproach.runSpawnPointPicker();
 
-
-        Problem problem = InputParser.getTestProblems().get(0);
-
-
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        DragAndDrop renderer = new DragAndDrop(problem, new DragAndDropPhysicsSimulator(problem.getRoom()));
-
-        config.width = 2000;
-        config.height = 1000;
-
-        DesktopLauncher.application = new LwjglApplication(renderer, config);
+//        BasicApproach.runPlainSolution();;
+//
+//        Problem problem = InputParser.getTestProblems().get(0);
+//
+//
+//        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+//        DragAndDrop renderer = new DragAndDrop(problem, new DragAndDropPhysicsSimulator(problem.getRoom()));
+//
+//        config.width = 2000;
+//        config.height = 1000;
+//
+//        DesktopLauncher.application = new LwjglApplication(renderer, config);
     }
 
 

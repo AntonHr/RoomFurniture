@@ -2,7 +2,6 @@ package com.roomfurniture.box2d;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.gui.RoomFurnitureRenderer;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.problem.*;
 import com.roomfurniture.solution.Solution;
@@ -392,7 +391,7 @@ public class PhysicsSimulatorEvaluator {
                 .filter(Body::isActive)
                 .forEach(body -> {
                     Furniture item = (Furniture) body.getUserData();
-                    int ind = item.findMeInInitialArray(problem.getFurnitures());
+                    int ind = problem.findMeInInitialArray(item);
 
                     descriptors.set(ind, Optional.of(new Descriptor(new Vertex(body.getPosition()), body.getAngle())));
                 });

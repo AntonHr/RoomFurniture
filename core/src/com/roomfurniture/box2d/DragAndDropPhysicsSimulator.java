@@ -292,7 +292,7 @@ public class DragAndDropPhysicsSimulator {
                 .filter(Body::isActive)
                 .forEach(body -> {
                     Furniture item = (Furniture) body.getUserData();
-                    int ind = item.findMeInInitialArray(problem.getFurnitures());
+                    int ind = problem.findMeInInitialArray(item);
 
                     descriptors.set(ind, Optional.of(new Descriptor(new Vertex(body.getPosition()), body.getAngle())));
                 });

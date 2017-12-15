@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.roomfurniture.ShapeCalculator;
-import com.roomfurniture.box2d.PhysicsSimulatorEvaluator;
 import com.roomfurniture.box2d.SimplePhysicsSimulator;
 import com.roomfurniture.problem.Descriptor;
 import com.roomfurniture.problem.Furniture;
@@ -146,7 +145,7 @@ public class SimplePhysicsRenderer extends ApplicationAdapter implements InputPr
             font.draw(batch, "zoomSpeed: " + zoomInc, 10, y += 20);
             font.draw(batch, "translateSpeed: " + translateInc, 10, y += 40);
 
-            font.draw(batch, "Score is " + solution.score(problem).get(), 10, y += 20);
+            font.draw(batch, "Score is " + problem.score(solution).get(), 10, y += 20);
             font.draw(batch, "Coverage: " + solution.findCoverage(problem) * 100 + "%", 10, y += 40);
 
             Vector3 screenPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0.0f);

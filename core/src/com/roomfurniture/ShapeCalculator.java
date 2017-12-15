@@ -21,6 +21,16 @@ public class ShapeCalculator {
         return polygon.area();
     }
 
+    public static double calculateIntersectingAreaOf(Shape shapeA, Shape shapeB) {
+         Area polygonA = new Area(shapeA);
+        Area polygonB = new Area(shapeB);
+
+        polygonA.intersect(polygonB);
+        if(polygonA.isEmpty())
+            return 0;
+        else
+            return calculateAreaOf(polygonA);
+    }
     public static boolean intersect(Shape shapeA, Shape shapeB) {
         Area polygonA = new Area(shapeA);
         Area polygonB = new Area(shapeB);

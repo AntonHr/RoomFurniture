@@ -1,9 +1,6 @@
 package com.roomfurniture;
 
-import com.roomfurniture.problem.Furniture;
-import com.roomfurniture.problem.Problem;
-import com.roomfurniture.problem.Room;
-import com.roomfurniture.problem.Vertex;
+import com.roomfurniture.problem.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -78,7 +75,7 @@ public class InputParser {
 //        System.out.println(problemNumber + ": " + roomShape);
 //        System.out.println(furnitures);
 
-        return Optional.of(new Problem(problemNumber, new Room(roomShape), furnitures));
+        return Optional.of(new BasicProblem(problemNumber, new Room(roomShape), furnitures));
     }
 
     private List<Vertex> parseVertices(Scanner scanner, String pattern) {

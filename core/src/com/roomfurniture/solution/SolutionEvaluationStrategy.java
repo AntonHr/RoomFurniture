@@ -12,6 +12,6 @@ public class SolutionEvaluationStrategy implements EvaluationStrategy<Solution> 
 
     @Override
     public double evaluate(Solution individual) {
-        return individual.score(p).orElse(0.0);
+        return p.score(individual).orElse(0.0);
     }
 }

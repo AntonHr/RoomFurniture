@@ -14,6 +14,7 @@ public class PlacingSolution {
     private final List<PlacingDescriptor> descriptors;
     private HashMap<String, Object> cache;
     private PhysicsSimulatorEvaluator physicsSimulator;
+    private Optional<Solution> solution;
 
 
     public PlacingSolution(List<PlacingDescriptor> descriptors) {
@@ -54,5 +55,12 @@ public class PlacingSolution {
 
     public PhysicsSimulatorEvaluator getPhysicsSimulator() {
         return physicsSimulator;
+    }
+
+    public void storeSolution(Solution solution) {
+        this.solution = Optional.of(solution);
+    }
+    public Optional<Solution> retrieveSolution() {
+        return this.solution;
     }
 }

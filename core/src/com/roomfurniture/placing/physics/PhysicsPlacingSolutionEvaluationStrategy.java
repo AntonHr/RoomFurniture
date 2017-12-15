@@ -4,8 +4,8 @@ import com.awesome.scenario.desktop.DesktopLauncher;
 import com.roomfurniture.ShapeCalculator;
 import com.roomfurniture.box2d.PhysicsSimulatorEvaluator;
 import com.roomfurniture.ga.algorithm.interfaces.EvaluationStrategy;
+import com.roomfurniture.placing.BasicPlacingProblem;
 import com.roomfurniture.placing.PlacingDescriptor;
-import com.roomfurniture.placing.PlacingProblem;
 import com.roomfurniture.placing.PlacingSolution;
 import com.roomfurniture.problem.Furniture;
 import com.roomfurniture.problem.Vertex;
@@ -13,7 +13,7 @@ import com.roomfurniture.problem.Vertex;
 import java.util.*;
 
 public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrategy<PlacingSolution> {
-    private final PlacingProblem problem;
+    private final BasicPlacingProblem problem;
     private boolean shouldRender;
     private int softMaxIterations;
     private double successRatio;
@@ -23,7 +23,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
     private int impulseForce;
     private int spawnForce;
 
-    public PhysicsPlacingSolutionEvaluationStrategy(PlacingProblem problem, boolean shouldRender, int softMaxIterations, double successRatio, double failureRatio, float dt, float trial_time, int impulseForce, int spawnForce) {
+    public PhysicsPlacingSolutionEvaluationStrategy(BasicPlacingProblem problem, boolean shouldRender, int softMaxIterations, double successRatio, double failureRatio, float dt, float trial_time, int impulseForce, int spawnForce) {
         this.problem = problem;
         this.shouldRender = shouldRender;
         this.softMaxIterations = softMaxIterations;
@@ -117,7 +117,7 @@ public class PhysicsPlacingSolutionEvaluationStrategy implements EvaluationStrat
         placingSolution.cacheResults(new HashMap<String, Object>() {{
             put("coverage", finalAreaSum / roomArea);//0..1
             put("score", finalScore);
-            put("solution", physicsSimulator.getSolution(problem.problem));
+            put("solution", physicsSimulator.getSolution(problem.getProblem()));
         }});
         placingSolution.storePhysicsSimulator(physicsSimulator);
 
